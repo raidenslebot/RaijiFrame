@@ -1064,11 +1064,6 @@ export function Dispatch({
     (n, s) => (!('pick' in s) ? n : n + [s.pick, ...s.alternates].filter((p) => progress[p.ref] !== undefined).length),
     0,
   );
-  /* Every suggestion still standing, not just the five face up. This is the
-     number the header had no way to say before, and it is the honest size of
-     what the panel is holding. */
-  const standing = chains.reduce((n, c) => n + c.picks.length, 0);
-
   /*
    * WHAT THE FACE-UP CARDS TAKE FROM EACH OTHER.
    * ————————————————————————————————————————————
@@ -1224,6 +1219,87 @@ export function Dispatch({
             align-items: start;
           }
           .rf-lead { grid-column: span 2; }
+
+          /*
+            THE ARRANGEMENT ABOVE FILLS AT FIVE CARDS AND AT NO OTHER NUMBER.
+
+            Three columns with the lead taking two is exactly right when all
+            five kinds have something: lead plus one on the first row, three on
+            the second, nothing left over. That is the case it was designed
+            against, and it is not the common case. A kind opens only when it
+            has a pick, and on a real account two opened.
+
+            What two cards in this template look like, measured: the lead 552
+            wide and 414 tall, its neighbour 271 wide and 740 tall, and a
+            552 x 330 hole underneath the lead. Neither card is wrong on its
+            own. The hole is made by the WIDTHS - the same paragraph wraps to
+            two lines at 552 and to six at 271 - so the card given twice the
+            room ends up with half the height, and align-items:start, which is
+            what stops a short card being stretched into a bordered void, leaves
+            the difference as empty plate.
+
+            So the template follows the count rather than assuming the count.
+            Equal columns whenever the cards are equal in number to something
+            that divides: two side by side, three across, four as a square.
+            The lead keeps its material - the gold edge and the lit top, which
+            is what actually marks it - and gives up only the span, which was
+            never the thing that made it the subject.
+          */
+          /*
+            THE FLOOR COMES BACK WITH THEM.
+
+            Written first as a fixed column count per card count, which put two
+            cards in two equal columns at every width - and the pane is not a
+            fixed width either, because it now follows this same count. At 1280
+            that made the columns 252px, under the 17rem floor the stacked
+            layout above declares and keeps. A card narrower than its own
+            minimum is the ragged-wrap problem again, arrived at from the other
+            direction.
+
+            auto-fit is exactly the rule for one, two and three cards: it lays
+            as many 17rem tracks as fit and COLLAPSES the ones nothing occupies,
+            so one card is one full-width track, and two are side by side where
+            there is room and stacked where there is not. Neither can leave an
+            empty cell, at any width, without anyone choosing a number.
+
+            Four is the one count that cannot use it: three tracks fit at the
+            wide end and four cards over three columns leaves two cells empty.
+            Two columns is the square, and it holds at every width this pane
+            reaches.
+          */
+          .rf-deck[data-count='1'],
+          .rf-deck[data-count='2'],
+          .rf-deck[data-count='3'] { grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+          .rf-deck[data-count='4'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .rf-deck[data-count='1'] .rf-lead,
+          .rf-deck[data-count='2'] .rf-lead,
+          .rf-deck[data-count='3'] .rf-lead,
+          .rf-deck[data-count='4'] .rf-lead { grid-column: auto; }
+
+          /*
+            AND align-items:start STILL HOLDS, WHICH IS NOT OBVIOUS.
+
+            A ragged bottom edge invites a fix, and both available fixes were
+            built and photographed here before this comment was written. With
+            two cards at 352 wide the measured heights are 384 and 576.
+
+            Stretching the plates and leaving the feet pinned by mt-auto puts
+            the 192-pixel difference INSIDE the shorter card, between "so it
+            moves" and the line you send - a gap in the middle of a card, which
+            reads as something that failed to load. Stretching them and
+            unpinning the feet moves the same emptiness to the bottom, where it
+            is 209 pixels of dark plate carrying nothing; the card reads as
+            finished, and then a third of it is a filled rectangle with no
+            content in it.
+
+            Neither card is short because it was cut off. It is short because
+            its pick requires nothing else, and the card beside it needs ten
+            thousand standing this account has never been read for. Letting
+            each end where it ends says that, and what shows in the difference
+            is the game's own art, which is better material than an empty
+            plate. So the ragged edge is the answer and not the defect - the
+            defect was the WIDTH, and that is what the rules above fix.
+          */
         }
 
         /*
@@ -1481,18 +1557,33 @@ export function Dispatch({
         <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
           Do any of these now
         </span>
-        <Meta>
-          {open.length > 0
-            ? standing > open.length
-              ? `${String(open.length)} open, ${String(standing)} suggestions behind them`
-              : `${String(open.length)} open`
-            : pricing !== null
-              ? 'still working out what is worth doing'
-              : refusals.length === slots.length
-                ? 'nothing can be recommended yet, and each line below says why'
-                : 'nothing outstanding'}
-          {dealt > 0 && `, ${String(dealt)} dealt with`}
-        </Meta>
+        {/*
+          COUNTING WHAT IS ALREADY ON SCREEN IS NOT NEWS.
+
+          This read "2 open, 10 suggestions behind them" directly under the
+          heading, above two cards the reader can see are two, each of which
+          prints its own depth in its own footer - "4 more of this kind, 1 of
+          5". The sum was the per-card figure added up and moved to the top,
+          where it arrives before the thing it is counting.
+
+          What CANNOT be seen is a card that is gone: a kind dealt with leaves
+          no gap, so "3 dealt with" is the only part of this line that told the
+          reader something the deck does not show, and it is what the button
+          beside it undoes. The empty states stay whole - with no cards at all
+          there is nothing else on the screen to read, and each of them says
+          something different about why.
+        */}
+        {(open.length === 0 || dealt > 0) && (
+          <Meta>
+            {open.length > 0
+              ? `${String(dealt)} dealt with`
+              : (pricing !== null
+                  ? 'still working out what is worth doing'
+                  : refusals.length === slots.length
+                    ? 'nothing can be recommended yet, and each line below says why'
+                    : 'nothing outstanding') + (dealt > 0 ? `, ${String(dealt)} dealt with` : '')}
+          </Meta>
+        )}
         {pricing !== null && (
           <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
             {pricing.stage} &mdash; {String(pricing.done)} of {String(pricing.total)}
@@ -1525,7 +1616,13 @@ export function Dispatch({
             DECK, not about any card in it, so it belongs on the deck - and only
             while there is more than one card to reorder.
           */}
-          {open.length > 1 && <Meta>pull a card sideways to reorder</Meta>}
+          {/*
+            And only where reordering is a decision. Two cards side by side have
+            one alternative arrangement and the reader can see both of them at
+            once, so the hint is a permanent line of instruction about a choice
+            that does not exist yet. From three it is a real ordering.
+          */}
+          {open.length > 2 && <Meta>pull a card sideways to reorder</Meta>}
           {dealt > 0 && (
             <button
               type="button"
@@ -1549,7 +1646,7 @@ export function Dispatch({
       </div>
 
       {open.length > 0 && (
-        <div className="rf-deck">
+        <div className="rf-deck" data-count={String(Math.min(open.length, 5))}>
           {open.map((c, i) => (
             <Card
               /* Keyed by KIND, not by the face-up ref: the card is the kind's

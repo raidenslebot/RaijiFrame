@@ -326,7 +326,7 @@ function RouteRow({
         response, fed by the same document-level tracker, with no edge of its
         own.
       */
-      className="anim-rise rf-lit relative"
+      className="rf-route anim-rise rf-lit relative"
       style={{
         clipPath: CHAMFER,
         background: open ? 'oklch(1 0 0 / 0.055)' : 'oklch(1 0 0 / 0.026)',
@@ -356,7 +356,24 @@ function RouteRow({
             live now
           </span>
         )}
-        <span className="eyebrow truncate" style={{ color: 'var(--text-faint)' }}>
+        {/*
+          THE GLOSS YIELDS WHOLE, WHICH IS THE RULE THE WALLET STRIP ALREADY
+          FOLLOWS TWELVE HUNDRED LINES DOWN.
+
+          Photographed on a real account with the reference pane at 718px: "Sell
+          complete sets, not parts" wrapping to two lines with "ASSEMBLED
+          PRIM..." beside it, and the row below it reading "WHATEVER YOU BOUGHT
+          U...". An ellipsis in the middle of a row reads as the panel being
+          broken; the same row without the gloss reads as a row. The route's
+          name, what it needs and whether it is open are the data, and this is a
+          gloss on the name - so it is the part that goes, and it goes entirely
+          rather than being cut off mid-word.
+
+          Measured on the row rather than on the window, because the pane's
+          width now follows how many deck cards are open and a viewport
+          breakpoint would be guessing at it from two rooms away.
+        */}
+        <span className="rf-sells eyebrow min-w-0 truncate" style={{ color: 'var(--text-faint)' }}>
           {route.sells}
         </span>
         {/*
@@ -506,7 +523,17 @@ const TEMPO_CODEC = {
  * A row here is one view: what it is called and what it is for.
  */
 const VIEWS = [
-  { id: 'routes', name: 'Ways to earn', caption: 'ranked against your account and your gear' },
+  /*
+   * FOUR OF THE FIVE CAPTIONS SAY SOMETHING THE VIEW CANNOT SAY FOR ITSELF -
+   * that the sell list is exact before any request goes out, that ducats are a
+   * separate currency on their own terms. This one said "ranked against your
+   * account and your gear" three lines above a count that reads "44 routes for
+   * you" and a disclosure headed "how this list is ordered". Three statements
+   * of one fact, stacked, in the space before the first row of the list they
+   * are all about. A caption is worth a line when it qualifies; this one only
+   * agreed.
+   */
+  { id: 'routes', name: 'Ways to earn', caption: null },
   {
     id: 'sell',
     name: 'Sell what you hold',
@@ -596,9 +623,11 @@ function ViewStrip({ view, onPick }: { view: ViewId; onPick: (v: ViewId) => void
           );
         })}
       </nav>
-      <span className="eyebrow truncate" style={{ color: 'var(--text-ghost)' }}>
-        {active.caption}
-      </span>
+      {active.caption !== null && (
+        <span className="eyebrow truncate" style={{ color: 'var(--text-ghost)' }}>
+          {active.caption}
+        </span>
+      )}
     </div>
   );
 }
@@ -1490,6 +1519,33 @@ export default function PlatinumPanel() {
    * rather than a second opinion about it.
    */
   const hasAnswer = slots.some((sl) => 'pick' in sl);
+  /*
+   * THE WIDTH GOES WHERE THERE IS SOMETHING TO PUT IN IT.
+   *
+   * Seven twelfths to the deck and five to the reference is right when the
+   * deck is full. It is not always full: a kind opens only when it has a pick,
+   * and on a real account one did. Measured at 1680 wide with one card open,
+   * the deck held 414 pixels of card in 900 of column - about 470 of nothing -
+   * while the reference beside it was truncating the labels it had no room for
+   * ("Sell complete sets, not parts" cut to "ASSEMBLE..."). The space was not
+   * missing, it was in the wrong column.
+   *
+   * So the split follows the deck. One card and the reference takes the larger
+   * share; two and they share evenly; three or more and the deck is doing the
+   * work again and takes it back. The card never drops below the 28rem its own
+   * container query needs to set the figure at hero size, so the lead reads as
+   * the lead at every one of these.
+   *
+   * The class strings are written out whole rather than assembled, because
+   * Tailwind reads this file as text and an interpolated arbitrary value is a
+   * class it never generates.
+   */
+  const openCount = slots.filter((sl) => 'pick' in sl).length;
+  const SPLIT: Readonly<Record<number, string>> = {
+    1: 'xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]',
+    2: 'xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]',
+  };
+  const split = SPLIT[openCount] ?? 'xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]';
 
   /*
    * WHAT THE HIDDEN CONTROLS ARE ACTUALLY SET TO, in one line.
@@ -1731,6 +1787,14 @@ export default function PlatinumPanel() {
             transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
             --mo-on 220ms cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .rf-route { container-type: inline-size; }
+        /*
+          The threshold is the row's own content, not a round number: the
+          longest route name in the catalogue sets the left half and the three
+          state words plus the rate set the right, and below this the gloss is
+          the first thing with nothing left to give.
+        */
+        @container (max-width: 46rem) { .rf-sells { display: none; } }
         @media (prefers-reduced-motion: reduce) { .rf-view, .rf-toggle { transition: none; } }
       `}</style>
       <Wallet pos={pos} />
@@ -1752,7 +1816,7 @@ export default function PlatinumPanel() {
         recommendation collapses to a band and the reference takes the width it
         was already not using.
       */}
-      <div className={hasAnswer ? 'grid min-h-0 gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : 'grid min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4'}>
+      <div className={hasAnswer ? `grid min-h-0 gap-5 ${split}` : 'grid min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4'}>
         {/*
           THE ANSWER COMES FIRST, AND IT IS NOT A LIST.
 
@@ -2119,22 +2183,25 @@ export default function PlatinumPanel() {
 
             This one is the cut, because it is the only one that says nothing
             the reader does not already have: the rail's active tab names the
-            view and the caption directly above says what the ranking is
-            against. The count below survives and carries the section, which is
-            what a heading is for when the content is a list of exactly that
-            many things.
+            view, and what the ranking is against is in the count itself. The
+            count carries the section, which is what a heading is for when the
+            content is a list of exactly that many things.
+
+            Written first as "Ranked for you" shortened to "Ranked", which was
+            the defect surviving its own fix: a single word in the heading
+            colour, orphaned to the left of the count, meaning nothing on its
+            own and repeating the count when read with it.
           */}
           <span className="eyebrow" style={{ color: 'var(--color-orokin-200)' }}>
-            Ranked
-          </span>
-          <span className="eyebrow" style={{ color: 'var(--text-faint)' }}>
             {/*
               "35 shown, 49 known" invited the obvious question and answered
               none of it: the fourteen missing were ducat routes, measured-
               worthless ones and whatever families are muted. Now the line only
               claims what it can account for.
             */}
-            {String(ranked.length)} routes for you{worthless.length > 0 && <> · {String(worthless.length)} checked and ruled out below</>}
+            {String(ranked.length)} routes for you
+            <span style={{ color: 'var(--text-faint)' }}>
+              {worthless.length > 0 && <> · {String(worthless.length)} checked and ruled out below</>}
             {/*
               SAID ONCE, HERE, RATHER THAN EIGHT TIMES BELOW.
 
@@ -2143,9 +2210,10 @@ export default function PlatinumPanel() {
               Eight rows saying "no measured rate yet" is the wall this grouping
               existed to remove, rebuilt out of the fix.
             */}
-            {rankedByFamily.length > 0 && rankedByFamily.every((g) => g.best === null) && (
-              <> · none timed yet, so no family has a rate to compare</>
-            )}
+              {rankedByFamily.length > 0 && rankedByFamily.every((g) => g.best === null) && (
+                <> · none timed yet, so no family has a rate to compare</>
+              )}
+            </span>
           </span>
         </div>
 

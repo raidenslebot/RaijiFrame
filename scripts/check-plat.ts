@@ -2670,5 +2670,117 @@ check('a price is parsed from a complete row, or not at all', () => {
   assert.equal(hist?.history.length, 1, 'the day with no volume is dropped from the series, not zeroed');
 });
 
+check('the deck leaves no empty cell at any number of open cards', () => {
+  /*
+   * A DECK WITH A HOLE IN IT IS THE DEFECT THE OWNER PHOTOGRAPHED, and it is
+   * pure arithmetic: columns, the number of cards, and whether the lead takes
+   * two of them. Three columns with a two-column lead fills EXACTLY at five
+   * cards and at no other number - at two it left a 552 x 330 hole under the
+   * lead, because the lead's extra width makes its text wrap short while the
+   * narrow card beside it wraps long.
+   *
+   * A kind opens only when it has a pick, so every number from one to five is
+   * a real screen. This derives each arrangement from the stylesheet itself
+   * and checks the one property that makes it a composition: cards plus the
+   * lead's extra cell must fill whole rows.
+   *
+   * Read out of the source rather than reimplemented here, because a gate that
+   * restates the rule cannot see the rule change - which this suite has caught
+   * itself doing four separate times.
+   */
+  const src = readFileSync(join(import.meta.dirname, '..', 'src', 'panels', 'platinum', 'Dispatch.tsx'), 'utf8');
+
+  // The deck must tell the stylesheet what it is laying out, or none of the
+  // rules below can match anything.
+  assert.match(
+    src,
+    /className="rf-deck" data-count=\{String\(Math\.min\(open\.length, 5\)\)\}/,
+    'the deck no longer states how many cards it is laying out, so every count rule below is dead text',
+  );
+
+  // The wide layout only: below 62rem the deck is a single stack and the
+  // question does not arise.
+  const wide = src.slice(src.indexOf('@media (min-width: 62rem)'));
+  /*
+   * A template is either a fixed number of columns, which has to divide, or
+   * auto-fit, which cannot leave an empty cell at all: it lays as many tracks
+   * as fit and collapses every one nothing occupies, so the cards always fill
+   * whatever tracks survive. Auto-fit reports null and the count is exempt -
+   * but only if it carries a real floor, because `minmax(0, 1fr)` under
+   * auto-fit is an unbounded number of zero-width tracks.
+   */
+  const AUTO_FIT = /repeat\(\s*auto-fit\s*,\s*minmax\(\s*(\d+(?:\.\d+)?)(rem|px)/;
+  const columnsIn = (rule: string): number | null | 'auto-fit' => {
+    const m = /grid-template-columns:\s*([^;]+);/.exec(rule);
+    if (m === null) return null;
+    if (/auto-fit/.test(m[1])) {
+      assert.match(m[1], AUTO_FIT, 'an auto-fit deck with no floor lays an unbounded number of zero-width tracks');
+      return 'auto-fit';
+    }
+    const repeat = /repeat\((\d+),/.exec(m[1]);
+    if (repeat !== null) return Number(repeat[1]);
+    return (m[1].match(/minmax\(/g) ?? []).length;
+  };
+
+  const base = columnsIn(wide.slice(wide.indexOf('.rf-deck {')));
+  assert.equal(base, 3, 'the wide deck is no longer three columns; the arrangements below were derived against three');
+
+  for (let n = 1; n <= 5; n++) {
+    /*
+     * The override for this count, if there is one: the selector may be part
+     * of a comma-separated list, so the rule is found by its own body.
+     */
+    const tag = `.rf-deck[data-count='${String(n)}']`;
+    let columns: number | 'auto-fit' | null = base;
+    let from = wide.indexOf(tag);
+    while (from !== -1) {
+      const brace = wide.indexOf('{', from);
+      const rule = wide.slice(brace, wide.indexOf('}', brace));
+      // A selector list ending in `.rf-lead` is about the lead, not the deck.
+      const selector = wide.slice(from, brace);
+      const found = selector.includes('.rf-lead') ? null : columnsIn(rule);
+      if (found !== null) columns = found;
+      from = wide.indexOf(tag, from + tag.length);
+    }
+
+    /*
+     * And whether the lead still spans two columns here. `grid-column: auto`
+     * under this count's selector puts it back to one.
+     */
+    const dropped = new RegExp(`\\[data-count='${String(n)}'\\][^{}]*\\.rf-lead[^{}]*(,[^{}]*)?\\{[^}]*grid-column:\\s*auto`).test(wide);
+    const cells = n + (dropped ? 0 : 1);
+
+    if (columns === 'auto-fit') {
+      /*
+       * Hole-free by construction, but only while the lead takes one cell:
+       * a two-column lead among collapsing tracks is the one way auto-fit can
+       * still strand a cell.
+       */
+      assert.ok(dropped, `${String(n)} open card(s) use auto-fit while the lead still spans two columns`);
+      continue;
+    }
+    assert.ok(columns !== null && columns > 0, `${String(n)} open card(s) have no column count at all`);
+    assert.equal(
+      cells % columns,
+      0,
+      `${String(n)} open card(s) lay out in ${String(columns)} column(s) with the lead taking ${dropped ? 'one' : 'two'}: ` +
+        `${String(cells)} cells over ${String(Math.ceil(cells / columns))} row(s) leaves ${String(columns - (cells % columns))} empty, ` +
+        'which is the hole the deck is arranged to avoid',
+    );
+  }
+
+  /*
+   * The five-card case keeps the composition it was designed for: the lead
+   * twice the width of the others. Losing that would satisfy the arithmetic
+   * above - five cards in five equal columns divides perfectly - and throw
+   * away the reason the deck has a subject at all.
+   */
+  assert.doesNotMatch(
+    wide,
+    /\[data-count='5'\][^{}]*\.rf-lead[^{}]*(,[^{}]*)?\{[^}]*grid-column:\s*auto/,
+    'the lead has stopped spanning two columns at five cards, which is the one arrangement it was built for',
+  );
+});
+
 console.log(failures === 0 ? '\nall platinum rules hold' : `\n${String(failures)} platinum rule(s) broken`);
 if (failures > 0) process.exit(1);
