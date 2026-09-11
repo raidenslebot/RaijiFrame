@@ -660,7 +660,19 @@ export class MissionTracker {
       case 'missionXp':
       case 'loadoutConsumable':
       case 'connectionState':
-      // The arsenal is not a mission. Consumers watch these via `onEvent`.
+      /*
+       * The arsenal is not a mission. Consumers watch these via `onEvent`.
+       *
+       * `no-fallthrough` reports the next label and it is WRONG here: every
+       * case in this block is EMPTY and they share one `return null` at the
+       * end, which is the idiom for "none of these carry anything the run
+       * needs". There is no statement to fall through. Restructuring correct
+       * code to satisfy a linter is how a switch grows twenty identical
+       * returns, so the rule is silenced at exactly this label and nowhere
+       * else - if a statement is ever added to one of these cases, it moves
+       * out of the group and the rule sees it again.
+       */
+      // eslint-disable-next-line no-fallthrough
       case 'screen':
       case 'upgradeSlot':
       case 'modInstalled':

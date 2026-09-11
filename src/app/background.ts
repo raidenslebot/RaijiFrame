@@ -442,11 +442,31 @@ function ensureCatalogues(): void {
 }
 
 /*
- * THE PLAN runs here, not in a Worker: `scripts/bench-plan.ts` measures one
- * search at 81 ms on the real catalogue and a whole plan at 293-621 ms, and a
- * screen open is a human-paced event. Blocking the controller for a fraction of
- * a second once per open costs less than a second bundle of the catalogue in a
- * Worker would.
+ * THE PLAN runs here, not in a Worker - AND THE FIGURE THAT JUSTIFIED THAT HAD
+ * DOUBLED WITHOUT ANYONE RE-READING IT.
+ *
+ * This said "one search at 81 ms and a whole plan at 293-621 ms", and concluded
+ * that blocking the controller for "a fraction of a second" was the cheaper
+ * trade. Re-measured today with `npm run bench` on the real catalogue (1,516
+ * mods, 80 rifle candidates):
+ *
+ *     62.8 ms   one search, Q2
+ *    564.2 ms   plan, weapon Q2, everything owned
+ *  1,114.0 ms   plan, weapon Q2, HALF owned  <- the realistic account shape
+ *    952.8 ms   plan, frame Q3, half owned
+ *
+ * The search got faster; the plan is now a FULL SECOND on the shape a real
+ * account has, not a fraction of one. The argument above is therefore weaker
+ * than it reads, and the reason it still stands is not the number: it is that
+ * `showStrip` no longer waits behind this, because `publishAndShow` puts the
+ * window up on the same publish and the memo below means only the first publish
+ * of a visit pays at all (measured: eight publishes, 13,832 ms recomputed
+ * against 1,691 ms memoised).
+ *
+ * If this figure grows again, the conclusion flips and the search belongs off
+ * the controller. A comment carrying a stale measurement is how a decision
+ * outlives the evidence for it - so re-run `npm run bench` before trusting the
+ * numbers above, and rewrite them here when they move.
  *
  * ONCE PER OPEN IS WHAT THIS SAID AND NOT WHAT IT DID.
  * ----------------------------------------------------
@@ -690,8 +710,18 @@ let ladderPlan: Plan | null = null;
  * A ladder that runs to its own end is up to nine seconds of searching on the
  * real catalogue, and past the first handful of rungs it is describing a
  * weapon several Forma into the future. Six is what the overlay can say
- * something useful about - one instruction and the shape of what follows - and
- * it keeps the controller's total under a second and a half.
+ * something useful about - one instruction and the shape of what follows.
+ *
+ * THE SECOND HALF OF THIS SENTENCE USED TO CLAIM IT "keeps the controller's
+ * total under a second and a half", AND THAT WAS WRONG BY A FACTOR OF TWO AND A
+ * HALF. Measured: six rungs is 59 yields at about 63 ms a slice, 3,730 ms in
+ * total. The horizon is still six, for the reason above - what the overlay can
+ * usefully SAY - and not because of a budget it never met.
+ *
+ * What makes 3.7 seconds acceptable is the slicing and the yield, not the
+ * total: the controller gets the turn back every 63 ms throughout, and since
+ * `showInFlight` the pump stands aside entirely while the overlay is coming up,
+ * so none of it is in front of the thing the player is waiting for.
  *
  * It is a horizon, not a claim: `ladderEnd` says which of the two ends this
  * was, so the overlay never presents a truncated ladder as a finished one.

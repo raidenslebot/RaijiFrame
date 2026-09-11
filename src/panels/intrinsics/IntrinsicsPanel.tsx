@@ -366,13 +366,20 @@ function BranchRow({ name, rank, maxRank, color, delay, cheapest, step, masteryR
          * the two facts inside were "ranks left" and "mastery left here", both
          * of which need a rank, so an unread branch opened onto nothing but the
          * apology. A chevron over an empty region is a worse lie than a dash -
-         * it promises an answer one press away and has none. The dash in the
-         * answer column still says the value is unknown; the container says why.
+         * it promises an answer one press away and has none.
+         *
+         * AND NO ANSWER COLUMN EITHER, which was the last of the nine copies.
+         * ————————————————————————————————————————————
+         * Each unread row still printed "—/10" down the right, so a cold launch
+         * put EIGHTEEN em dashes on one screen, all of them the same sentence
+         * the banner states in full at the top. Measured at 1280x720 with no
+         * account read, that column was the largest single block of repetition
+         * on the panel. The ten dimmed pips already say the branch has ten
+         * ranks and that the fill is unknown, the tree header says how many
+         * ranks are in the tree, and the footer says a pip is a rank — so the
+         * dash was the only thing carrying nothing, eighteen times over.
          */
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2">
-          {title}
-          <span className="ml-auto">{answer}</span>
-        </div>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2">{title}</div>
       ) : (
         <Disclosure
           depth={1}
@@ -530,16 +537,31 @@ function TreeBlock({
         style={{ clipPath: CHAMFER, background: PLATE }}
       >
         <span aria-hidden className="absolute top-0 bottom-0 left-0 z-10 w-[2px]" style={{ background: color }} />
+        {/*
+          THE HEADER SAYS WHAT IT KNOWS, WHICH IS NOT NOTHING.
+          ————————————————————————————————————————————
+          Unmeasured, this printed an em dash under "mastery earned" with
+          "67,500 when complete" pushed out to the answer column — a refusal
+          occupying the loudest slot on the plate, with the fact demoted beside
+          it. Both trees did it, which was two of the five dashes a cold launch
+          put on this screen.
+
+          Nothing here is unknown except the account, so the eyebrow states
+          which question the figure answers and the figure is always real: what
+          you have earned once there are ranks to read, what the tree is worth
+          when there are not. The ink stays muted in the second case, which is
+          this panel's standing signal for "a fact, but not a fact about you".
+        */}
         <Disclosure
           accent={color}
-          eyebrow="mastery earned"
+          eyebrow={measured ? 'mastery earned' : 'mastery when complete'}
           summary={
             <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span
                 className="numeric text-[length:var(--text-lead)] leading-none"
                 style={{ color: measured ? color : 'var(--text-muted)' }}
               >
-                {measured ? int(tree.masteryXp) : UNKNOWN}
+                {int(measured ? tree.masteryXp : tree.masteryXpMax)}
               </span>
               {measured && tree.unspentPoints !== null && (
                 // Flagged, not hidden. inventory-schema.md §6 reads LPP_* as
@@ -560,13 +582,14 @@ function TreeBlock({
             </span>
           }
           answer={
-            <span className="numeric" style={{ color: 'var(--text-muted)' }}>
-              {!measured
-                ? `${int(tree.masteryXpMax)} when complete`
-                : remaining > 0
-                  ? `${int(remaining)} unearned`
-                  : 'tree complete'}
-            </span>
+            /* No answer column without ranks: "N ranks to buy" is already on
+               the section heading two lines above, and the figure that used to
+               sit here is now the summary itself. */
+            measured ? (
+              <span className="numeric" style={{ color: 'var(--text-muted)' }}>
+                {remaining > 0 ? `${int(remaining)} unearned` : 'tree complete'}
+              </span>
+            ) : undefined
           }
         >
           <p className="wf-note">
@@ -705,290 +728,423 @@ export default function IntrinsicsPanel() {
   );
 
   return (
-    <div className="flex h-full flex-col gap-6 p-6">
-      {!measured && <AccountBanner hasAccount={inventory !== null} />}
+    /*
+     * ONE SCREEN: A PINNED ANSWER AND A REFERENCE PANE THAT SCROLLS ON ITS OWN.
+     *
+     * THE MEASUREMENT THAT FORCED THIS. Driven through a real browser at
+     * 1280x720 with no account read - the cold-launch state, which is the one
+     * the owner actually sees - this panel emitted 946 px into a 672 px
+     * viewport. One and a half screens, six sections stacked in a single
+     * column, and five em-dash readouts each saying the same one fact in a
+     * different costume, with half the window empty to the right of every one
+     * of them. A panel that has read nothing was a page that had to be
+     * scrolled to find out that it had read nothing.
+     *
+     * So the shape is a fixed-height grid rather than a growing column:
+     *
+     *   - the HERO is the answer - ranks held, and where the next rank costs
+     *     least - and it is pinned, so no length of branch list can push it
+     *     off the top;
+     *   - the BRANCHES are reference. Eighteen rows plus two tree headers are
+     *     legitimately longer than a screen, so they scroll INSIDE their own
+     *     pane and move nothing else when they do;
+     *   - the MASTERY ARITHMETIC sits in the width that was empty beside them
+     *     rather than under them.
+     *
+     * `min-h-0` on every row and column of the chain is what makes that true,
+     * and is the easiest part to leave out: a grid child's default
+     * `min-height: auto` refuses to shrink below its content, so one missing
+     * `min-h-0` anywhere and the whole thing grows back to 946 px with nothing
+     * on screen to say that anything is wrong.
+     */
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+      {/* ---- ROW 1: pinned. The account's state, then the decision. -------- */}
+      <div className="flex min-w-0 flex-col gap-4">
+        {!measured && <AccountBanner hasAccount={inventory !== null} />}
 
-      {/* ---- THE BOLD ELEMENT: ranks held, and where the next one is cheapest */}
-      {/*
-        `mo-field` puts this plate on the document pointer tracker and `mo-tilt`
-        reads the signed offset it writes, so the hero turns a few degrees under
-        the cursor. Both are pointer-driven, which is why they are allowed to be
-        the loudest motion on the panel: a pointer cannot be over a window
-        nobody is presenting, so neither effect can be stranded mid-flight.
-      */}
-      <section
-        className="mo-field mo-tilt mo-in-settle relative isolate"
-        style={{
-          clipPath: CHAMFER,
-          padding: 1,
-          background:
-            'linear-gradient(150deg, var(--color-orokin-400), oklch(0.83 0.105 90 / 0.16) 44%, transparent 78%)',
-        }}
-      >
-        <div
-          className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-5 px-6 py-5"
+        {/* ---- THE BOLD ELEMENT: ranks held, and where the next one is cheapest */}
+        {/*
+          `mo-field` puts this plate on the document pointer tracker and `mo-tilt`
+          reads the signed offset it writes, so the hero turns a few degrees under
+          the cursor. Both are pointer-driven, which is why they are allowed to be
+          the loudest motion on the panel: a pointer cannot be over a window
+          nobody is presenting, so neither effect can be stranded mid-flight.
+        */}
+        <section
+          className="mo-field mo-tilt mo-in-settle relative isolate"
           style={{
             clipPath: CHAMFER,
+            padding: 1,
             background:
-              'radial-gradient(120% 150% at 0% 0%, oklch(0.83 0.105 90 / 0.10), transparent 58%), linear-gradient(168deg, oklch(0.165 0.028 74 / 0.97), oklch(0.105 0.02 70 / 0.98))',
+              'linear-gradient(150deg, var(--color-orokin-400), oklch(0.83 0.105 90 / 0.16) 44%, transparent 78%)',
           }}
         >
-          <div className="min-w-0">
-            <div className="flex items-baseline gap-2.5">
-              <span aria-hidden className="size-[5px] rotate-45" style={{ background: 'var(--color-orokin-400)' }} />
-              <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
-                Intrinsic ranks held
-              </span>
+          <div
+            className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-5 px-6 py-5"
+            style={{
+              clipPath: CHAMFER,
+              background:
+                'radial-gradient(120% 150% at 0% 0%, oklch(0.83 0.105 90 / 0.10), transparent 58%), linear-gradient(168deg, oklch(0.165 0.028 74 / 0.97), oklch(0.105 0.02 70 / 0.98))',
+            }}
+          >
+            <div className="min-w-0">
+              <div className="flex items-baseline gap-2.5">
+                <span aria-hidden className="size-[5px] rotate-45" style={{ background: 'var(--color-orokin-400)' }} />
+                <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+                  Intrinsic ranks held
+                </span>
+              </div>
+
+              <div className="mt-2.5 flex items-baseline gap-2.5">
+                <span
+                  className="numeric text-[length:var(--text-hero)] leading-none"
+                  style={{
+                    color: measured ? 'var(--color-orokin-200)' : 'var(--text-faint)',
+                  }}
+                >
+                  {measured ? ranks : UNKNOWN}
+                </span>
+                <span className="numeric text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
+                  / {maxRanks}
+                </span>
+              </div>
+
+              {/* No bar without ranks: a 0%-wide fill is a measurement claim. */}
+              {measured && (
+                <div
+                  className="mt-3 w-full max-w-[26rem] overflow-hidden"
+                  style={{ height: 4, background: 'oklch(1 0 0 / 0.07)' }}
+                >
+                  <span
+                    aria-hidden
+                    className="block h-full"
+                    style={{
+                      width: `${Math.max(2, (maxRanks > 0 ? ranks / maxRanks : 0) * 100)}%`,
+                      background: 'var(--color-orokin-400)',
+                    }}
+                  />
+                </div>
+              )}
+
+              <div className="numeric mt-2 text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
+                {!measured
+                  ? `${maxRanks} ranks exist across ${railjack.branches.length + drifter.branches.length} branches`
+                  : remainingRanks > 0
+                    ? `${remainingRanks} ranks left to buy`
+                    : 'every rank bought'}
+              </div>
             </div>
 
-            <div className="mt-2.5 flex items-baseline gap-2.5">
+            {/* The other half of the decision: where the next rank costs least. */}
+            <div className="min-w-[15rem]">
               <span
-                className="numeric text-[length:var(--text-hero)] leading-none"
+                className="eyebrow"
                 style={{
-                  color: measured ? 'var(--color-orokin-200)' : 'var(--text-faint)',
+                  color: cheapest ? 'var(--color-signal-good)' : 'var(--text-faint)',
                 }}
               >
-                {measured ? ranks : UNKNOWN}
+                Cheapest next rank
               </span>
-              <span className="numeric text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
-                / {maxRanks}
-              </span>
-            </div>
-
-            {/* No bar without ranks: a 0%-wide fill is a measurement claim. */}
-            {measured && (
-              <div
-                className="mt-3 w-full max-w-[26rem] overflow-hidden"
-                style={{ height: 4, background: 'oklch(1 0 0 / 0.07)' }}
-              >
-                <span
-                  aria-hidden
-                  className="block h-full"
-                  style={{
-                    width: `${Math.max(2, (maxRanks > 0 ? ranks / maxRanks : 0) * 100)}%`,
-                    background: 'var(--color-orokin-400)',
-                  }}
-                />
-              </div>
-            )}
-
-            <div className="numeric mt-2 text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
-              {!measured
-                ? `${maxRanks} ranks exist across ${railjack.branches.length + drifter.branches.length} branches`
-                : remainingRanks > 0
-                  ? `${remainingRanks} ranks left to buy`
-                  : 'every rank bought'}
-            </div>
-          </div>
-
-          {/* The other half of the decision: where the next rank costs least. */}
-          <div className="min-w-[15rem]">
-            <span
-              className="eyebrow"
-              style={{
-                color: cheapest ? 'var(--color-signal-good)' : 'var(--text-faint)',
-              }}
-            >
-              Cheapest next rank
-            </span>
-            {cheapest !== null ? (
-              <>
-                <div
-                  className="mt-2 font-[family-name:var(--font-title)] text-[length:var(--text-lead)] leading-none tracking-[0.12em] uppercase"
-                  style={{ color: 'var(--color-signal-good)' }}
-                >
-                  {cheapest.name}
+              {cheapest !== null ? (
+                <>
+                  <div
+                    className="mt-2 font-[family-name:var(--font-title)] text-[length:var(--text-lead)] leading-none tracking-[0.12em] uppercase"
+                    style={{ color: 'var(--color-signal-good)' }}
+                  >
+                    {cheapest.name}
+                  </div>
+                  <div className="numeric mt-2 text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
+                    {cheapest.tree} · rank {cheapest.rank} to {cheapest.rank + 1}
+                  </div>
+                  <p
+                    className="wf-prose mt-2"
+                  >
+                    Intrinsic cost rises with rank, so the lowest branch is always the least expensive place to spend.
+                  </p>
+                </>
+              ) : measured ? (
+                <div className="mt-2 text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
+                  Every branch is at its cap. Nothing left to buy.
                 </div>
-                <div className="numeric mt-2 text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
-                  {cheapest.tree} · rank {cheapest.rank} to {cheapest.rank + 1}
-                </div>
+              ) : (
                 <p
                   className="wf-prose mt-2"
                 >
-                  Intrinsic cost rises with rank, so the lowest branch is always the least expensive place to spend.
+                  Cost rises with rank, so the lowest branch is always the cheapest — but which one that is needs your
+                  ranks, and those have not been read yet.
                 </p>
-              </>
-            ) : measured ? (
-              <div className="mt-2 text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
-                Every branch is at its cap. Nothing left to buy.
-              </div>
-            ) : (
-              <p
-                className="wf-prose mt-2"
-              >
-                Cost rises with rank, so the lowest branch is always the cheapest — but which one that is needs your
-                ranks, and those have not been read yet.
-              </p>
-            )}
+              )}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* ---- ROW 2: reference. Two panes, and only the panes may scroll. ---- */}
+      {/*
+        THE SPLIT IS 7/5 AND THE BRANCHES TAKE THE SEVEN.
+        ————————————————————————————————————————————
+        Measured before this, the eighteen branch rows and the three arithmetic
+        plates were stacked in ONE column down the left of a 1280px window, with
+        roughly half the width holding nothing at all. They are both reference -
+        things you look up, not things you act on - so they sit side by side and
+        the page stops being twice as tall as it needs to be.
+
+        Below `xl` the two fall back to rows rather than columns, and the branch
+        pane keeps the `1fr`: the list is what is meant to give way when there
+        is less room, never the arithmetic, which is four lines and fixed.
+      */}
+      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_auto] gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        {/* ---- the nine branches ------------------------------------------- */}
+        <div className="flex min-h-0 min-w-0 flex-col">
+          {/*
+            THE CONTROL THIS PANEL DID NOT HAVE.
+            Eighteen branch rows, no way to ask a question about them, and one click
+            handler in the whole file. "Where is there still work" is the only thing
+            anybody wants from this list once a tree is half bought, and the answer
+            was already computed — it was just never offered as a choice.
+
+            IT STAYS IN THE OPEN rather than moving behind a disclosure with the
+            rest of the controls. A filter is the one control whose own state is the
+            thing being hidden: a collapsed "Unfinished" chip is a list silently
+            missing rows with nothing on screen to say so. The pressed chip IS the
+            summary line a disclosure would have had to carry.
+          */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {/*
+              THE PIP LEGEND SITS WITH THE PIPS NOW.
+              ————————————————————————————————————————————
+              It was a footer line at the bottom of the panel, which in the new
+              two-pane shape put it in the OTHER column from the thing it
+              explains - and below that column's fold, so the one sentence that
+              says a pip is a rank rather than a percentage needed a scroll in a
+              pane the reader had no reason to scroll. It is a caption, so it
+              goes on the heading of the list it captions.
+            */}
+            <SectionTitle
+              count={branchTotals.all}
+              note={measured ? 'pips are ranks — ten per branch' : 'ranks unmeasured — every branch shown, ten pips each'}
+            >
+              Branches
+            </SectionTitle>
+            <Segmented
+              label="Which branches to show"
+              value={branchFilter}
+              onChange={setBranchFilter}
+              options={[
+                {
+                  id: 'all',
+                  label: 'All',
+                  badge: branchTotals.all,
+                  hint: 'Every branch in both trees',
+                },
+                {
+                  id: 'unfinished',
+                  label: 'Unfinished',
+                  // Absent, never zero: with no ranks read there is no count to
+                  // give, and a 0 here would claim every branch is capped.
+                  badge: measured ? branchTotals.unfinished : null,
+                  // Each chip says what IT could not decide, not the same sentence
+                  // twice: two controls wearing one identical refusal is the
+                  // smaller version of the nine identical paragraphs this panel
+                  // just lost, and it costs nothing to say which is which.
+                  hint: measured ? 'Branches below their rank cap' : 'Which branches are below their cap needs your ranks',
+                },
+                {
+                  id: 'maxed',
+                  label: 'Maxed',
+                  badge: measured ? branchTotals.maxed : null,
+                  hint: measured ? 'Branches at their rank cap' : 'Which branches are at their cap needs your ranks',
+                },
+              ]}
+            />
+          </div>
+
+          {/*
+            THE ONLY THING ON THIS PANEL ALLOWED TO SCROLL.
+            ————————————————————————————————————————————
+            Two trees, eighteen rows and two headers come to roughly 1,200 px of
+            list, which is more than a 720p window has and always will be. What
+            changed is WHAT moves when it is scrolled: the pane does, and the hero
+            above it does not, so the ranks held and the cheapest next rank are on
+            screen no matter how far down the list the reader is.
+
+            The trees are stacked rather than side by side in here. At the 7fr
+            width each row is comfortable; split into two columns each tree would
+            be about 310 px, which is under the 22rem container query inside
+            `Disclosure` - every row would wrap its own answer onto a second line
+            and the list would get TALLER for having been given two columns.
+          */}
+          <div className="mo-arrive flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
+            <TreeBlock
+              label="Railjack"
+              role="Empyrean crew skills — earned in Veil Proxima and spent from the Railjack menu."
+              tree={railjack}
+              color={RAILJACK_INK}
+              delay={140}
+              cheapestKey={cheapest !== null && cheapest.tree === 'Railjack' ? cheapest.key : null}
+              measured={measured}
+              filter={branchFilter}
+              step={step}
+              masteryRank={masteryRank}
+            />
+            <TreeBlock
+              label="Drifter"
+              role="Duviri skills — earned in the Undercroft and spent at the Drifter camp."
+              tree={drifter}
+              color={DRIFTER_INK}
+              delay={200}
+              cheapestKey={cheapest !== null && cheapest.tree === 'Drifter' ? cheapest.key : null}
+              measured={measured}
+              filter={branchFilter}
+              step={step}
+              masteryRank={masteryRank}
+            />
           </div>
         </div>
-      </section>
 
-      {/* ---- the mastery arithmetic ---------------------------------------- */}
-      <section className="mo-arrive">
-        <SectionTitle note="1,500 mastery per rank">Mastery from intrinsics</SectionTitle>
+        {/* ---- the mastery arithmetic, in the width that was empty ---------- */}
+        <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-1">
+          <section className="mo-arrive min-w-0">
+            {/* The rate used to ride on this heading as a note, which in a 5fr
+                column pushed the title onto two lines for a figure the plate
+                below already carries ("at 1,500 mastery per rank" on the
+                unearned cell when there is an account, and the sentence under
+                the pool when there is not). One line, said once. */}
+            <SectionTitle>Mastery from intrinsics</SectionTitle>
 
-        <div className="mo-stagger grid gap-[3px] sm:grid-cols-3">
-          {[
-            {
-              label: 'Earned',
-              value: measured ? int(masteryXp) : UNKNOWN,
-              sub: measured
-                ? `${ranks} ranks × ${int(MASTERY_PER_INTRINSIC_RANK)}`
-                : `${int(MASTERY_PER_INTRINSIC_RANK)} per rank — ranks not measured`,
-              ink: measured ? 'var(--color-orokin-300)' : 'var(--text-muted)',
-            },
-            {
-              label: 'Still unearned',
-              value: measured ? int(remainingXp) : UNKNOWN,
-              // NOT "N ranks left to buy" - that exact sentence is already the
-              // hero's own subline sixty lines above, and both are visible
-              // without scrolling. This says what THIS figure is instead.
-              sub: !measured ? 'needs the ranks you hold' : 'at 1,500 mastery per rank',
-              ink: measured ? 'var(--text)' : 'var(--text-muted)',
-            },
-            {
-              label: 'Full pool',
-              value: int(masteryXpMax),
-              sub: `${railjack.maxRanks} Railjack + ${drifter.maxRanks} Drifter`,
-              ink: 'var(--color-tenno-300)',
-            },
-          ].map((cell, i) => (
-            <div
-              key={cell.label}
-              className="rf-plate mo-field mo-sheen mo-lift mo-in-up relative px-4 py-3"
-              style={
+            {/*
+              ONE COLUMN, AND THE FIGURES ARE NOT HERO-SIZED.
+              ————————————————————————————————————————————
+              These three were a `sm:grid-cols-3` strip at `--text-title`, which
+              is 41.6px at this window. In the 5fr column that strip would put
+              "135,000" into a 150px cell: a mono figure that cannot wrap, in a
+              box narrower than itself, which is sideways overflow rather than a
+              tight fit. Stacked at `--text-lead` each plate has the full column
+              width and the hero above stays the largest number on the screen,
+              which is what it is for.
+            */}
+            <div className="mo-stagger grid gap-[3px]">
+              {[
                 {
-                  '--i': i,
-                  clipPath: CHAMFER,
-                  background: PLATE,
-                } as CSSProperties
-              }
-            >
-              <span
-                aria-hidden
-                className="absolute top-0 bottom-0 left-0 w-[2px]"
-                style={{ background: cell.ink, opacity: 0.75 }}
-              />
-              <div className="eyebrow">{cell.label}</div>
-              <div className="numeric mt-1.5 text-[length:var(--text-title)] leading-none" style={{ color: cell.ink }}>
-                {cell.value}
-              </div>
-              <div className="numeric mt-1.5 text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
-                {cell.sub}
-              </div>
+                  label: 'Earned',
+                  value: int(masteryXp),
+                  sub: `${ranks} ranks × ${int(MASTERY_PER_INTRINSIC_RANK)}`,
+                  ink: 'var(--color-orokin-300)',
+                  when: measured,
+                },
+                {
+                  label: 'Still unearned',
+                  value: int(remainingXp),
+                  // NOT "N ranks left to buy" - that exact sentence is already the
+                  // hero's own subline, and both are visible without scrolling.
+                  // This says what THIS figure is instead.
+                  sub: 'at 1,500 mastery per rank',
+                  ink: 'var(--text)',
+                  when: measured,
+                },
+                {
+                  label: 'Full pool',
+                  value: int(masteryXpMax),
+                  sub: `${railjack.maxRanks} Railjack + ${drifter.maxRanks} Drifter`,
+                  ink: 'var(--color-tenno-300)',
+                  when: true,
+                },
+              ]
+                .filter((cell) => cell.when)
+                .map((cell, i) => (
+                  <div
+                    key={cell.label}
+                    className="rf-plate mo-field mo-sheen mo-lift mo-in-up relative px-4 py-3"
+                    style={
+                      {
+                        '--i': i,
+                        clipPath: CHAMFER,
+                        background: PLATE,
+                      } as CSSProperties
+                    }
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute top-0 bottom-0 left-0 w-[2px]"
+                      style={{ background: cell.ink, opacity: 0.75 }}
+                    />
+                    <div className="eyebrow">{cell.label}</div>
+                    <div
+                      className="numeric mt-1.5 text-[length:var(--text-lead)] leading-none"
+                      style={{ color: cell.ink }}
+                    >
+                      {cell.value}
+                    </div>
+                    <div className="numeric mt-1.5 text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
+                      {cell.sub}
+                    </div>
+                  </div>
+                ))}
             </div>
-          ))}
-        </div>
 
-        {/*
-         * `measured` is load-bearing here, not decoration.
-         *
-         * `remainingXp` is `masteryXpMax - masteryXp`, and `masteryXp` is 0 when
-         * `PlayerSkills` is absent — so without this gate the panel printed
-         * "That unearned 135,000 is 98% of the step from MR 27 to 28" three lines
-         * under a "Still unearned —" cell that had just refused to state it. The
-         * sentence was arithmetic on our own missing data.
-         */}
-        {measured && stepShare !== null && masteryRank !== null && (
-          <p className="wf-note mt-2.5">
-            {remainingXp === 0 ? (
-              <>Every intrinsic rank is bought. This subsystem can give you nothing further.</>
-            ) : (
-              <>
-                That unearned {int(remainingXp)} is{' '}
-                <span className="numeric" style={{ color: 'var(--color-orokin-300)' }}>
-                  {stepShare >= 1 ? `${stepShare.toFixed(1)}×` : pct(stepShare)}
-                </span>{' '}
-                of the step from MR {masteryRank} to {masteryRank + 1}.
-              </>
+            {/*
+              TWO DASHES, REPLACED BY THE ONE SENTENCE THEY WERE BOTH SPELLING.
+              ————————————————————————————————————————————
+              With nothing read, "Earned" and "Still unearned" were two plates
+              each printing an em dash under a sub-line apologising for it, on a
+              screen where the hero had already printed a third and the two tree
+              headers a fourth and fifth. Five refusals, one reason. The plates
+              are gone rather than emptied - both are arithmetic ON the ranks,
+              so neither exists before the ranks do - and the reason is stated
+              once, here, beside the one figure of the three that IS knowable
+              without an account. Nothing is lost: the banner at the top says
+              what would change it.
+            */}
+            {!measured && (
+              <p className="wf-note mt-2.5">
+                What you have earned, and what is still unearned, are both arithmetic on the ranks you hold — so neither
+                can be stated until those are read. The pool above is the whole subsystem: {maxRanks} ranks at{' '}
+                {int(MASTERY_PER_INTRINSIC_RANK)} mastery each.
+              </p>
             )}
-          </p>
-        )}
-      </section>
 
-      {/* ---- the nine branches --------------------------------------------- */}
-      {/*
-        THE CONTROL THIS PANEL DID NOT HAVE.
-        Eighteen branch rows, no way to ask a question about them, and one click
-        handler in the whole file. "Where is there still work" is the only thing
-        anybody wants from this list once a tree is half bought, and the answer
-        was already computed — it was just never offered as a choice.
-      */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <SectionTitle count={branchTotals.all} note={measured ? undefined : 'ranks unmeasured — showing every branch'}>
-          Branches
-        </SectionTitle>
-        <Segmented
-          label="Which branches to show"
-          value={branchFilter}
-          onChange={setBranchFilter}
-          options={[
-            {
-              id: 'all',
-              label: 'All',
-              badge: branchTotals.all,
-              hint: 'Every branch in both trees',
-            },
-            {
-              id: 'unfinished',
-              label: 'Unfinished',
-              // Absent, never zero: with no ranks read there is no count to
-              // give, and a 0 here would claim every branch is capped.
-              badge: measured ? branchTotals.unfinished : null,
-              // Each chip says what IT could not decide, not the same sentence
-              // twice: two controls wearing one identical refusal is the
-              // smaller version of the nine identical paragraphs this panel
-              // just lost, and it costs nothing to say which is which.
-              hint: measured ? 'Branches below their rank cap' : 'Which branches are below their cap needs your ranks',
-            },
-            {
-              id: 'maxed',
-              label: 'Maxed',
-              badge: measured ? branchTotals.maxed : null,
-              hint: measured ? 'Branches at their rank cap' : 'Which branches are at their cap needs your ranks',
-            },
-          ]}
-        />
+            {/*
+             * `measured` is load-bearing here, not decoration.
+             *
+             * `remainingXp` is `masteryXpMax - masteryXp`, and `masteryXp` is 0 when
+             * `PlayerSkills` is absent — so without this gate the panel printed
+             * "That unearned 135,000 is 98% of the step from MR 27 to 28" three lines
+             * under a "Still unearned —" cell that had just refused to state it. The
+             * sentence was arithmetic on our own missing data.
+             */}
+            {measured && stepShare !== null && masteryRank !== null && (
+              <p className="wf-note mt-2.5">
+                {remainingXp === 0 ? (
+                  <>Every intrinsic rank is bought. This subsystem can give you nothing further.</>
+                ) : (
+                  <>
+                    That unearned {int(remainingXp)} is{' '}
+                    <span className="numeric" style={{ color: 'var(--color-orokin-300)' }}>
+                      {stepShare >= 1 ? `${stepShare.toFixed(1)}×` : pct(stepShare)}
+                    </span>{' '}
+                    of the step from MR {masteryRank} to {masteryRank + 1}.
+                  </>
+                )}
+              </p>
+            )}
+          </section>
+
+          {/* No payload field names down here. They are our names for the game's
+              bytes, not anything a player has ever seen on a screen in Warframe.
+
+              AND NO FOOTER AT ALL WHEN IT HAS NOTHING TO SAY. The pip legend
+              moved to the branch heading, leaving one caveat that applies to
+              one account shape; an empty bar reserved for it was the same
+              wasted band the em-dash plates were. */}
+          {measured && masteryRank === null && (
+            <footer className="mo-arrive mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
+              <span className="eyebrow" style={{ color: 'var(--color-signal-warn)' }}>
+                your mastery rank is not in this account read — the rank-step comparison needs it
+              </span>
+            </footer>
+          )}
+        </div>
       </div>
-
-      <div className="grid min-w-0 gap-6 lg:grid-cols-2">
-        <TreeBlock
-          label="Railjack"
-          role="Empyrean crew skills — earned in Veil Proxima and spent from the Railjack menu."
-          tree={railjack}
-          color={RAILJACK_INK}
-          delay={140}
-          cheapestKey={cheapest !== null && cheapest.tree === 'Railjack' ? cheapest.key : null}
-          measured={measured}
-          filter={branchFilter}
-          step={step}
-          masteryRank={masteryRank}
-        />
-        <TreeBlock
-          label="Drifter"
-          role="Duviri skills — earned in the Undercroft and spent at the Drifter camp."
-          tree={drifter}
-          color={DRIFTER_INK}
-          delay={200}
-          cheapestKey={cheapest !== null && cheapest.tree === 'Drifter' ? cheapest.key : null}
-          measured={measured}
-          filter={branchFilter}
-          step={step}
-          masteryRank={masteryRank}
-        />
-      </div>
-
-      {/* No payload field names down here. They are our names for the game's
-          bytes, not anything a player has ever seen on a screen in Warframe. */}
-      <footer className="mo-arrive mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
-        <span className="eyebrow">Pips are ranks, not a percentage — ten per branch</span>
-        {measured && masteryRank === null && (
-          <span className="eyebrow ml-auto" style={{ color: 'var(--color-signal-warn)' }}>
-            your mastery rank is not in this account read — the rank-step comparison needs it
-          </span>
-        )}
-      </footer>
     </div>
   );
 }

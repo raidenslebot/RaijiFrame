@@ -530,16 +530,41 @@ function singular(unit: string, n: number): string {
  * legible. Nothing is revealed by a transition and no figure arrives as an
  * animation's TO value.
  */
+/**
+ * WHICH HALF OF THE ANSWER THIS CALL IS RENDERING.
+ *
+ * WHAT WAS MEASURED. Driven through a real browser at 1280x720 with no account
+ * read, this panel emitted 1,498 px into a 672 px viewport - 2.38 screens -
+ * across eight top-level siblings, and this section alone was roughly half the
+ * viewport: the eyebrow, a 42 px title, the sentence, and then THREE sibling
+ * disclosure rows (the two drills and the plan) at about 65 px each. Pinning
+ * all of that would have left the board under 220 px, which is a board nobody
+ * can read.
+ *
+ * So the section renders in two parts from ONE derivation. `answer` is the
+ * statement - the thing that must never scroll away. `working` is the drills
+ * and the plan, which are already one click deep and belong with the reference
+ * they explain, directly above the board that was ranked by the same solve.
+ *
+ * One component rather than two, deliberately: `head`, `gated`, `prereqs`,
+ * `cost`, `atLeast` and `figures` are all derived here, and two components
+ * would be two copies of that derivation free to drift apart. The derivation is
+ * pure and cheap; the guards are written once and cannot disagree.
+ */
+type AnswerPart = 'answer' | 'working';
+
 function NextMove({
   solved,
   graph,
   unit,
   measured,
+  part,
 }: {
   solved: Solved | null;
   graph: Graph | null;
   unit: string;
   measured: boolean;
+  part: AnswerPart;
 }) {
   if (solved === null || graph === null || solved.plan.length === 0) return null;
 
@@ -564,6 +589,90 @@ function NextMove({
     const gate = solved.gate.get(id) ?? null;
     return gate == null ? null : gate - (solved.value.get(id) ?? 0);
   });
+
+  if (part === 'working') {
+    /*
+      THE WORKING, WHERE THE REFERENCE IT EXPLAINS IS.
+
+      No wrapper element. Both drills and the plan below can each decline to
+      render - a head with no timed path, nothing dominated, a one-step plan -
+      and an empty wrapper inside a gapped column is a gap with nothing in it,
+      which reads as a section that failed to load. A fragment that emits
+      nothing takes no space.
+    */
+    return (
+      <>
+        <NextMoveDrills solved={solved} head={head} atLeast={atLeast} unit={unit} titleOf={titleOf} />
+
+        {rest.length > 0 && (
+          <Disclosure
+            accent="var(--color-tenno-300)"
+            eyebrow="Then, in order"
+            summary="The moves after it"
+            answer={<span>{rest.length} queued</span>}
+          >
+            <ol className="flex flex-col gap-1.5">
+              {rest.map((id: string, i: number) => {
+                const g = figures[i + 1] ?? null;
+                /*
+                 * THE ENGINE'S OWN TIE, NOT A LOOK-ALIKE. This used to compare
+                 * the figure behind a step with its neighbours' and call equals
+                 * "tied - nothing measurable orders them". That was true while
+                 * cost was a count of one; with minutes from the log, two rows
+                 * opening the same four objectives at 30 and 55 minutes were
+                 * labelled tied while the engine scored them 10.0 and 5.5.
+                 * `solved.tied` is the engine's definition - equal on every axis
+                 * it measures - and the panel had been computing its own and
+                 * ignoring it.
+                 */
+                const tied = solved.tied.has(id);
+                return (
+                  <li key={id} className="flex items-baseline gap-3">
+                    {/* Hanging numeral: the step index sits in the margin so the
+                        titles form one clean left edge to read down. */}
+                    <span
+                      className="numeric w-4 shrink-0 text-right text-[length:var(--text-micro)]"
+                      style={{ color: 'var(--text-ghost)' }}
+                    >
+                      {i + 2}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
+                      {titleOf(id)}
+                    </span>
+                    {/* Same figure as a neighbour: nothing measurable orders them. */}
+                    {tied && <span className="eyebrow shrink-0">tied</span>}
+                    {g != null && (
+                      <span className="numeric shrink-0 text-[length:var(--text-micro)]" style={{ color: 'var(--text-faint)' }}>
+                        {g.toLocaleString()}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+
+            {/*
+              The provenance, one level in. It never gates content: the ranking
+              above it is the game's own dependency graph and is exactly as true
+              before the game has ever run, which is why the closed row can state
+              the SOURCE rather than a caveat.
+            */}
+            <Disclosure
+              depth={1}
+              summary="How this order was reached"
+              answer={<span>{measured ? 'from your account' : 'from a fresh start'}</span>}
+            >
+              <p className="wf-note">
+                {measured
+                  ? 'Ranked against what your account has done.'
+                  : 'No account captured — this is the game’s own dependency graph, from a fresh start.'}
+              </p>
+            </Disclosure>
+          </Disclosure>
+        )}
+      </>
+    );
+  }
 
   return (
     <section className="anim-rise" style={{ paddingLeft: 18, boxShadow: 'inset 2px 0 0 0 var(--color-tenno-400)' }}>
@@ -612,92 +721,19 @@ function NextMove({
       </p>
 
       {/*
-        VERDICT, THEN WORKING, THEN PROVENANCE - AND ONLY THE VERDICT IS OPEN.
+        THE WORKING IS NOT HERE ANY MORE, AND THAT IS THE POINT.
 
         The verdict is the heading above: one quest, named, with what stands
-        behind it. Under it sat four more numbered rows AND a provenance line,
-        all permanently visible, so the "one bold element" this section is built
-        around was competing with five quieter versions of itself.
+        behind it. Under it sat the two drills AND the plan - three sibling
+        disclosure rows at about 65 px each - so the section a glance is
+        supposed to read in one line was around half of a 672 px viewport on
+        its own, and the board it introduces could not fit under it.
 
-        The plan is the working, and it folds: the closed row states how many
-        moves are queued, which is the one thing about a plan you cannot infer
-        from its first step. The provenance - what the ranking was computed
-        against - is nested one level INSIDE the plan, because it is a statement
-        about the ORDERING rather than about the panel, and inside the plan is
-        where a reader who doubts the order goes looking for it.
-
-        A SEQUENCE, said so. Step 2 is not available yet - it opens when step 1
-        is done - and the board below rightly files it as blocked. Without that
-        word the two contradicted each other on one screen.
+        They are rendered by the same component under `part="working"`, at the
+        top of the reference column below, immediately above the board that the
+        same solve ranked. Nothing is deleted and nothing is more than one click
+        away; the statement is simply the only thing that is pinned.
       */}
-      <NextMoveDrills solved={solved} head={head} atLeast={atLeast} unit={unit} titleOf={titleOf} />
-
-      {rest.length > 0 && (
-        <Disclosure
-          className="mt-3"
-          accent="var(--color-tenno-300)"
-          eyebrow="Then, in order"
-          summary="The moves after it"
-          answer={<span>{rest.length} queued</span>}
-        >
-          <ol className="flex flex-col gap-1.5">
-          {rest.map((id: string, i: number) => {
-            const g = figures[i + 1] ?? null;
-            /*
-             * THE ENGINE'S OWN TIE, NOT A LOOK-ALIKE. This used to compare the
-             * figure behind a step with its neighbours' and call equals "tied -
-             * nothing measurable orders them". That was true while cost was a
-             * count of one; with minutes from the log, two rows opening the
-             * same four objectives at 30 and 55 minutes were labelled tied
-             * while the engine scored them 10.0 and 5.5. `solved.tied` is the
-             * engine's definition - equal on every axis it measures - and the
-             * panel had been computing its own and ignoring it.
-             */
-            const tied = solved.tied.has(id);
-            return (
-              <li key={id} className="flex items-baseline gap-3">
-                {/* Hanging numeral: the step index sits in the margin so the
-                    titles form one clean left edge to read down. */}
-                <span
-                  className="numeric w-4 shrink-0 text-right text-[length:var(--text-micro)]"
-                  style={{ color: 'var(--text-ghost)' }}
-                >
-                  {i + 2}
-                </span>
-                <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
-                  {titleOf(id)}
-                </span>
-                {/* Same figure as a neighbour: nothing measurable orders them. */}
-                {tied && <span className="eyebrow shrink-0">tied</span>}
-                {g != null && (
-                  <span className="numeric shrink-0 text-[length:var(--text-micro)]" style={{ color: 'var(--text-faint)' }}>
-                    {g.toLocaleString()}
-                  </span>
-                )}
-              </li>
-            );
-          })}
-          </ol>
-
-          {/*
-            The provenance, one level in. It never gates content: the ranking
-            above it is the game's own dependency graph and is exactly as true
-            before the game has ever run, which is why the closed row can state
-            the SOURCE rather than a caveat.
-          */}
-          <Disclosure
-            depth={1}
-            summary="How this order was reached"
-            answer={<span>{measured ? 'from your account' : 'from a fresh start'}</span>}
-          >
-            <p className="wf-note">
-              {measured
-                ? 'Ranked against what your account has done.'
-                : 'No account captured — this is the game\u2019s own dependency graph, from a fresh start.'}
-            </p>
-          </Disclosure>
-        </Disclosure>
-      )}
     </section>
   );
 }
@@ -713,9 +749,20 @@ function NextMove({
 function Tonight({
   lane,
   measured,
+  part,
 }: {
   lane: { kind: 'expiry' | 'endgame'; rows: readonly RankedPursuit[]; daily: number; weekly: number; seasonal: number };
   measured: boolean;
+  /**
+   * SPLIT THE SAME WAY `NextMove` IS, OR THE PANEL CHANGES SHAPE WITH THE GOAL.
+   *
+   * These two heroes are alternates - one renders or the other does - so if one
+   * of them pinned its queue and the other did not, picking "Best use of
+   * tonight" would move the board down the screen by the height of a disclosure
+   * row and the reader would be looking for what broke. The statement is pinned
+   * in both; the queue is in the reference column in both.
+   */
+  part: AnswerPart;
 }) {
   const [head, ...rest] = lane.rows;
   if (head === undefined) return null;
@@ -741,6 +788,85 @@ function Tonight({
     : measured
       ? 'Ranked by the pursuit taxonomy’s own weights; your progress is read where the game reports it.'
       : 'Ranked by the pursuit taxonomy’s own weights. Your progress needs your account, and is not assumed.';
+
+  if (part === 'working') {
+    /*
+      No wrapper, for the reason `NextMove` has none: a lane with a single row
+      has no queue, and an empty container inside a gapped column is a gap with
+      nothing in it.
+    */
+    if (rest.length === 0) return null;
+    return (
+      <Disclosure
+        accent="var(--color-tenno-300)"
+        eyebrow={expiry ? 'Then, soonest first' : 'Then, most valuable first'}
+        summary={expiry ? 'What else is on the clock' : 'The rest of the endgame'}
+        answer={<span>{Math.min(rest.length, 4)} more</span>}
+      >
+        <ol className="flex flex-col gap-1.5">
+          {rest.slice(0, 4).map((p, i) => {
+            /*
+             * THE LABEL MARKS THE BREAK, IT DOES NOT TAG EVERY ROW.
+             * ————————————————————————————————————————————
+             * The endgame rows had nothing in this slot, so four ranked titles
+             * read as one undifferentiated list - the rank number says which is
+             * first and nothing about where "worth doing now" stops.
+             *
+             * Stamping the tier on every row fixes that badly: on a real
+             * account the top of this list is usually one band, so it renders
+             * as HIGH PRIORITY three times, which is repetition wearing the
+             * costume of information. The hero above already names the band in
+             * words. What is genuinely unknown is where the band CHANGES, so
+             * the label appears there and only there - once, at the boundary,
+             * measured against the row above it (the hero, for the first).
+             *
+             * The expiry lane keeps its cadence on every row: daily, weekly and
+             * seasonal genuinely alternate down that list, so there is no
+             * repetition to collapse.
+             */
+            const prev = i === 0 ? head : rest[i - 1];
+            const breaks = !expiry && p.tier !== prev?.tier;
+            return (
+              <li key={p.id} className="flex items-baseline gap-3">
+                <span className="numeric w-4 shrink-0 text-right text-[length:var(--text-micro)]" style={{ color: 'var(--text-ghost)' }}>
+                  {i + 2}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
+                  {p.label}
+                </span>
+                {expiry ? (
+                  <span className="eyebrow shrink-0">{cadence(p.cadence)}</span>
+                ) : (
+                  breaks && (
+                    <span className="eyebrow shrink-0" style={{ color: 'var(--color-orokin-300)' }}>
+                      {TIER_LABEL[p.tier]}
+                    </span>
+                  )
+                )}
+              </li>
+            );
+          })}
+        </ol>
+
+        {/*
+          The provenance, one level in - the same place `NextMove` puts it.
+          Under a cadence goal it can be genuinely absent (an expiring pursuit
+          whose state the account CAN answer has no caveat to make), and an
+          absent caveat is rendered as no section rather than as an empty one:
+          a heading over nothing is the failure this whole pass is about.
+        */}
+        {provenance !== null && (
+          <Disclosure
+            depth={1}
+            summary="How this order was reached"
+            answer={<span>{measured ? 'from your account' : 'game data only'}</span>}
+          >
+            <p className="wf-note">{provenance}</p>
+          </Disclosure>
+        )}
+      </Disclosure>
+    );
+  }
 
   return (
     <section className="anim-rise" style={{ paddingLeft: 18, boxShadow: 'inset 2px 0 0 0 var(--color-tenno-400)' }}>
@@ -799,86 +925,13 @@ function Tonight({
         </Clamp>
       </div>
       {/*
-        THE SAME THREE LEVELS AS `NextMove`, AND ON PURPOSE.
+        THE QUEUE IS IN THE REFERENCE COLUMN, NOT UNDER THE STATEMENT.
 
-        These two heroes are alternates - one renders or the other does - so
-        they have to read as the same thing or the panel appears to change
-        shape when the goal changes. Verdict open, the queue folded with its
-        length on the closed row, the provenance nested inside the queue.
+        Same split as the other hero, and for the same measured reason: the
+        panel emitted 1,498 px into a 672 px viewport, and a disclosure row
+        pinned under the title is a row the board pays for. It renders from
+        this component under the working part, directly above the board.
       */}
-      {rest.length > 0 && (
-        <Disclosure
-          className="mt-3"
-          accent="var(--color-tenno-300)"
-          eyebrow={expiry ? 'Then, soonest first' : 'Then, most valuable first'}
-          summary={expiry ? 'What else is on the clock' : 'The rest of the endgame'}
-          answer={<span>{Math.min(rest.length, 4)} more</span>}
-        >
-          <ol className="flex flex-col gap-1.5">
-          {rest.slice(0, 4).map((p, i) => {
-            /*
-             * THE LABEL MARKS THE BREAK, IT DOES NOT TAG EVERY ROW.
-             * ————————————————————————————————————————————
-             * The endgame rows had nothing in this slot, so four ranked titles
-             * read as one undifferentiated list - the rank number says which is
-             * first and nothing about where "worth doing now" stops.
-             *
-             * Stamping the tier on every row fixes that badly: on a real
-             * account the top of this list is usually one band, so it renders
-             * as HIGH PRIORITY three times, which is repetition wearing the
-             * costume of information. The hero above already names the band in
-             * words. What is genuinely unknown is where the band CHANGES, so
-             * the label appears there and only there - once, at the boundary,
-             * measured against the row above it (the hero, for the first).
-             *
-             * The expiry lane keeps its cadence on every row: daily, weekly and
-             * seasonal genuinely alternate down that list, so there is no
-             * repetition to collapse.
-             */
-            const prev = i === 0 ? head : rest[i - 1];
-            const breaks = !expiry && p.tier !== prev?.tier;
-            return (
-              <li key={p.id} className="flex items-baseline gap-3">
-                <span className="numeric w-4 shrink-0 text-right text-[length:var(--text-micro)]" style={{ color: 'var(--text-ghost)' }}>
-                  {i + 2}
-                </span>
-                <span className="min-w-0 flex-1 truncate text-[length:var(--text-small)]" style={{ color: 'var(--text-muted)' }}>
-                  {p.label}
-                </span>
-                {expiry ? (
-                  <span className="eyebrow shrink-0">{cadence(p.cadence)}</span>
-                ) : (
-                  breaks && (
-                    <span className="eyebrow shrink-0" style={{ color: 'var(--color-orokin-300)' }}>
-                      {TIER_LABEL[p.tier]}
-                    </span>
-                  )
-                )}
-              </li>
-            );
-          })}
-          </ol>
-
-          {/*
-            The provenance, one level in - the same place `NextMove` puts it.
-            Under a cadence goal it can be genuinely absent (an expiring pursuit
-            whose state the account CAN answer has no caveat to make), and an
-            absent caveat is rendered as no section rather than as an empty one:
-            a heading over nothing is the failure this whole pass is about.
-          */}
-          {provenance !== null && (
-            <Disclosure
-              depth={1}
-              summary="How this order was reached"
-              answer={<span>{measured ? 'from your account' : 'game data only'}</span>}
-            >
-              <p className="wf-note">
-                {provenance}
-              </p>
-            </Disclosure>
-          )}
-        </Disclosure>
-      )}
     </section>
   );
 }
@@ -1814,167 +1867,273 @@ export default function ProgressionPanel() {
   ];
 
 
-  // How much of the board we can actually substantiate. Stated out loud rather
-
+  /*
+   * The footer says what is still ARRIVING, so it exists only while something
+   * is. Rendered unconditionally it was an empty flex row in a gapped column -
+   * a band of nothing at the bottom of a panel that had already run out of
+   * room. Nothing here is new: the same three notes, on the same conditions.
+   */
+  const stillArriving = !loaded || !itemDb || itemDb.missingCategories.length > 0;
 
   return (
-    <div className="flex h-full flex-col gap-7 p-7">
+    /*
+     * ONE SCREEN, A PINNED ANSWER AND TWO PANES, AND THE PAGE DOES NOT MOVE.
+     *
+     * WHAT WAS MEASURED. Driven through a real browser at 1280x720 with no
+     * account read - the cold launch, which is the state the owner actually
+     * sees - this panel emitted 1,498 px into a 672 px viewport. Two and a
+     * third screens, laid out as EIGHT top-level siblings in one flex column:
+     * the answer, the account banner, the goal picker, the filters, the
+     * tracking list, the board, the completion wheel, the footer. Nothing in
+     * that stack was subordinate to anything else, so the thing the panel
+     * exists to say - the name of the next thing to do - could be scrolled off
+     * the top by a ring of sixteen arcs that answers a slower question.
+     *
+     * A flat stack also wastes the width. The panel was one narrow column with
+     * the right half of the window empty, which is the other half of why it was
+     * two and a third screens tall.
+     *
+     * So the shape is a fixed-height grid, and the subordination is structural
+     * rather than a promise:
+     *
+     *   - the ANSWER is pinned. One statement, and the banner that says what it
+     *     was computed without. It never scrolls away.
+     *   - the LEFT pane is that answer's WORKING and then the BOARD - the two
+     *     things the same solve produced, in the order you would read them. It
+     *     is legitimately long and it scrolls INSIDE ITSELF.
+     *   - the RIGHT pane is the CONTROLS and the MAP. The goal and the filters
+     *     are what shape the board, so they sit beside it rather than above it,
+     *     and the tracking list and the wheel scroll under them.
+     *
+     * `min-h-0` on every row, column and flex child of that chain is what makes
+     * it true, and is the easy thing to leave out: a grid child defaults to
+     * `min-height: auto` and refuses to shrink below its content, so one
+     * missing `min-h-0` anywhere and the whole thing grows again and the page
+     * scrolls exactly as before, with nothing on screen to say anything is
+     * wrong.
+     *
+     * THE NARROW CASE IS THE NORMAL CASE, so the rows are explicit. Below the
+     * two-column breakpoint the panes stack, and a stacked pane in an implicit
+     * `auto` row is a trap: `flex-1` is `flex: 1 1 0%`, whose hypothetical main
+     * size is zero, so a scrolling child of an auto-height column collapses to
+     * nothing and takes its content with it. Two explicit `minmax(0,1fr)` rows
+     * give both panes a definite height at every width, which is what lets each
+     * of them scroll instead of the page.
+     */
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
       {/*
-        THE FUNNEL: answer, then plan, then the controls that shape it, then the
-        board, then the map. Each level is one click deeper than the last.
+        THE ANSWER, PINNED. One statement and, when there is no account, the one
+        honest sentence saying so - not eleven readouts saying it eleven times.
       */}
-      {tonight !== null ? (
-        <Tonight lane={tonight} measured={inventory !== null} />
-      ) : (
-        <NextMove solved={solved} graph={graph} unit={solved?.unit ?? 'objectives'} measured={inventory !== null} />
-      )}
-
-      {!inventory && <AccountBanner />}
-
-      <GoalPicker value={goal} onChange={setGoal} effect={goalEffect} />
-
-      <Filters
-        active={activeDomains}
-        onToggleDomain={(d) =>
-          setActiveDomains((cur) => {
-            const next = new Set(cur);
-            if (next.has(d)) next.delete(d);
-            else next.add(d);
-            return next;
-          })
-        }
-        onClear={() => setActiveDomains(new Set())}
-        hideDone={hideDone}
-        onHideDone={setHideDone}
-        query={query}
-        onQuery={setQuery}
-        showing={rankedQuests.length}
-        total={quests.length}
-      />
-
-      <TrackedQuests
-        quests={bandedQuests}
-        order={track.tracked}
-        onToggleTrack={track.toggle}
-        onMove={track.move}
-        onClear={track.clear}
-        openId={openQuest}
-        onToggleOpen={(id) => setOpenQuest((cur) => (cur === id ? null : id))}
-        onJump={jumpTo}
-      />
-
-      {/* Scroll-driven, like everything else on this panel that lives below
-          the fold. The heading drifts slower than its own rows, which is what
-          makes the board read as layered rather than flat - and `mo-parallax`
-          takes its progress from position, so a frozen document timeline has
-          no clock in it to stop. */}
-      <section className="mo-arrive">
-        <header className="mb-2.5 flex items-baseline gap-3">
-          <h3
-            className="mo-parallax font-[family-name:var(--font-title)] text-[length:var(--text-small)] tracking-[0.26em] uppercase"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            The board
-          </h3>
-          {/*
-            `--text-muted`, not `--text-ghost`. Measured at 2.66:1 against the panel
-            behind it, which is under the 3:1 floor for any text carrying information -
-            and this is a COUNT, the number that says how big the list under this heading
-            is. Ghost is the tone for pure decoration.
-          */}
-          <span className="numeric text-[length:var(--text-nano)]" style={{ color: 'var(--text-muted)' }}>
-            {rankedQuests.length}
-          </span>
-          <span
-            aria-hidden
-            className="h-px flex-1"
-            style={{ background: 'var(--rule-hairline)' }}
-          />
-          <span className="eyebrow">actionable first, then blocked</span>
-        </header>
-
-        {rankedQuests.length === 0 ? (
-          <p className="wf-note">
-            Nothing matches those filters.
-          </p>
+      <div className="flex min-w-0 flex-col gap-3">
+        {tonight !== null ? (
+          <Tonight lane={tonight} measured={inventory !== null} part="answer" />
         ) : (
-          <div className="flex flex-col gap-6">
-            {bands
-              .filter((b) => b.rows.length > 0)
-              .map((b) => (
-                <BoardSection
-                  key={b.id}
-                  id={b.id}
-                  title={b.title}
-                  count={b.rows.length}
-                  note={b.note}
-                  quiet={b.quiet}
-                  defaultOpen={b.defaultOpen}
-                  rows={b.rows}
-                  openId={openQuest}
-                  expanded={expanded}
-                  onExpand={expandGroup}
-                  renderRow={(q) => (
-                    <QuestRow
-                      key={q.id}
-                      quest={q}
-                      tracked={track.isTracked(q.id)}
-                      onToggleTrack={() => {
-                        track.toggle(q.id);
-                      }}
-                      open={openQuest === q.id}
-                      onToggleOpen={() => {
-                        setOpenQuest((cur) => (cur === q.id ? null : q.id));
-                      }}
-                      onJump={jumpTo}
+          <NextMove
+            solved={solved}
+            graph={graph}
+            unit={solved?.unit ?? 'objectives'}
+            measured={inventory !== null}
+            part="answer"
+          />
+        )}
+
+        {!inventory && <AccountBanner />}
+      </div>
+
+      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:grid-rows-[minmax(0,1fr)]">
+        {/*
+          ------------------------------------------------ the working and the board.
+
+          One scroller, because these are one reading: the drills explain the
+          statement above, the plan is the statement's queue, and the board is
+          every other row the same solve ranked. Scrolling them together is what
+          keeps "why this one" attached to "and here is everything else".
+        */}
+        <div className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto pr-1">
+          {tonight !== null ? (
+            <Tonight lane={tonight} measured={inventory !== null} part="working" />
+          ) : (
+            <NextMove
+              solved={solved}
+              graph={graph}
+              unit={solved?.unit ?? 'objectives'}
+              measured={inventory !== null}
+              part="working"
+            />
+          )}
+
+          {/* Scroll-driven, like everything else on this panel that lives below
+              the fold. The heading drifts slower than its own rows, which is what
+              makes the board read as layered rather than flat - and `mo-parallax`
+              takes its progress from position, so a frozen document timeline has
+              no clock in it to stop. */}
+          <section className="mo-arrive">
+            <header className="mb-2.5 flex items-baseline gap-3">
+              <h3
+                className="mo-parallax font-[family-name:var(--font-title)] text-[length:var(--text-small)] tracking-[0.26em] uppercase"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                The board
+              </h3>
+              {/*
+                `--text-muted`, not `--text-ghost`. Measured at 2.66:1 against the panel
+                behind it, which is under the 3:1 floor for any text carrying information -
+                and this is a COUNT, the number that says how big the list under this heading
+                is. Ghost is the tone for pure decoration.
+              */}
+              <span className="numeric text-[length:var(--text-nano)]" style={{ color: 'var(--text-muted)' }}>
+                {rankedQuests.length}
+              </span>
+              <span
+                aria-hidden
+                className="h-px flex-1"
+                style={{ background: 'var(--rule-hairline)' }}
+              />
+              <span className="eyebrow">actionable first, then blocked</span>
+            </header>
+
+            {rankedQuests.length === 0 ? (
+              <p className="wf-note">
+                Nothing matches those filters.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-6">
+                {bands
+                  .filter((b) => b.rows.length > 0)
+                  .map((b) => (
+                    <BoardSection
+                      key={b.id}
+                      id={b.id}
+                      title={b.title}
+                      count={b.rows.length}
+                      note={b.note}
+                      quiet={b.quiet}
+                      defaultOpen={b.defaultOpen}
+                      rows={b.rows}
+                      openId={openQuest}
+                      expanded={expanded}
+                      onExpand={expandGroup}
+                      renderRow={(q) => (
+                        <QuestRow
+                          key={q.id}
+                          quest={q}
+                          tracked={track.isTracked(q.id)}
+                          onToggleTrack={() => {
+                            track.toggle(q.id);
+                          }}
+                          open={openQuest === q.id}
+                          onToggleOpen={() => {
+                            setOpenQuest((cur) => (cur === q.id ? null : q.id));
+                          }}
+                          onJump={jumpTo}
+                        />
+                      )}
                     />
-                  )}
-                />
-              ))}
+                  ))}
+              </div>
+            )}
+          </section>
+        </div>
+
+        {/*
+          ------------------------------------------------ the controls and the map.
+
+          The two pickers lead this pane rather than sitting above the board,
+          which is where they used to push it down the page. They are both
+          folded and both state on their closed row what they are currently
+          doing, so at rest they are two rows beside the thing they shape.
+
+          THEY ARE INSIDE THE SCROLLER, NOT PINNED ABOVE IT, AND THAT IS A
+          MEASUREMENT RATHER THAN A PREFERENCE. Pinned, they are two flex items
+          whose `min-height: auto` forbids them shrinking below their content -
+          so opening the goal picker (seven chips and two sentences, about 200
+          px) and the filters (a field, a toggle and a token rail) would have
+          taken roughly 370 px of a 431 px pane and left the tracking list and
+          the wheel sharing what was left. A control that guts the pane it
+          shares when you use it reads as the panel breaking. Inside the
+          scroller, opening one pushes rather than squeezes.
+        */}
+        <div className="flex min-h-0 min-w-0 flex-col gap-3">
+          <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pr-1">
+            <GoalPicker value={goal} onChange={setGoal} effect={goalEffect} />
+
+            <Filters
+              active={activeDomains}
+              onToggleDomain={(d) =>
+                setActiveDomains((cur) => {
+                  const next = new Set(cur);
+                  if (next.has(d)) next.delete(d);
+                  else next.add(d);
+                  return next;
+                })
+              }
+              onClear={() => setActiveDomains(new Set())}
+              hideDone={hideDone}
+              onHideDone={setHideDone}
+              query={query}
+              onQuery={setQuery}
+              showing={rankedQuests.length}
+              total={quests.length}
+            />
+
+            <TrackedQuests
+              quests={bandedQuests}
+              order={track.tracked}
+              onToggleTrack={track.toggle}
+              onMove={track.move}
+              onClear={track.clear}
+              openId={openQuest}
+              onToggleOpen={(id) => setOpenQuest((cur) => (cur === id ? null : id))}
+              onJump={jumpTo}
+            />
+
+            {/*
+              THE MAP, LAST, AND NOW BESIDE THE BOARD RATHER THAN A SCREEN BELOW IT.
+              Sixteen arcs of domain coverage answer "how much of the game is there",
+              which is a different and slower question than "what do I do now". It led
+              the panel once and it answered nothing before an account existed - every
+              arc hatched and unmeasured above a heading reading "The whole game". It
+              is genuinely useful once you are oriented, and it is also the way domain
+              filters go ON, which is why it belongs in the same pane as the filter it
+              sets rather than at the bottom of a page nobody reached.
+            */}
+            {/*
+              The map arrives on SCROLL, not on a clock - and the scroller is now
+              this pane rather than the page, which is the only thing that changed
+              about it. `view()` resolves against the nearest scroll container, and
+              the animation is transform-only either way: a map that is never
+              scrolled to sits twenty pixels low and completely legible.
+            */}
+            <section className="mo-arrive">
+              <CompletionWheel
+                pursuits={ranked}
+                active={activeDomains}
+                onPick={(d) =>
+                  setActiveDomains((cur) => {
+                    const next = new Set(cur);
+                    if (next.has(d)) next.delete(d);
+                    else next.add(d);
+                    return next;
+                  })
+                }
+              />
+            </section>
           </div>
-        )}
-      </section>
 
-      {/*
-        THE MAP, LAST.
-        Sixteen arcs of domain coverage answer "how much of the game is there",
-        which is a different and slower question than "what do I do now". It led
-        the panel and it answered nothing before an account existed - every arc
-        hatched and unmeasured above a heading reading "The whole game". It is
-        genuinely useful once you are oriented, so it keeps its place at the end
-        rather than being cut.
-      */}
-      {/*
-        The map arrives on SCROLL, not on a clock. It is the last thing on the
-        panel and therefore always below the fold, which is the one place a
-        time-based entrance is guaranteed to be wrong: on a frozen document
-        timeline it sits nine pixels low forever, and it has already "played"
-        by the time anyone reaches it.
-      */}
-      <section className="mo-arrive">
-        <CompletionWheel
-          pursuits={ranked}
-          active={activeDomains}
-          onPick={(d) =>
-            setActiveDomains((cur) => {
-              const next = new Set(cur);
-              if (next.has(d)) next.delete(d);
-              else next.add(d);
-              return next;
-            })
-          }
-        />
-      </section>
-
-      <footer className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
-        {!loaded && <span className="eyebrow">star chart still indexing</span>}
-        {!itemDb && <span className="eyebrow">item catalog still loading</span>}
-        {itemDb && itemDb.missingCategories.length > 0 && (
-          <span className="eyebrow" style={{ color: 'var(--color-signal-warn)' }}>
-            {itemDb.missingCategories.join(', ')} unavailable — those totals are unknown, not zero
-          </span>
-        )}
-      </footer>
+          {stillArriving && (
+            <footer className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              {!loaded && <span className="eyebrow">star chart still indexing</span>}
+              {!itemDb && <span className="eyebrow">item catalog still loading</span>}
+              {itemDb && itemDb.missingCategories.length > 0 && (
+                <span className="eyebrow" style={{ color: 'var(--color-signal-warn)' }}>
+                  {itemDb.missingCategories.join(', ')} unavailable — those totals are unknown, not zero
+                </span>
+              )}
+            </footer>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

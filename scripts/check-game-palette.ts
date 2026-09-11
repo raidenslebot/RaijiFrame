@@ -57,18 +57,18 @@ const CSS = readFileSync(new URL('../src/styles/automod.css', import.meta.url), 
 /** Comments carry the OLD values on purpose, as the record of what was wrong. */
 const LIVE = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
 
-interface Found {
-  readonly raw: string;
-  readonly c: Lch;
-}
-function literals(text: string): Found[] {
-  const out: Found[] = [];
-  const re = /oklch\(\s*([0-9.]+)\s+([0-9.]+)\s+([0-9.]+)/g;
-  for (let m = re.exec(text); m !== null; m = re.exec(text)) {
-    out.push({ raw: m[0], c: { L: Number(m[1]), C: Number(m[2]), h: Number(m[3]) } });
-  }
-  return out;
-}
+/*
+ * `literals()` AND ITS `Found` TYPE LIVED HERE AND NOTHING CALLED THEM.
+ *
+ * They walked every bare `oklch(...)` in a blob of text and handed back the
+ * parsed triples. Two checks below replaced that with a walk over DECLARATIONS
+ * - `--name: oklch(...)` - which is strictly stronger, because it knows which
+ * token each colour belongs to and can therefore say "the ink is wrong" rather
+ * than "some colour in this file is wrong". An extractor nothing calls in a
+ * gate file is worth a second look before deleting, because it can mean an
+ * assertion was removed and its helper left behind; here the assertion was
+ * replaced by a better one, and this is the helper it made redundant.
+ */
 
 /** The token a declaration defines, so a failure names the token and not a number. */
 function tokenOf(name: string): Lch | null {

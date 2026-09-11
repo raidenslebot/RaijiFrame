@@ -43,7 +43,16 @@ if (!existsSync(LOG)) {
 } else {
   const UNREAD = new Set([4, 5, 6, 7, 8, 9, 10]);
   let inVisit = false;
+  /*
+   * WHICH ROW, NOT JUST HOW MANY. This was captured on every press and then
+   * thrown away - the script counted visits and printed no index at all, while
+   * the one genuinely open question about the arsenal is which of these indices
+   * a real account ever produces. Only 0 and 3 have ever been observed, and
+   * every row above 3 is something this app has to deduce from the first mod
+   * placed. A tally of them is the measurement that question needs.
+   */
   let row = null;
+  const rows = new Map();
   let lines = 0;
   const shapes = new Map();
   let visits = 0;
@@ -57,7 +66,10 @@ if (!existsSync(LOG)) {
       const n = Number(press[1]);
       inVisit = UNREAD.has(n);
       row = inVisit ? n : null;
-      if (inVisit) visits++;
+      if (inVisit) {
+        visits++;
+        rows.set(row, (rows.get(row) ?? 0) + 1);
+      }
       continue;
     }
 
@@ -74,7 +86,13 @@ if (!existsSync(LOG)) {
   }
 
   console.log(`${lines.toLocaleString('en-US')} lines read`);
-  console.log(`${String(visits)} visit(s) on an arsenal row this app does not read\n`);
+  console.log(`${String(visits)} visit(s) on an arsenal row this app does not read`);
+  if (rows.size === 0) {
+    console.log('  no index to report: this log contains none of rows 4-10\n');
+  } else {
+    const seen = [...rows].sort((a, b) => a[0] - b[0]).map(([n, c]) => `${String(n)} x${String(c)}`);
+    console.log(`  indices seen: ${seen.join(', ')}\n`);
+  }
   if (shapes.size === 0) {
     console.log('  the game emitted nothing at all between that open and its close');
   } else {

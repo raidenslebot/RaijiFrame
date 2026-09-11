@@ -52,6 +52,40 @@
  *
  * Everything numeric comes from `inventoryTotals` in subsystems.ts; nothing here
  * re-reads the account bag directly.
+ *
+ * TWO SCREENS OF STACKING, AND SEVEN DASHES AT THE TOP OF THEM
+ * ───────────────────────────────────────────────────────────
+ * Measured in a real browser at 1280x720 with no account read — the cold-launch
+ * state, which is what the owner actually sees: 1,297px of panel inside a 672px
+ * viewport. 2.06 screens. The page scrolled, and what it scrolled past first was
+ * a gold hero reading `—`, a platinum readout reading `—`, and five plates
+ * reading `—`. Seven readouts, all saying the same thing, above a banner that
+ * had already said it in a sentence.
+ *
+ * Two structural changes, both borrowed from the Platinum panel, which had the
+ * same disease and the same cure:
+ *
+ *   1. THE PAGE NO LONGER SCROLLS. The root is a fixed-height grid — a pinned
+ *      row for the headline state and one `minmax(0,1fr)` row for everything
+ *      else — and the long things (the vault, the catalog) scroll INSIDE their
+ *      own panes. `min-h-0` is on every row and column of that chain, because a
+ *      grid child's default `min-height: auto` refuses to shrink below its
+ *      content: one omission anywhere and the panel silently grows again with
+ *      nothing on screen to say so.
+ *
+ *   2. THE WALLET IS ACCOUNT-ONLY. With nothing read, the hero and the five
+ *      plates have no number between them, so they are not drawn. The banner —
+ *      which is the ONE place this panel states the absence — names the seven
+ *      denominations it would fill in, one click down. Nothing is lost: the
+ *      labels that were on screen are still on screen one press away, and they
+ *      now arrive with what each currency is FOR, which the plates only ever
+ *      showed once they had a value to explain.
+ *
+ * The horizontal half of the same fix: the catalog used to be a full-width
+ * column under everything else, so with an account the panel was a single narrow
+ * stack with the right half of the window empty. The vault and the catalog are
+ * now two panes side by side at xl, which is the width the measurement was taken
+ * at.
  */
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
@@ -344,7 +378,26 @@ function Provenance({ itemType, catalogName }: { itemType: string; catalogName: 
       }
     >
       <Facts
-        columns={1}
+        /*
+         * `columns={1}` WAS A 150px OVERHANG, and only once the catalog became a
+         * pane rather than the full window.
+         *
+         * `Facts` sizes its tracks `minmax(MIN_PAIR_REM / columns, 1fr)`, and
+         * MIN_PAIR_REM is 30rem — so asking for one column asks for a 480px
+         * minimum track. This block sits three disclosures deep inside the
+         * catalog pane, which at the 1280px width everything here is measured at
+         * is 432px wide before the nesting indents take another hundred: a 480px
+         * track in a ~330px box overhangs by roughly 150px, and because the pane
+         * scrolls it would have paid for that with a sideways scrollbar rather
+         * than an error.
+         *
+         * Two is not a layout change in the narrow case — `auto-fill` still
+         * fits exactly one 240px track in 330px, so these read as one column
+         * exactly as before — and it is what lets the same block use the room
+         * when the panel is wide. The long value here is the game path, which
+         * this component truncates either way.
+         */
+        columns={2}
         items={[
           { label: 'Game path', value: itemType },
           { label: 'Rule applied', value: alias === undefined ? 'spaced out of camel case' : 'hand-checked alias' },
@@ -886,7 +939,19 @@ function Filter({
 
 function SectionTitle({ children, count, note }: { children: string; count?: string; note?: string }) {
   return (
-    <header className="mb-2.5 flex items-baseline gap-3">
+    /*
+     * WRAPS, BECAUSE THIS IS NO LONGER A FULL-WIDTH ROW.
+     *
+     * Four items with no wrap: a wide-tracked title, a count, a hairline that
+     * takes the slack, and a note. That is fine across a 1,016px column and it
+     * is not fine in the 432px catalog pane this panel now uses, where
+     * "Resource catalog" + "353 in the game" + "game data — no account needed"
+     * measure past the pane and walk out of it. A no-wrap flex row is one of
+     * the three ways this app has produced sideways overflow, and it is the
+     * invisible one: `overflow-y-auto` on the pane turns the overhang into a
+     * horizontal scrollbar rather than into anything that looks like a fault.
+     */
+    <header className="mb-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
       <h2
         className="font-[family-name:var(--font-title)] text-[length:var(--text-small)] tracking-[0.26em] uppercase"
         style={{ color: 'var(--color-orokin-300)' }}
@@ -1072,6 +1137,46 @@ function Token({
   );
 }
 
+/**
+ * The five minor denominations, in the order the plates print them.
+ *
+ * ONE LIST, TWO READERS, AND THAT IS WHY IT IS A LIST.
+ * ────────────────────────────────────────────────────
+ * The plates print these when there are numbers to print. The cold-launch
+ * banner NAMES them, because with nothing read the plates are not drawn at all
+ * and the labels would otherwise be information this panel used to show and
+ * stopped showing. Written out twice, the band could fall silently out of step
+ * with the row it is standing in for — a currency added to one and not the
+ * other, with nothing to catch it. Written once, it cannot.
+ *
+ * `read` is the accessor rather than a key so the null stays a null: every
+ * field on `InventoryTotals` is `number | null` at source and there is no
+ * `?? 0` anywhere on this path.
+ */
+const TOKENS: ReadonlyArray<{
+  label: string;
+  /** What the currency is FOR. One phrase, not a sentence. */
+  sub: string;
+  color: string;
+  read: (t: InventoryTotals) => number | null;
+}> = [
+  { label: 'Endo', sub: 'mod fusion', color: 'var(--color-signal-warn)', read: (t) => t.endo },
+  { label: 'Ducats', sub: "Baro's currency", color: 'var(--color-orokin-300)', read: (t) => t.ducats },
+  { label: 'Aya', sub: 'relic packs', color: 'var(--color-tenno-300)', read: (t) => t.aya },
+  { label: 'Regal Aya', sub: 'premium relics', color: 'var(--color-signal-rare)', read: (t) => t.regalAya },
+  { label: 'Dirac', sub: 'railjack upgrades', color: 'var(--color-tenno-200)', read: (t) => t.dirac },
+];
+
+/**
+ * The two the hero carries, named here so the banner can list all seven in one
+ * place. They are not in `TOKENS` because they are not plates — credits get the
+ * hero and platinum gets the corner of it.
+ */
+const HERO_CURRENCIES: ReadonlyArray<{ label: string; sub: string }> = [
+  { label: 'Credits', sub: 'everything the foundry builds' },
+  { label: 'Platinum', sub: 'trade, and the tradable share of it' },
+];
+
 /* --------------------------------------------------------------- no account */
 
 /**
@@ -1111,12 +1216,52 @@ function AccountBanner() {
         boxShadow: 'inset 2px 0 0 var(--color-orokin-500)',
       }}
     >
-      <Disclosure summary={title} eyebrow="account" answer="what would change it" accent="var(--color-orokin-300)">
+      <Disclosure
+        summary={title}
+        eyebrow="account"
+        /*
+         * THE ANSWER NAMES WHAT IS BEHIND THE ROW, NOT WHAT THE ROW DOES.
+         *
+         * It read "what would change it", which describes the body rather than
+         * reporting anything — and this row is now standing in for seven
+         * readouts that used to be drawn as seven em-dashes. A closed
+         * disclosure hiding a control or a fact has to say what it is hiding,
+         * or the reader cannot know it is there. The count is derived from the
+         * two lists below rather than typed, so it cannot go stale.
+         */
+        answer={`${String(HERO_CURRENCIES.length + TOKENS.length)} currency readouts waiting`}
+        accent="var(--color-orokin-300)"
+      >
         {/* The one refusal on a no-account screen, so it is set at reading size
             rather than at the caption size a footnote would get. */}
-        <div className="text-[length:var(--text-body)] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+        <div className="wf-prose" style={{ color: 'var(--text-muted)' }}>
           <Clamp lines={2}>{detail}</Clamp>
         </div>
+
+        {/*
+          THE SEVEN LABELS, WHICH WERE THE ONLY THING THE DASHES CARRIED.
+          ————————————————————————————————————————————
+          Measured cold at 1280x720: a gold hero reading `—`, a platinum corner
+          reading `—`, and five plates reading `—`. Seven readouts, 300px of
+          screen, and between them exactly one fact — that nothing has been read
+          — which the sentence above this already states in words. So the plates
+          are not drawn without an account and their labels move here, where
+          they are one press from the row that explains why they are empty.
+
+          Nothing is lost and something is gained: a plate only prints what a
+          currency is FOR once it has a value to explain, so with nothing read
+          "Dirac" used to appear with no indication of what Dirac is.
+        */}
+        <dl className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-2 xl:grid-cols-3">
+          {[...HERO_CURRENCIES, ...TOKENS].map((c) => (
+            <div key={c.label} className="flex min-w-0 items-baseline gap-2">
+              <dt className="shrink-0 text-[length:var(--text-small)]" style={{ color: 'var(--text)' }}>
+                {c.label}
+              </dt>
+              <dd className="eyebrow min-w-0 truncate">{c.sub}</dd>
+            </div>
+          ))}
+        </dl>
       </Disclosure>
     </section>
   );
@@ -1164,7 +1309,19 @@ function VaultSections({
             Rare stock
           </SectionTitle>
 
-          <div className="mo-stagger grid grid-cols-1 gap-[3px] md:grid-cols-2 xl:grid-cols-3">
+          {/*
+            THE THIRD COLUMN MOVED UP A BREAKPOINT, BECAUSE THE STRIP MOVED
+            INTO A PANE.
+            ————————————————————————————————————————————
+            These breakpoints were chosen when this section was the full width
+            of the window. It is now the 7fr half of a two-pane row, so at the
+            1280px width everything here is measured at, `xl:grid-cols-3` put
+            three cards into roughly 600px — about 170px of content each, for a
+            name and a count that together want more than that. `2xl` is where
+            the pane is wide enough for a third column to be a division rather
+            than a squeeze.
+          */}
+          <div className="mo-stagger grid grid-cols-1 gap-[3px] md:grid-cols-2 2xl:grid-cols-3">
             {vault.rares.map((r, i) => {
               const out = r.count === 0;
               const ink = out ? 'var(--color-signal-bad)' : 'var(--color-orokin-400)';
@@ -1275,7 +1432,17 @@ export default function ResourcesPanel() {
   const inventoryAt = useAccount((s) => s.inventoryAt);
   const catalog = useResourceDb();
   const [catalogQuery, setCatalogQuery] = useState('');
-  const catalogRef = useRef<HTMLElement>(null);
+  /*
+   * THE CATALOG'S OWN SCROLLER, not the section around it.
+   *
+   * This used to point at the `<section>` and call `scrollIntoView`, which
+   * worked because the page scrolled. The page no longer scrolls — the root is
+   * a fixed-height grid and the catalog lives in a pane with its own overflow —
+   * so `scrollIntoView` on the section is now a guaranteed no-op, and a click
+   * that appears to do nothing is worse than one that does nothing honestly.
+   * The pane is what has to move, so the pane is what is held.
+   */
+  const catalogRef = useRef<HTMLDivElement>(null);
 
   // `RawInventory` and `RawAccount` are the same GEP payload described at two
   // levels of detail; subsystems.ts models the detailed one and reads every field
@@ -1308,10 +1475,15 @@ export default function ResourcesPanel() {
    * its rows carry the held count. The rows have no id to jump to, so this is
    * the same filter the cross-panel jump above uses, plus a scroll so the
    * click visibly lands somewhere.
+   *
+   * The scroll is now the catalog pane's own, and it is a reset to the top
+   * rather than a jump: the filter has just rebuilt the tree under a pane that
+   * may be scrolled hundreds of pixels down, and leaving it there shows the
+   * reader the middle of a list that is now one item long.
    */
   const inspect = (name: string): void => {
     setCatalogQuery(name);
-    catalogRef.current?.scrollIntoView({ block: 'start' });
+    catalogRef.current?.scrollTo(0, 0);
   };
 
   const cq = catalogQuery.trim().toLowerCase();
@@ -1327,78 +1499,163 @@ export default function ResourcesPanel() {
   const hasAccount = vault !== null;
 
   return (
-    // No `h-full`: the shell's <main> is the page scroller. Neither tree caps its
-    // own height either — a list clipped to half the viewport put a second
-    // scrollbar inside the first, and the per-group caps already bound it.
-    <div className="flex flex-col gap-6 p-6">
-      {!hasAccount && <AccountBanner />}
+    /*
+     * A FIXED-HEIGHT GRID, NOT A GROWING COLUMN.
+     * ──────────────────────────────────────────
+     * The note that used to sit here said "no `h-full`: the shell's <main> is
+     * the page scroller", and that was true and was the defect. Measured at
+     * 1280x720 with nothing read: 1,297px of panel in a 672px viewport, so the
+     * reader met a wallet of em-dashes, scrolled past it, and found the catalog
+     * — the only part of this panel that works before the game has ever been
+     * launched — below the fold.
+     *
+     * Two rows. The first is `auto` and is PINNED: it is the headline state,
+     * and it never scrolls away. The second is `minmax(0,1fr)` and holds the
+     * long material — the vault and the catalog — each of which scrolls inside
+     * its own pane. The page itself does not scroll at all.
+     *
+     * `min-h-0` on every row and column of the chain is what makes that true
+     * and is the easy thing to leave out: a grid child defaults to
+     * `min-height: auto` and refuses to shrink below its content, so one
+     * omission anywhere and the whole thing grows again with nothing on screen
+     * to say anything is wrong.
+     */
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+      {/*
+        THE PINNED ROW IS THE WALLET, OR THE REASON THERE ISN'T ONE.
+        ————————————————————————————————————————————
+        These are two states of one thing, so they are one row rather than two
+        stacked sections. With an account the hero and the plates carry seven
+        real numbers and are the headline. With none they carry seven em-dashes
+        and a banner underneath already saying, in a sentence, the single fact
+        all seven were spelling out — so the band takes the row on its own and
+        names the seven inside it, one press away.
+      */}
+      {hasAccount ? (
+        <div className="flex min-w-0 flex-col gap-3">
+          <CreditHero
+            value={totals?.credits ?? null}
+            platinum={totals?.platinum ?? null}
+            tradable={totals?.platinumTradable ?? null}
+            hasAccount={hasAccount}
+          />
 
-      <CreditHero
-        value={totals?.credits ?? null}
-        platinum={totals?.platinum ?? null}
-        tradable={totals?.platinumTradable ?? null}
-        hasAccount={hasAccount}
-      />
-
-      <div className="mo-stagger grid grid-cols-2 gap-[3px] lg:grid-cols-5">
-        <Token index={0} label="Endo" value={totals?.endo ?? null} color="var(--color-signal-warn)" sub="mod fusion" />
-        <Token index={1} label="Ducats" value={totals?.ducats ?? null} color="var(--color-orokin-300)" sub="Baro's currency" />
-        <Token index={2} label="Aya" value={totals?.aya ?? null} color="var(--color-tenno-300)" sub="relic packs" />
-        <Token index={3} label="Regal Aya" value={totals?.regalAya ?? null} color="var(--color-signal-rare)" sub="premium relics" />
-        <Token index={4} label="Dirac" value={totals?.dirac ?? null} color="var(--color-tenno-200)" sub="railjack upgrades" />
-      </div>
-
-      {/* The account half. Omitted entirely without one: an empty vault tree
-          would assert that you hold nothing, which is a different claim from
-          not knowing what you hold. */}
-      {vault !== null && (
-        <VaultSections vault={vault} inventoryAt={inventoryAt} catalog={catalog} onInspect={inspect} />
+          <div className="mo-stagger grid grid-cols-2 gap-[3px] lg:grid-cols-5">
+            {TOKENS.map((t, i) => (
+              <Token
+                key={t.label}
+                index={i}
+                label={t.label}
+                // Still `number | null` the whole way: `totals` is non-null in
+                // this branch, and the accessor returns the field as it is.
+                value={totals === null ? null : t.read(totals)}
+                color={t.color}
+                sub={t.sub}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <AccountBanner />
       )}
 
-      {/* ----------------------------------------------------------- catalog */}
-      <section ref={catalogRef} className="mo-arrive">
-        {/* The one place the total is stated. Each group states its own size, so
-            nothing else needs to count. */}
-        <SectionTitle
-          count={
-            catalog === null
-              ? 'loading'
-              : catalog.failed
-                ? 'total unknown'
-                : cq === ''
-                  ? `${catalog.all.length.toLocaleString()} in the game`
-                  : `${catalogRows.length.toLocaleString()} of ${catalog.all.length.toLocaleString()} match the filter`
-          }
-          note="game data — no account needed"
-        >
-          Resource catalog
-        </SectionTitle>
+      {/*
+        THE REFERENCE ROW, AND IT USES THE WIDTH.
+        ————————————————————————————————————————————
+        With an account there are two long things to read and they were stacked,
+        which is what made this panel two screens: the catalog sat under a vault
+        tree that is itself hundreds of rows, in a single column with the right
+        half of the window empty. Side by side they are one screen, and each one
+        scrolls without moving the other.
 
-        {catalog !== null && !catalog.failed && (
-          <div className="mb-3 flex flex-wrap items-center justify-end gap-3">
-            <Filter
-              value={catalogQuery}
-              onChange={setCatalogQuery}
-              label="Filter the resource catalog"
-              placeholder="Filter by name or type"
-            />
+        Below `xl` the two panes become two half-height rows rather than two
+        auto rows, because auto rows size to their content and a grid does not
+        clip: two auto rows here is the growing column again, just written
+        differently.
+
+        With NO account there is no vault to put beside it — the account half is
+        omitted entirely, since an empty vault tree asserts that you hold
+        nothing, which is a different claim from not knowing what you hold — so
+        the catalog takes the whole row rather than being given half of it and
+        leaving a hole where the other half would be.
+      */}
+      <div
+        className={
+          hasAccount
+            ? 'grid min-h-0 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:grid-rows-[minmax(0,1fr)]'
+            : 'grid min-h-0 grid-rows-[minmax(0,1fr)]'
+        }
+      >
+        {vault !== null && (
+          <div className="flex min-h-0 min-w-0 flex-col gap-5 overflow-y-auto pr-1">
+            <VaultSections vault={vault} inventoryAt={inventoryAt} catalog={catalog} onInspect={inspect} />
           </div>
         )}
 
-        {catalog === null ? (
-          <EmptyState
-            title="Loading the resource catalog"
-            detail="Fetching the resource export. Until it lands, how many resources the game contains is unknown — it is not zero."
-          />
-        ) : catalog.failed ? (
-          <EmptyState
-            title="Resource catalog unavailable"
-            detail="The catalog fetch failed, so how many resources the game contains is unknown — not zero — and this panel will not print a total it cannot substantiate. It retries on the next launch."
-          />
-        ) : (
-          <CatalogTree rows={catalogRows} vault={vault} query={catalogQuery} />
-        )}
-      </section>
+        {/* ----------------------------------------------------------- catalog */}
+        {/*
+          `mo-arrive` IS GONE WITH THE SCROLL IT WAS READING.
+          ————————————————————————————————————————————
+          It is a scroll-driven entrance — `animation-timeline: view()`, ranged
+          over the first quarter of the section's entry — and this section used
+          to be the last thing in a 1,297px column, so it genuinely entered.
+          As a pane it is permanently in view, which resolves the animation
+          straight to its end state and leaves a class that does nothing. The
+          Arsenal panel struck the same class for the same reason when its
+          footer became a pinned track: motion that exists in the source and
+          never in the pixels is worse than no motion, because it reads as
+          having been considered. The panel's own entrance is `anim-rise` on
+          the shell's <main>, which is unaffected.
+        */}
+        <section className="flex min-h-0 min-w-0 flex-col">
+          {/* The one place the total is stated. Each group states its own size, so
+              nothing else needs to count. */}
+          <SectionTitle
+            count={
+              catalog === null
+                ? 'loading'
+                : catalog.failed
+                  ? 'total unknown'
+                  : cq === ''
+                    ? `${catalog.all.length.toLocaleString()} in the game`
+                    : `${catalogRows.length.toLocaleString()} of ${catalog.all.length.toLocaleString()} match the filter`
+            }
+            note="game data — no account needed"
+          >
+            Resource catalog
+          </SectionTitle>
+
+          {/* The title and the filter stay put; only the tree under them moves.
+              A filter that scrolls away from the list it filters is a control
+              the reader has to go and find again after every keystroke. */}
+          {catalog !== null && !catalog.failed && (
+            <div className="mb-3 flex flex-wrap items-center justify-end gap-3">
+              <Filter
+                value={catalogQuery}
+                onChange={setCatalogQuery}
+                label="Filter the resource catalog"
+                placeholder="Filter by name or type"
+              />
+            </div>
+          )}
+
+          <div ref={catalogRef} className="min-h-0 flex-1 overflow-y-auto pr-1">
+            {catalog === null ? (
+              <EmptyState
+                title="Loading the resource catalog"
+                detail="Fetching the resource export. Until it lands, how many resources the game contains is unknown — it is not zero."
+              />
+            ) : catalog.failed ? (
+              <EmptyState
+                title="Resource catalog unavailable"
+                detail="The catalog fetch failed, so how many resources the game contains is unknown — not zero — and this panel will not print a total it cannot substantiate. It retries on the next launch."
+              />
+            ) : (
+              <CatalogTree rows={catalogRows} vault={vault} query={catalogQuery} />
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

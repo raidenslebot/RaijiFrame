@@ -144,6 +144,25 @@ export function Pentad({ schools, selected, onSelect }: PentadProps) {
   const plotted = schools.every((s) => s.share !== null);
 
   /*
+   * THE VALUE COLUMN EXISTS ONLY WHEN THERE IS A VALUE.
+   *
+   * Measured in a real browser at 1280x720 with no account read - the state the
+   * owner sees at every cold launch - this legend contributed FIVE of the ten
+   * em-dashes on the screen: one per row, all five null for the one identical
+   * reason, sitting under a banner that had already said it in a sentence. Five
+   * dashes in a column is not five readouts, it is one fact printed five times
+   * in the costume of a table, and the eye reads a column of dashes as "this
+   * app is broken" rather than as "this app has not read you yet".
+   *
+   * So the column is drawn when ANY school has a figure and dropped when none
+   * does. Nothing is lost: with no account read the panel's band says so in
+   * full, once. A MIXED read still shows every row - a school with a dash beside
+   * four schools with numbers is a real difference and is exactly what a dash is
+   * for.
+   */
+  const anyValue = schools.some((s) => s.value !== null);
+
+  /*
    * Hover previews, selection persists.
    *
    * Two states rather than one because they answer different questions: the
@@ -262,7 +281,25 @@ export function Pentad({ schools, selected, onSelect }: PentadProps) {
   const dim = (key: FocusSchoolKey): number => (active === null || active === key ? 1 : 0.28);
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+    /*
+     * THE FIGURE AND THE LEGEND HAVE TO FIT BESIDE EACH OTHER, NOT MERELY BE
+     * ABLE TO.
+     *
+     * `flex-wrap` decides where a line breaks from the items' FLEX BASES, not
+     * from their shrunk widths - so two items that would shrink to fit happily
+     * still wrap, and nothing about the rendered result says why. The bases were
+     * 360px and 22rem with a 2.5rem gutter: 752px before either could shrink a
+     * pixel. The panel's own pane is 630px at 1280x720, so the legend always
+     * dropped under the figure, which made this one component 590px tall in a
+     * viewport with about 400px left for it.
+     *
+     * Bases now sum to 464px with the gutter, so the two halves sit side by side
+     * in any pane wider than that and both GROW into whatever is left. The
+     * geometry is untouched: the viewBox, the angles, the radii and the label
+     * placement are the same numbers they were, and the figure is square at
+     * every size because the viewBox says it is.
+     */
+    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-5">
       {/*
        * The figure SCALES. It used to be pinned at 300x300 inside a container
        * measured at 1,087px, so the panel's one hero element sat as a small
@@ -274,6 +311,13 @@ export function Pentad({ schools, selected, onSelect }: PentadProps) {
        * that the five spokes stop reading as one shape and start reading as five
        * separate lines, and `min-w` keeps it from collapsing when the legend
        * wraps beside it on a narrow overlay.
+       *
+       * THE CAP CAME DOWN TO 20rem, AND THE BASIS WITH IT. 420px of figure plus
+       * 352px of legend is 772px of flex base in a pane the panel measured at
+       * 630px, so the two never once sat side by side and the component ran 590px
+       * tall. `grow` is what keeps the figure from being small as a consequence:
+       * the base only decides where the line breaks, and past the break the
+       * figure takes its share of whatever the pane actually has, up to the cap.
        */}
       {/*
        * `role="radiogroup"`, not `role="img"` and not `role="group"`.
@@ -295,7 +339,7 @@ export function Pentad({ schools, selected, onSelect }: PentadProps) {
       */}
       <svg
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="mo-in-scale h-auto w-full max-w-[420px] min-w-[240px] shrink basis-[360px]"
+        className="mo-in-scale h-auto w-full max-w-[20rem] min-w-[11rem] shrink grow basis-[14rem]"
         role="radiogroup"
         aria-label="The five focus schools"
         onPointerMove={onFigureMove}
@@ -560,7 +604,7 @@ export function Pentad({ schools, selected, onSelect }: PentadProps) {
       <div
         role="radiogroup"
         aria-label="The five focus schools, as a list"
-        className="mo-stagger flex min-w-[17rem] grow basis-[22rem] flex-col gap-px"
+        className="mo-stagger flex min-w-[13rem] grow basis-[15rem] flex-col gap-px"
       >
         {schools.map((s, i) => (
           <button
@@ -611,14 +655,20 @@ export function Pentad({ schools, selected, onSelect }: PentadProps) {
             <span className="min-w-0 flex-1 text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
               {s.creed}
             </span>
-            <span
-              className="numeric shrink-0 text-[length:var(--text-micro)]"
-              // Muted, not ghost: an unmeasured dash still has to clear the
-              // contrast floor — it is the row's answer, not decoration.
-              style={{ color: s.value === null ? 'var(--text-muted)' : 'var(--text)' }}
-            >
-              {s.value ?? '—'}
-            </span>
+            {/* See `anyValue` above: five dashes in a column is one fact
+                printed five times, and it is printed properly once by the
+                panel's band instead. A dash survives here only alongside a
+                figure, where it means something the figures do not. */}
+            {anyValue && (
+              <span
+                className="numeric shrink-0 text-[length:var(--text-micro)]"
+                // Muted, not ghost: an unmeasured dash still has to clear the
+                // contrast floor — it is the row's answer, not decoration.
+                style={{ color: s.value === null ? 'var(--text-muted)' : 'var(--text)' }}
+              >
+                {s.value ?? '—'}
+              </span>
+            )}
           </button>
         ))}
       </div>

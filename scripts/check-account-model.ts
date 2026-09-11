@@ -257,7 +257,7 @@ function everyFeatureCarryingAReadKeyIsRequested(): void {
   assert.ok(requested.size > 0, 'no features are requested at all, so no data will ever arrive');
 
   // The keys the client consumes, from `route`'s own switch.
-  const routeBody = /private route\([\s\S]*?\n  \}/.exec(src);
+  const routeBody = /private route\([\s\S]*?\n {2}\}/.exec(src);
   assert.ok(routeBody, 'route() is gone from gep.ts, or is no longer a single method');
   const routed = [...(routeBody[0] ?? '').matchAll(/case '(\w+)':/g)].map((m) => m[1] ?? '');
   assert.ok(routed.length >= 2, `only ${String(routed.length)} routed keys found; route() has changed shape`);
@@ -346,7 +346,7 @@ function aReadCountsOnlyWhenSomethingArrived(): void {
     'THE APP DISCARDS EVERY READ GEP SENDS: route reads the wrapper instead of the account nested inside it',
   );
 
-  const seed = /private seed\(\)[\s\S]*?\n  \}/.exec(src);
+  const seed = /private seed\(\)[\s\S]*?\n {2}\}/.exec(src);
   assert.ok(seed, 'seed() is gone from gep.ts');
   assert.ok(
     /\.inventory : \('absent' as const\);/.test(seed[0]) && /refreshOutcome\(seeded\) !== 'nothing'/.test(seed[0]),
@@ -383,7 +383,7 @@ function aReadCountsOnlyWhenSomethingArrived(): void {
   assert.ok(!/seed gave up/.test(seed[0]), 'THE APP STRANDS ITSELF ON THE DISK SNAPSHOT: the seed still stops asking while the game is running');
   assert.ok(/if \(this\.seeded \|\| !this\.connected\) return;/.test(seed[0]), 'nothing stops the retry when the account lands or the game goes away, which is what makes it a poll');
 
-  const refresh = /refresh\(reason: string, urgent = false\)[\s\S]*?\n  \}/.exec(src);
+  const refresh = /refresh\(reason: string, urgent = false\)[\s\S]*?\n {2}\}/.exec(src);
   assert.ok(refresh, 'refresh() is gone from gep.ts');
   /*
    * THE TEST MOVED, AND SO DID ITS MEANING. This pinned the literal
@@ -472,7 +472,7 @@ function previousMeansTheStartOfASession(): void {
 
   // The premise. Without this, rolling on a difference would be defensible.
   const gep = strip('../src/core/gep.ts');
-  const ingest = /private ingest\(info: InfoBag\): \{ routed: number; rejected: number; inventory: InventoryRead \}[\s\S]*?\n  \}/.exec(gep);
+  const ingest = /private ingest\(info: InfoBag\): \{ routed: number; rejected: number; inventory: InventoryRead \}[\s\S]*?\n {2}\}/.exec(gep);
   assert.ok(ingest, 'ingest is gone from gep.ts');
   assert.ok(
     /this\.hashes\.get\(id\) === fp[\s\S]*?continue;/.test(ingest[0]),
@@ -480,7 +480,7 @@ function previousMeansTheStartOfASession(): void {
   );
 
   const snap = strip('../src/core/snapshot.ts');
-  const write = /const existing = store\.get\(KEY\);[\s\S]*?\n      \};/.exec(snap);
+  const write = /const existing = store\.get\(KEY\);[\s\S]*?\n {6}\};/.exec(snap);
   assert.ok(write, 'the snapshot write is gone from snapshot.ts');
   assert.ok(
     /if \(rollDue && prior !== undefined && !sameAccount\(prior, snapshot\)\)/.test(write[0]),
@@ -492,7 +492,7 @@ function previousMeansTheStartOfASession(): void {
   // And the wiring, or the generation rolls once per process and never again.
   const bg = strip('../src/app/background.ts');
   assert.ok(/rollGenerationOnNextSave/.test(bg), 'nothing tells the writer a session started, so the delta freezes at app launch');
-  const start = /onStart: \([\s\S]*?\n  \},/.exec(bg);
+  const start = /onStart: \([\s\S]*?\n {2}\},/.exec(bg);
   assert.ok(start, 'the game-start handler is gone from background.ts');
   assert.ok(
     /rollGenerationOnNextSave\(\)/.test(start[0]),

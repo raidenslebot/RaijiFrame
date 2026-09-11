@@ -675,7 +675,18 @@ function Record({ state }: { state: NemesisState | null }) {
           banner states once, at the top of the panel, why. */}
       <SectionTitle {...(total === null ? { note: state === null ? 'needs your account' : 'not in this account read' } : { count: total, note: 'lifetime' })}>Record</SectionTitle>
 
-      <div className="mo-stagger grid gap-[3px] sm:grid-cols-2 lg:grid-cols-4">
+      {/*
+        TWO COLUMNS, NOT FOUR, AND THE BREAKPOINT WAS THE WRONG AXIS.
+
+        `lg:grid-cols-4` is a VIEWPORT query, and the record no longer gets the
+        viewport: it sits in the five-twelfths reference column beside the
+        arsenal, which is about 420px wide at the 1280px the panel is measured
+        at. Four cards in 420px is 105px each, and "Railjack on call" alone is
+        wider than that as an eyebrow, so every card wrapped its own label to
+        three lines while the viewport-width query happily reported "large".
+        Two columns fit the column this actually lives in.
+      */}
+      <div className="mo-stagger grid grid-cols-2 gap-[3px]">
         {cells.map((c, i) => (
           <div
             key={c.label}
@@ -982,28 +993,53 @@ function Arsenal({
                   </span>
                 )}
               </span>
+              {/*
+                SIX OF THE ELEVEN DASHES WERE HERE, AND THE CARDS HAD A REAL
+                NUMBER TO PRINT THE WHOLE TIME.
+
+                Measured at 1280x720 with no account read, this panel showed
+                eleven em-dash readouts before the player learned anything, and
+                three of these cards contributed two each: a dash over the
+                family total for owned, and a bare dash where "n maxed" goes.
+                Both are honest —
+                neither is knowable without an account — but the denominator
+                beside them never needed one. `t.total` is a catalog fact, the
+                same fact the table underneath is built from, and printing it as
+                the numeral says strictly more than a dash over it did.
+
+                So with no account the card states the size of the family, and
+                the ownership half of it stays absent rather than dashed: the
+                banner at the top of the panel states once, in a sentence, that
+                the account has not been read. It does not need repeating three
+                times in punctuation.
+              */}
               <span className="mt-1.5 flex items-baseline gap-1">
-                <span
-                  className="numeric text-[length:var(--text-lead)] leading-none"
-                  style={{ color: measured ? 'var(--text)' : 'var(--text-muted)' }}
-                >
-                  {measured ? t.owned : '—'}
+                <span className="numeric text-[length:var(--text-lead)] leading-none" style={{ color: 'var(--text)' }}>
+                  {measured ? t.owned : t.total}
                 </span>
-                <span className="numeric text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
-                  /{t.total}
-                </span>
+                {measured ? (
+                  <span className="numeric text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
+                    /{t.total}
+                  </span>
+                ) : (
+                  <span className="text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
+                    in the catalog
+                  </span>
+                )}
               </span>
               {/* No track without an account: an empty bar reads as "you own none
                   of these", which is a claim we have no basis for. */}
-              <span className="mt-2.5 block">
-                {measured && <Track value={t.total > 0 ? t.owned / t.total : 0} color={t.lineage.hue} />}
-                {/* Without an account the count above is already a dash. Three
-                    cards each repeating "not measured" said nothing the banner
-                    had not, three times over. */}
-                <span className="numeric mt-1.5 block text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
-                  {measured ? `${t.maxed} maxed` : '—'}
+              {measured && (
+                <span className="mt-2.5 block">
+                  <Track value={t.total > 0 ? t.owned / t.total : 0} color={t.lineage.hue} />
+                  <span
+                    className="numeric mt-1.5 block text-[length:var(--text-micro)]"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    {t.maxed} maxed
+                  </span>
                 </span>
-              </span>
+              )}
             </button>
           );
         })}
@@ -1167,35 +1203,39 @@ function AccountBanner() {
         <div className="text-[length:var(--text-small)] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
           <Clamp lines={2}>{detail}</Clamp>
         </div>
+        {/*
+          THE FIVE DASHES THAT WERE TWO WHOLE SECTIONS, SAID ONCE.
+
+          Below this banner there used to be a band printing "active nemesis —"
+          and, under it, the lifetime record printing four more dashes. All five
+          were dashes for the SAME reason — nothing has been read — which the
+          summary line above already states. Two sections saying one thing in
+          punctuation is most of what made this panel measure 2,449px in a 672px
+          viewport, with eleven em-dash readouts in front of anything a player
+          could learn from.
+
+          Nothing is lost: every label those sections carried is named here, one
+          click from the closed row, and all five reappear as real numbers the
+          moment there is an account to read them from.
+        */}
+        <p className="wf-note mt-2.5">
+          Needs your account, so it is not shown yet: whether a nemesis is hunting you and which lineage, the star-chart
+          nodes it holds, and the lifetime record — vanquished, converted, Railjack on call and kill rate.
+        </p>
       </Disclosure>
     </section>
   );
 }
 
-/**
- * The hunt, with nothing to read it from. Not the same as "no lich hunting you".
+/*
+ * `HuntNotMeasured` LIVED HERE AND IS GONE ON PURPOSE.
  *
- * A dash, not a sentence. The banner directly above already explains that the
- * account has not been read and why nothing here may be assumed; this row
- * repeating it made "not measured" the loudest phrase on the screen.
+ * It was a full plate whose entire content was the word "active nemesis" and an
+ * em dash. The banner directly above it already said the account had not been
+ * read, so the dash was the same fact a second time, in punctuation, occupying a
+ * whole section of a panel that measured 3.89 screens. Its one label is now
+ * named in the banner's own disclosure, which is one click from the closed row.
  */
-function HuntNotMeasured() {
-  return (
-    <section
-      className="rf-plate mo-field mo-sheen mo-in-up relative flex flex-wrap items-baseline gap-x-5 gap-y-1.5 px-5 py-4"
-      style={{ clipPath: CHAMFER, background: PLATE }}
-    >
-      <span aria-hidden className="absolute top-0 bottom-0 left-0 w-[2px]" style={{ background: 'var(--text-faint)' }} />
-      <span className="eyebrow">active nemesis</span>
-      <span
-        className="numeric text-[length:var(--text-body)]"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        —
-      </span>
-    </section>
-  );
-}
 
 export default function NemesisPanel() {
   const inventory = useAccount((s) => s.inventory);
@@ -1235,51 +1275,152 @@ export default function NemesisPanel() {
   const nodeName = (id: string | null): string | null =>
     id === null ? null : (loaded?.catalog.nodeById.get(id)?.name ?? null);
 
-  return (
-    <div className="flex h-full flex-col gap-6 p-6">
-      {state === null && <AccountBanner />}
+  /*
+   * THE FOOTER ONLY EXISTS WHEN IT HAS SOMETHING TO SAY.
+   *
+   * All three of its children are caveats, and on a cold launch — no account
+   * read, complete star chart, complete catalog — every one of them is false.
+   * It still rendered: an empty `<footer>` with `pt-2`, plus the column gap
+   * above it. In a growing column that was invisible; in a fixed-height grid it
+   * is a track and a gap, about 24px of a 672px viewport spent on an element
+   * with no content. So the row is only laid out when one of the three fires.
+   */
+  const hasFooter =
+    inventoryAt !== null ||
+    (loaded !== null && !loaded.status.nodes) ||
+    (db !== null && db.missingCategories.length > 0);
 
+  return (
+    /*
+     * ONE SCREEN. THE PAGE DOES NOT MOVE; THE REFERENCE DOES.
+     *
+     * THE MEASUREMENT THAT FORCED THIS. Driven through a real browser at
+     * 1280x720 with no account read — which is what the owner sees on every
+     * launch before the game has been run once — this panel emitted 2,449px
+     * into a 672px viewport. Three point eight nine screens, and eleven em-dash
+     * readouts stacked in front of the only thing on it that was actually
+     * knowable: the Kuva, Tenet and Coda weapon lists, which are catalog data
+     * and need no account at all. The player scrolled four screens of "we do
+     * not know" to reach the one section that did.
+     *
+     * The shape is the same one the Platinum panel was rebuilt to: a grid with
+     * a FIXED height, so the page itself can never scroll, and the long list
+     * scrolls inside its own pane instead of pushing everything above it off
+     * the top.
+     *
+     *   - ROW 1 is the ANSWER and is pinned. Exactly one of three things: the
+     *     dossier when something is hunting you, the quiet "nothing is hunting
+     *     you" band when nothing is, and the account banner when we have not
+     *     read you yet. It never scrolls away, because it is the one thing on
+     *     this panel a player opens it to find out.
+     *   - ROW 2 is REFERENCE. The fifty-row arsenal is legitimately long and is
+     *     a thing to look up, so it gets the wide column and its own scroller;
+     *     the territory and the lifetime record are short lookups and take the
+     *     narrow one. Neither can push the answer off the screen any more.
+     *
+     * `min-h-0` on EVERY row and column of the chain is what makes that true
+     * and is the easy thing to leave out: a grid child defaults to
+     * `min-height: auto` and refuses to shrink below its content, so one
+     * missing `min-h-0` anywhere and the whole thing grows again and the page
+     * scrolls exactly as before, with nothing visible to say anything is wrong.
+     *
+     * The padding drops from `p-6` to `p-5` and the gaps from 6 to 4/5 for the
+     * same reason they did on Platinum: at 672px of viewport, 8px of outer
+     * padding is a row of the table.
+     */
+    <div
+      className={
+        hasFooter
+          ? 'grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5'
+          : 'grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5'
+      }
+    >
+      {/*
+        ROW 1 — THE ANSWER, PINNED.
+
+        Three states, ONE band, where there used to be two stacked: the banner
+        and then, under it, a second plate restating the banner as a dash. The
+        `state === null` branch is the cold launch the measurement above was
+        taken on, and it is now a single row that says one honest sentence.
+      */}
       {active !== null && lineage !== null ? (
-        <>
-          <Dossier active={active} lineage={lineage} db={db} nodeName={nodeName} nowRef={inventoryAt} />
-          <div className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
-            <Territory rows={territory} />
+        <Dossier active={active} lineage={lineage} db={db} nodeName={nodeName} nowRef={inventoryAt} />
+      ) : state === null ? (
+        <AccountBanner />
+      ) : (
+        <NoNemesis />
+      )}
+
+      {/*
+        ROW 2 — REFERENCE, IN ITS OWN SCROLLERS.
+
+        With no account there is nothing for the narrow column to hold: the
+        territory needs a live nemesis and the record needs a read. A reserved
+        five-twelfths of the window holding nothing reads as the panel being
+        broken rather than as the app not knowing anything yet, so the column is
+        not laid out at all and the arsenal — which is complete, catalog data,
+        and the only thing on the screen with real numbers in it — takes the
+        full width.
+      */}
+      <div
+        className={
+          state === null
+            ? 'grid min-h-0 min-w-0 gap-5'
+            : 'grid min-h-0 min-w-0 gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]'
+        }
+      >
+        {/*
+          `overflow-y-auto` here is also what keeps the track above it honest:
+          a scroll container contributes zero to its grid track's minimum, so
+          the auto row can never grow past the height the root grid gave it.
+          Without it the pane sizes to fifty rows of table and the page is back
+          where it started.
+        */}
+        <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto pr-1">
+          {arsenal ? (
+            <Arsenal arsenal={arsenal} highlight={lineage} db={db} />
+          ) : (
+            <section className="mo-arrive">
+              <SectionTitle note="Kuva · Tenet · Coda">Nemesis arsenal</SectionTitle>
+              <div className="rf-plate px-5 py-4" style={{ clipPath: CHAMFER, background: PLATE }}>
+                <p className="wf-note">
+                  Joining your account against the Kuva, Tenet and Coda weapon lists. This is cached after the first
+                  launch.
+                </p>
+              </div>
+            </section>
+          )}
+        </div>
+
+        {state !== null && (
+          <div className="flex min-h-0 min-w-0 flex-col gap-5 overflow-y-auto pr-1">
+            {/* Same guard the old layout carried implicitly by living inside the
+                "there is a lich" branch. Stated here because this column is now
+                shared by both account states: `territory` is built from
+                `Nemesis.InfNodes`, so with no lich it is empty and the section
+                would render its "has not spread onto the star chart yet" plate
+                beside a band that has just said nothing is hunting you. */}
+            {active !== null && <Territory rows={territory} />}
             <Record state={state} />
           </div>
-        </>
-      ) : (
-        <>
-          {state === null ? <HuntNotMeasured /> : <NoNemesis />}
-          <Record state={state} />
-        </>
-      )}
-
-      {arsenal ? (
-        <Arsenal arsenal={arsenal} highlight={lineage} db={db} />
-      ) : (
-        <section className="mo-arrive">
-          <SectionTitle note="Kuva · Tenet · Coda">Nemesis arsenal</SectionTitle>
-          <div className="rf-plate px-5 py-4" style={{ clipPath: CHAMFER, background: PLATE }}>
-            <p className="wf-note">
-              Joining your account against the Kuva, Tenet and Coda weapon lists. This is cached after the first launch.
-            </p>
-          </div>
-        </section>
-      )}
-
-      <footer className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
-        {inventoryAt !== null && <span className="eyebrow">account read {CLOCK.format(inventoryAt)}</span>}
-        {loaded !== null && !loaded.status.nodes && (
-          <span className="eyebrow" style={{ color: 'var(--color-signal-warn)' }}>
-            no star chart data — nodes shown by id
-          </span>
         )}
-        {db !== null && db.missingCategories.length > 0 && (
-          <span className="eyebrow" style={{ color: 'var(--color-signal-warn)' }}>
-            catalog missing {db.missingCategories.join(', ')}
-          </span>
-        )}
-      </footer>
+      </div>
+
+      {hasFooter && (
+        <footer className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          {inventoryAt !== null && <span className="eyebrow">account read {CLOCK.format(inventoryAt)}</span>}
+          {loaded !== null && !loaded.status.nodes && (
+            <span className="eyebrow" style={{ color: 'var(--color-signal-warn)' }}>
+              no star chart data — nodes shown by id
+            </span>
+          )}
+          {db !== null && db.missingCategories.length > 0 && (
+            <span className="eyebrow" style={{ color: 'var(--color-signal-warn)' }}>
+              catalog missing {db.missingCategories.join(', ')}
+            </span>
+          )}
+        </footer>
+      )}
     </div>
   );
 }

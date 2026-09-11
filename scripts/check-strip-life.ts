@@ -37,7 +37,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { memoLast } from '../src/core/memo.ts';
 import { parseLine, type LogEvent } from '../src/core/eelog.ts';
-import { IDLE, fold, step, type PendingSlot, type Phase, type Session, type UpgradeSlot } from '../src/data/automod-session.ts';
+import { IDLE, fold, step, type PendingSlot, type Phase, type Session } from '../src/data/automod-session.ts';
 import { questionFor, type Plan, type Rung } from '../src/data/optimise.ts';
 import { hasSomethingToSay, itemIdentity, ladderToShow, openPolicy, opensAScreen, publishDecision, SETTLE_WAIT_MS, stillToDo } from '../src/data/automod-publish.ts';
 
@@ -477,7 +477,7 @@ ok('the game area is tracked by comparing dimensions, not by trusting the resolu
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
     .replace(/\/\/.*/g, ' ');
 
-  const onChange = /onChange: \(([\s\S]*?)\n  \},/.exec(src);
+  const onChange = /onChange: \(([\s\S]*?)\n {2}\},/.exec(src);
   assert.ok(onChange, 'the game-change handler is gone from background.ts');
   assert.ok(/observeGame\(info\)/.test(onChange[0]), 'the change handler no longer refreshes the area');
   assert.ok(
@@ -513,7 +513,7 @@ ok('the game area is tracked by comparing dimensions, not by trusting the resolu
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
     .replace(/\/\/.*/g, ' ');
 
-  const settle = /const settle = \([\s\S]*?\n  \};/.exec(ow);
+  const settle = /const settle = \([\s\S]*?\n {2}\};/.exec(ow);
   assert.ok(settle, 'settle() is gone from ow.ts');
   assert.ok(
     /else if \(up && running && info\) \{\s*cb\.onChange\?\.\(info\);/.test(settle[0]),
@@ -1244,10 +1244,10 @@ ok('nothing is named from a loadout the app has not confirmed for THIS screen', 
    * and nothing has answered since the game exited. Left set, the app reports
    * "answered at 14:02" for a process that is not running.
    */
-  const disconnect = /disconnect\(\): void \{[\s\S]*?\n  \}/.exec(gepSrc);
+  const disconnect = /disconnect\(\): void \{[\s\S]*?\n {2}\}/.exec(gepSrc);
   assert.ok(disconnect, 'disconnect() is gone from gep.ts');
   assert.ok(/this\.answeredAt = null;/.test(disconnect[0]), 'the answer clock survives the game exiting, so the app reports a read from a process that is gone');
-  const stop = /onStop: \(\) => \{[\s\S]*?\n  \}/.exec(src);
+  const stop = /onStop: \(\) => \{[\s\S]*?\n {2}\}/.exec(src);
   assert.ok(stop, 'the game-stop handler is gone from background.ts');
   assert.ok(/setAnswered\(null\)/.test(stop[0]), 'the store keeps the answer clock after the game exits, and the panels print it');
   assert.ok(

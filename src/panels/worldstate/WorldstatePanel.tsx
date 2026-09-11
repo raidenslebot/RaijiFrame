@@ -54,6 +54,27 @@
  * purpose: `check-ui-tokens.ts` counts them by scanning the source, so a
  * comment quoting the prop in its JSX form would be counted as a disclosure
  * that does not exist and would raise the gate's own floor on a fiction.
+ *
+ * AND THE SECTIONS ARE NO LONGER TEN SIBLINGS IN ONE COLUMN
+ * ────────────────────────────────────────────────────────
+ * Measured in a real browser at 1280 x 720 with no account read - the cold
+ * launch, which is what the owner sees - this panel emitted 803 px into a
+ * 672 px viewport with every section closed but the cycle strip. Ten
+ * top-level siblings, the most of any panel in the app, all at one level in
+ * one `flex-col gap-6`: nothing was subordinate to anything, and 240 px of
+ * the height was the gaps and the page padding rather than the content.
+ *
+ * The fix is structural and is the one the platinum panel already settled: a
+ * fixed-height grid, the headline state pinned in a band that never scrolls
+ * away, and the sections split into an ANSWER pane and a REFERENCE pane that
+ * each scroll inside themselves. The page does not scroll at all now. See the
+ * default export at the foot of this file, which carries the whole argument.
+ *
+ * One consequence reaches into the sections and is worth stating here: FOUR
+ * LISTS SPLIT INTO TWO COLUMNS AND ALL FOUR ASKED THE WINDOW'S WIDTH. That
+ * was the same measurement as the list's width while the panel was one
+ * full-width column and stopped being it the moment there were two panes, so
+ * they ask their own container now - `.rf-cols`, in `PanelRules`.
  */
 
 import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react';
@@ -400,17 +421,23 @@ function Fold({
 /**
  * THE RULES THAT CANNOT BE WRITTEN AS UTILITIES.
  *
- * Both drive a CHILD from a PARENT's pointer state, and a Tailwind
+ * The first two drive a CHILD from a PARENT's pointer state, and a Tailwind
  * `group-hover:[--mo-on:1]` variant cannot do it here: Tailwind v4 emits
  * utilities into `@layer utilities`, motion.css is unlayered, and an unlayered
  * declaration beats a layered one at any specificity - so the variant loses to
  * `.mo-underline`'s own `--mo-on: 0` and the effect renders, tracks the
  * pointer and stays invisible. A plain rule later in document order wins.
  *
+ * The third is a layout rule and lives here for the same reason rather than a
+ * different one: it is a CONTAINER query, and Tailwind's `lg:`/`xl:` variants
+ * are WINDOW queries. Once this panel is two panes the window stopped
+ * describing the space a list has - see `.rf-cols` below. One `<style>`
+ * element, so the component is named for what it now carries.
+ *
  * Duplicated in the two sibling panels this pass touches rather than shared:
  * the shared home for it is `src/ui`, which this pass does not own.
  */
-function MotionRules() {
+function PanelRules() {
   return (
     <style>{`
       /*
@@ -437,6 +464,43 @@ function MotionRules() {
       @media (prefers-reduced-motion: reduce) {
         .rf-edge {
           transition: none;
+        }
+      }
+
+      /*
+        TWO COLUMNS WHEN THE LIST'S OWN CONTAINER IS WIDE, NEVER WHEN THE
+        WINDOW IS.
+
+        Four lists here split into two columns and every one of them asked
+        Tailwind's lg: or xl: prefix - a WINDOW query. That was true enough
+        while the panel was a single full-width column: window width and list
+        width were the same measurement wearing two names. This pass makes the
+        panel two panes, so they are now different numbers, and the window
+        query reads the wrong one: at a 1280px window the narrow pane is about
+        430px wide and an xl:grid-cols-2 would still fire, splitting a list of
+        act titles into two 200px columns because a window somewhere else was
+        roomy.
+
+        A container query asks the element that actually constrains the list.
+        Every one of these lists sits inside an .rf-disc, which sets
+        container-type: inline-size for exactly this, so the query resolves
+        against the disclosure the list is in - one pane wide, not one window
+        wide.
+
+        44rem is the width at which a two-up fissure row still holds "Gradivus
+        (Mars) · Excavation" and a countdown without wrapping. Below it, one
+        column: a pane scrolls now, so height is cheap and a cramped row is
+        not.
+
+        Unlayered and after Tailwind's own utilities, which is why it can carry
+        the whole decision rather than fighting a grid-cols utility for it.
+      */
+      .rf-cols {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      @container (min-width: 44rem) {
+        .rf-cols {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
       }
     `}</style>
@@ -1100,6 +1164,24 @@ function Fissures({
       title="Void fissures"
       eyebrow="soonest to expire, first"
       /*
+       * THE ONE SECTION IN THE LEFT PANE THAT OPENS ITSELF, AND THE REASON IS
+       * THE NEW SHAPE RATHER THAN A CHANGE OF MIND.
+       * ─────────────────────────────────────────────────────────────────────
+       * Every section on this panel was closed on purpose: measured at 1280 x
+       * 720 the panel emitted 803 px into a 672 px viewport with nothing but
+       * the cycle strip open, so one more open section was one more push past
+       * the bottom of the window. Under a fixed-height grid that cost is gone
+       * - this section sits in a pane that scrolls inside itself, so opening
+       * it moves nothing else on the screen.
+       *
+       * What was left was the opposite fault: an answer pane holding three
+       * closed drawers and four hundred pixels of air, which reads as a broken
+       * panel rather than as a tidy one. This is the list the pane exists for
+       * - it is the only section here that names a place to go right now - so
+       * it is the one that opens.
+       */
+      defaultOpen
+      /*
        * THE ONLY PLACE THIS ARITHMETIC IS STATED.
        *
        * It used to be here as "3 of 11 running" AND again at the foot of the
@@ -1247,7 +1329,7 @@ function Fissures({
                 }
               >
                 <ul
-                  className="mo-stagger grid gap-[3px] lg:grid-cols-2"
+                  className="rf-cols mo-stagger grid gap-[3px]"
                   /* A plain style value, and it stays one: this is a STATE, and
                      a state that arrives by transition can be stranded
                      half-applied on a stopped timeline. */
@@ -1484,7 +1566,7 @@ function DailyMissions({ world, now, ids }: { world: Worldstate; now: number; id
         </div>
       )}
 
-      <div className="mo-stagger grid gap-[3px] lg:grid-cols-2">
+      <div className="rf-cols mo-stagger grid gap-[3px]">
         {shown.map((b, i) => {
           const left = leftMs(b.expiry, now);
           return (
@@ -1867,11 +1949,13 @@ function Nightwave({ world, now }: { world: Worldstate; now: number }) {
               </span>
             }
           >
-            {/* Two columns only above 1280px. Even with the description folded
-                away an act title is a phrase rather than a word, so at the
-                overlay's narrower widths the pair of plates on a row stop
-                lining up with each other. */}
-            <ul className="mo-stagger grid gap-[3px] xl:grid-cols-2">
+            {/* Two columns only when this list has 44rem of its OWN to spend.
+                Even with the description folded away an act title is a phrase
+                rather than a word, so in a narrow column the pair of plates on
+                a row stop lining up with each other - and this section now
+                lives in the reference pane, which is the narrow one at the
+                window width the old `xl:` was written for. See `.rf-cols`. */}
+            <ul className="rf-cols mo-stagger grid gap-[3px]">
               {g.rows.map((a, i) => (
                 <ActRow key={a.id} act={a} index={i} longest={g.longest} now={now} />
               ))}
@@ -2032,7 +2116,7 @@ function Invasions({ world, now, ids }: { world: Worldstate; now: number; ids: R
         </span>
       }
     >
-      <ul className="mo-stagger grid gap-[3px] lg:grid-cols-2">
+      <ul className="rf-cols mo-stagger grid gap-[3px]">
         {list.map((inv, i) => {
           // Clamped because the feed can report a run count past the requirement.
           // Null when the feed sent no figure: a bar drawn at half would be a number nobody reported.
@@ -2173,61 +2257,143 @@ export default function WorldstatePanel() {
 
   return (
     /*
-     * `min-h-full`, not `h-full`.
+     * ONE SCREEN. THE PAGE DOES NOT MOVE; THE PANES DO.
      *
-     * The shell's <main> is the scroller. Pinned at exactly its height, this
-     * column's padding box could not grow with the content, so the sections
-     * spilled past the bottom `p-6` and the footer ended up flush against the
-     * edge of the scroll. A minimum keeps `mt-auto` pinning the footer when the
-     * page is short and lets the gutter come back when it is long.
+     * THE MEASUREMENT THAT FORCED THIS. Driven through a real browser at
+     * 1280 x 720, this panel emitted 803 px into a 672 px viewport with
+     * nothing open but the cycle strip and no account read - one and a
+     * quarter screens before a single section had been pressed. It was the
+     * most top-level siblings of any panel in the app: ten of them, every one
+     * a `<section>` at the same level in one `flex-col gap-6`, so the layout
+     * said cycles, a live event, traders, today's dailies, the Nightwave
+     * board, faction wars, Teshin's shelf and the fissure list were all
+     * equally important and all equally worth the reader's next second. None
+     * of them was subordinate to anything, because nothing in a flat stack
+     * can be.
+     *
+     * It was also 240 px of pure chrome: eight 24 px gaps and 48 px of page
+     * padding, holding closed rows about 45 px tall. A THIRD of the overflow
+     * was the spacing between the sections rather than the sections.
+     *
+     * So the shape is a grid of a fixed height, and the hierarchy is
+     * structural rather than a promise:
+     *
+     *   - the CYCLE STRIP is pinned. It is the panel's headline state and its
+     *     one bold figure, it is what the whole screen is ordered by, and it
+     *     can no longer be pushed off the top by a list somebody opened;
+     *   - the LEFT pane is WHAT TO GO AND DO - a running event, the fissures,
+     *     today's two dailies. All three name a place on the star chart;
+     *   - the RIGHT pane is REFERENCE - who is selling, what the Nightwave
+     *     board is asking, the faction wars, Teshin's rotation. These are
+     *     things to look up. They are legitimately long and they scroll
+     *     INSIDE their own pane, where what they can no longer do is push the
+     *     answer off the screen.
+     *
+     * `min-h-0` on every row and column of that chain is what makes it true
+     * and is easy to leave out: a grid child's default `min-height: auto`
+     * refuses to shrink below its content, so one missing `min-h-0` anywhere
+     * and the whole thing grows again and the page scrolls exactly as before,
+     * with no visible sign that anything is wrong.
+     *
+     * `h-full`, where this used to say `min-h-full` and explain that the
+     * shell's <main> is the scroller. It still is - that is precisely what is
+     * being stopped. A minimum let the column grow with its content, which is
+     * the growth being measured above; a fixed height with scrolling panes
+     * inside it is the same content with a floor under it.
      */
-    <div className="flex min-h-full flex-col gap-6 p-6">
-      <MotionRules />
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+      <PanelRules />
+
       {/*
-        THE ONE SECTION THAT OPENS ITSELF.
+        ROW 1 - PINNED, AND NOT A DISCLOSURE ANY MORE.
+        ─────────────────────────────────────────────
         The panel's whole hierarchy is time and this is the soonest thing on
-        it - the lead cell is the screen's one bold element. Every other
-        section states its answer on a closed row instead, which is what makes
-        eight sections fit on a screen a player glances at beside a running
-        game.
+        it, so it is the one region that is always on screen.
+
+        It was a `Fold` whose closed row read "Cetus · day · 42m" - which is
+        the lead cell's own three fields, in smaller type, eight pixels above
+        the lead cell. That is the same fact in two costumes, and it cost a
+        45 px summary row and 19 px of body padding to say it twice. Opened by
+        default it could never usefully be closed either: closing the one
+        section that is the subject of the panel leaves a screen that answers
+        nothing.
+
+        The title and the eyebrow survive on the band below, and they share
+        that line with the read's provenance - which used to be a footer at the
+        bottom of eight hundred pixels, i.e. below the fold, on the one panel
+        in this app whose data has a shelf life. Both are one-line facts about
+        the same read, so they are one line.
       */}
-      <Fold
-        title="World cycles"
-        eyebrow="ordered by what runs out first"
-        defaultOpen
-        answer={
-          lead === undefined ? (
-            <span style={{ color: 'var(--text-faint)' }}>none in this read</span>
-          ) : (
-            <span className="numeric" style={{ color: lead.left === null ? 'var(--text-muted)' : timeInk(lead.left, 300_000) }}>
-              {lead.cycle.state} · {lead.left === null ? 'no expiry in this read' : humanDuration(lead.left)}
-            </span>
-          )
-        }
-      >
-        {/* Five tracks so the lead's double-width cell and the three quiet ones
-            land on a single row instead of orphaning the last. */}
-        <div className="mo-stagger grid grid-cols-2 gap-[3px] sm:grid-cols-5">
-          {lead && <LeadCycle item={lead} />}
-          {rest.map((item, i) => (
-            <CycleCell key={item.label} item={item} index={i} />
-          ))}
+      <section className="min-w-0">
+        <div className="mb-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+            World cycles
+          </span>
+          <span className="eyebrow">ordered by what runs out first</span>
+          <span className="eyebrow ml-auto">worldstate read {new Date(loaded.at).toLocaleTimeString()}</span>
+          <span className="eyebrow">{loaded.origin}</span>
+          <span className="eyebrow">refreshes at most every 2 min</span>
         </div>
-      </Fold>
 
-      <Events world={loaded.data} now={now} />
-      <Traders world={loaded.data} now={now} />
-      <DailyMissions world={loaded.data} now={now} ids={ids} />
-      <Nightwave world={loaded.data} now={now} />
-      <Invasions world={loaded.data} now={now} ids={ids} />
-      <SteelPath world={loaded.data} now={now} />
-      <Fissures world={loaded.data} now={now} ids={ids} stock={stock} />
+        {cycles.length === 0 ? (
+          /* The `Fold` this replaced said "none in this read" on its closed
+             row for exactly this case. A pinned strip with no cells in it
+             would be a blank band instead, which is the one reading that is
+             not true: the read happened, and it carried no cycle. */
+          <p className="wf-note">No world cycle is in this worldstate read.</p>
+        ) : (
+          /* Five tracks so the lead's double-width cell and the three quiet
+             ones land on a single row instead of orphaning the last. */
+          <div className="mo-stagger grid grid-cols-2 gap-[3px] sm:grid-cols-5">
+            {lead && <LeadCycle item={lead} />}
+            {rest.map((item, i) => (
+              <CycleCell key={item.label} item={item} index={i} />
+            ))}
+          </div>
+        )}
+      </section>
 
-      <footer className="mo-arrive mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
-        <span className="eyebrow">worldstate read {new Date(loaded.at).toLocaleTimeString()}</span>
-        <span className="eyebrow">{loaded.origin}</span>
-        <span className="eyebrow ml-auto">refreshes at most every 2 min</span>
-      </footer>
+      {/*
+        ROW 2 - TWO PANES ABOVE 1280px, TWO STACKED SCROLLERS BELOW IT.
+        ──────────────────────────────────────────────────────────────
+        THE ROW TRACKS ARE WRITTEN OUT AND THAT IS NOT TIDINESS. Without them
+        the stacked case below `xl` has two AUTO rows inside a track that is
+        exactly as tall as the window, and an auto row sizes to its content -
+        so the panes would each grow to their full list height, the grid would
+        overflow the row it was given, and <main> would scroll again at every
+        width under 1280, which is every width this overlay is usually opened
+        at. Two `minmax(0, 1fr)` rows share the height instead and each pane
+        scrolls within its half; at `xl` a single one hands the whole height
+        back to the row the two columns sit on.
+
+        Spelled as arbitrary values rather than `grid-rows-2`, because the
+        whole point is the `minmax(0, …)` - a bare `1fr` has an automatic
+        minimum and is exactly the growth being prevented, and a numbered
+        utility hides which of the two it emits behind a version.
+      */}
+      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:grid-rows-[minmax(0,1fr)]">
+        {/*
+          `min-w-0` is load-bearing on both panes, for the reason the shell
+          records about its own <main>: a grid item defaults to
+          `min-width: auto` and refuses to shrink below its content's
+          intrinsic width, so a `minmax(0, 7fr)` TRACK that is allowed to be
+          narrow still gets an ITEM that is not - and the overflow goes
+          sideways, where `overflow-y-auto` shows no scrollbar and a
+          screenshot shows nothing at all.
+        */}
+        <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-1">
+          <Events world={loaded.data} now={now} />
+          <Fissures world={loaded.data} now={now} ids={ids} stock={stock} />
+          <DailyMissions world={loaded.data} now={now} ids={ids} />
+        </div>
+
+        <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto pr-1">
+          <Traders world={loaded.data} now={now} />
+          <Nightwave world={loaded.data} now={now} />
+          <Invasions world={loaded.data} now={now} ids={ids} />
+          <SteelPath world={loaded.data} now={now} />
+        </div>
+      </div>
     </div>
   );
 }

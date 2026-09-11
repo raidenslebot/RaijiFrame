@@ -74,16 +74,18 @@ export interface AccountState {
    * persisted, with no code path that could ever separate them again.
    */
   accountOwner: string | null;
+  /** Advances after a committed snapshot so mounted comparisons reload. */
+  snapshotRevision: number;
 
   setUsername: (name: string) => void;
   /** Report whether the last write to disk landed. Diagnostics, and the Shell. */
-  setDurable: (durable: boolean) => void;
+  setDurable: (durable: boolean | null) => void;
   /**
    * Fold a read into the account. Returns the account as it now stands, or null
    * if the read was not an account at all - the caller persists what comes back,
    * never the raw payload, so the snapshot on disk only ever gets more complete.
    */
-  setInventory: (inv: RawInventory) => RawInventory | null;
+  setInventory: (inv: RawInventory, owner?: string | null) => RawInventory | null;
   setHighlighted: (item: HighlightedItem | null) => void;
   setGep: (status: GepStatus) => void;
   setGameRunning: (running: boolean) => void;
@@ -92,7 +94,8 @@ export interface AccountState {
   hydrate: (inv: RawInventory | null, username: string | null, capturedAt: number | null) => void;
 }
 
-export const useAccount = create<AccountState>((set, get) => ({
+export function createAccountStore() {
+  return create<AccountState>((set, get) => ({
   username: null,
   inventory: null,
   inventoryAt: null,
@@ -105,8 +108,24 @@ export const useAccount = create<AccountState>((set, get) => ({
   hydrated: false,
   acquire: emptyAcquireStats(),
   accountOwner: null,
+  snapshotRevision: 0,
 
-  setUsername: (username) => set({ username }),
+  setUsername: (username) => set((s) => {
+    if (!username || (s.username === username && s.accountOwner === username)) return s;
+    // Identity and its visible data change together. Keeping A's inventory
+    // while displaying B's name made both advice and subsequent saves lie.
+    const switched = s.accountOwner !== null && s.accountOwner !== username;
+    const discard = s.inventory !== null && s.accountOwner !== username;
+    return {
+      username,
+      accountOwner: username,
+      ...(discard ? { inventory: null, inventoryAt: null, capturedAt: null } : {}),
+      liveClears: [],
+      highlighted: null,
+      answeredAt: null,
+      acquire: { ...s.acquire, durable: discard ? null : s.acquire.durable, switched: s.acquire.switched + Number(switched) },
+    };
+  }),
   setDurable: (durable) => set((s) => ({ acquire: { ...s.acquire, durable } })),
   /*
    * A read is evidence, not a replacement. See core/acquire.ts for why: a memory
@@ -114,22 +133,14 @@ export const useAccount = create<AccountState>((set, get) => ({
    * account with it - then persisting that - is how the app used to forget
    * everything the player had.
    */
-  setInventory: (pushed) => {
+  setInventory: (pushed, suppliedOwner) => {
     const s = get();
     if (!isPlausibleAccount(pushed)) {
       set({ acquire: { ...s.acquire, dropped: s.acquire.dropped + 1 } });
       return null;
     }
-    /*
-     * Whose account is this? A read that arrives after a different player has
-     * logged in must REPLACE what we hold, never merge into it. The username is
-     * the only identity GEP offers, and EE.log's `Logged in <name>` gives the
-     * same string earlier - the switch is usually known before the first read.
-     *
-     * Nothing is destroyed on the name change itself, only when a real read for
-     * the new player arrives: a spurious name event costs nothing.
-     */
-    const switched = s.username !== null && s.accountOwner !== null && s.username !== s.accountOwner;
+    const owner = suppliedOwner === undefined ? s.username : suppliedOwner;
+    const switched = s.accountOwner !== owner;
     const base = switched ? null : s.inventory;
     const merged = mergeInventory(base, pushed);
     const partial = base !== null && accountKeyCount(pushed) < accountKeyCount(base) ? 1 : 0;
@@ -137,10 +148,9 @@ export const useAccount = create<AccountState>((set, get) => ({
       ...s.acquire,
       accepted: s.acquire.accepted + 1,
       partial: s.acquire.partial + partial,
-      switched: s.acquire.switched + (switched ? 1 : 0),
+      switched: s.acquire.switched + (switched && s.accountOwner !== null ? 1 : 0),
       redundant: s.acquire.redundant + (merged === s.inventory ? 1 : 0),
     };
-    const owner = s.username ?? s.accountOwner;
     // `capturedAt` moves either way: the account was confirmed current even when
     // nothing in it changed. `inventoryAt` and a re-render happen only on a real
     // change, which is what keeps a repeated identical push cheap.
@@ -148,7 +158,11 @@ export const useAccount = create<AccountState>((set, get) => ({
       set({ capturedAt: Date.now(), acquire, accountOwner: owner });
       return merged;
     }
-    set({ inventory: merged, inventoryAt: Date.now(), capturedAt: Date.now(), acquire, accountOwner: owner });
+    set({
+      inventory: merged, inventoryAt: Date.now(), capturedAt: Date.now(), acquire,
+      accountOwner: owner, username: owner,
+      ...(switched ? { liveClears: [], highlighted: null, answeredAt: null } : {}),
+    });
     return merged;
   },
   setAnswered: (answeredAt) => set({ answeredAt }),
@@ -168,30 +182,58 @@ export const useAccount = create<AccountState>((set, get) => ({
     set((s) => {
       const stored = inventory && isPlausibleAccount(inventory) ? inventory : null;
       /*
-       * The stored account belongs to whoever was playing when it was written,
-       * and if a different player is live now it is not theirs to merge into.
+       * WHOSE SNAPSHOT IS THIS, AND THE TWO UNKNOWNS ARE NOT SYMMETRIC.
        *
-       * The two unknowns are NOT symmetric, which is why only one of them is
-       * forgiven here. An unknown LIVE owner is the ordinary startup case - no
-       * login line seen yet - and it corrects itself: `accountOwner` becomes the
-       * stored name, so the first push for a different player trips `switched`
-       * in `setInventory` and replaces the lot. An unknown STORED owner while
-       * the live player is known has no such correction: the merge would take
-       * the LIVE name as its owner, `switched` could then never fire, and two
-       * accounts would stay blended for the rest of the session with every
-       * figure and every recommendation drawn from the mixture.
+       * An unknown LIVE owner is the ordinary startup: no login line has been
+       * seen yet, a thin GEP push may already have landed, and the snapshot on
+       * disk is almost certainly the same player's. It is forgiven, and it
+       * CORRECTS ITSELF - `accountOwner` becomes the stored name, so the first
+       * read for a different player trips `switched` in `setInventory` and
+       * replaces the lot, and `setUsername` now discards on the name change
+       * before that even happens.
+       *
+       * An unknown STORED owner while the live player is known has no such
+       * correction: the merge would take the LIVE name as its owner, `switched`
+       * could then never fire, and two accounts would stay blended for the rest
+       * of the session with every figure and every recommendation drawn from
+       * the mixture. So that one is refused.
+       *
+       * THIS WAS TIGHTENED TO `s.inventory === null && s.username === null` and
+       * that broke the first case, which is the common one. A thin live push
+       * arriving before hydrate made `s.inventory` non-null, so the stored
+       * account was DISCARDED - the app forgetting everything the player had,
+       * which is the exact failure the note on `setInventory` above exists to
+       * prevent. `check-acquisition.ts` names the race: "a thin live push lands
+       * first, the snapshot resolves second."
+       *
+       * The predicate below keeps the refusal that tightening was reaching for
+       * - a snapshot whose owner is unknown never merges into a known live
+       * player - without taking the startup case with it.
        */
-      const sameOwner = stored !== null && (s.username === null || username === s.username);
+      const liveOwner = s.accountOwner ?? s.username;
+      const sameOwner = stored !== null && (liveOwner === null || (username !== null && username === liveOwner));
       const next = stored === null || !sameOwner ? s.inventory : s.inventory ? mergeInventory(stored, s.inventory) : stored;
       return {
         inventory: next,
-        username: s.username ?? username,
-        capturedAt: s.capturedAt ?? capturedAt,
-        accountOwner: s.accountOwner ?? (sameOwner ? username : s.username),
+        username: sameOwner ? (s.username ?? username) : s.username,
+        capturedAt: sameOwner ? (s.capturedAt ?? capturedAt) : s.capturedAt,
+        accountOwner: sameOwner ? (s.accountOwner ?? username) : s.accountOwner,
         hydrated: true,
       };
     }),
-}));
+  }));
+}
+
+export const useAccount = createAccountStore();
+
+/** Every data field crosses windows; action closures remain local. */
+export type AccountData = Pick<AccountState, {
+  [K in keyof AccountState]: AccountState[K] extends (...args: never[]) => unknown ? never : K
+}[keyof AccountState]>;
+
+export function accountData(state: AccountState): AccountData {
+  return Object.fromEntries(Object.entries(state).filter(([, value]) => typeof value !== 'function')) as AccountData;
+}
 
 /**
  * Read state from a window that is not the one running the store.

@@ -624,6 +624,56 @@ function AccountBanner() {
             <Clamp lines={3}>{detail}</Clamp>
           </div>
         </Disclosure>
+
+        {/*
+          THE THREE PLATES' GAME FACTS, KEPT WHEN THE PLATES THEMSELVES ARE NOT.
+          ————————————————————————————————————————————
+          Measured at 1280x720 with no account read, the Today strip printed
+          FIVE em-dashes - the allowance, the pool, the node total, waybound and
+          school-bound - in three large plates whose every number was the same
+          single unknown. That is not five readouts, it is one sentence, which
+          this banner is already saying above it in words. So the plates do not
+          render on the unread path at all and the band shrinks to this.
+
+          What the plates carried that was NOT account data is a different
+          matter and is not deleted: the cap formula, the reset, that nothing
+          caps a pool, and the two kinds of node are facts about the game and
+          true with the game never launched. They are one press away, which is
+          the rule - a fact that was on the screen stays reachable in one click.
+        */}
+        <Disclosure
+          depth={1}
+          eyebrow="what this panel reports once it has read you"
+          summary={<span className="rf-fold-ink mo-underline">The three readouts, and what they mean</span>}
+          answer={<span style={{ color: 'var(--text-faint)' }}>three, all unread</span>}
+        >
+          <dl
+            className="grid gap-x-4 gap-y-2 text-[length:var(--text-micro)] leading-snug [grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))]"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <div className="min-w-0">
+              <dt className="eyebrow whitespace-nowrap" style={{ color: 'var(--color-tenno-300)' }}>
+                Focus earnable today
+              </dt>
+              <dd className="mt-0.5">
+                Use it or lose it. The cap is 250,000 + MR x 5,000 and it resets at 00:00 UTC, unearned.
+              </dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="eyebrow whitespace-nowrap">Pooled focus</dt>
+              <dd className="mt-0.5">
+                Unspent, waiting to go into nodes. Nothing caps what you hold; the daily cap is what limits what you
+                earn.
+              </dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="eyebrow whitespace-nowrap">Nodes unlocked</dt>
+              <dd className="mt-0.5">
+                Split into waybound nodes, which are universal, and school-bound nodes, which are per school.
+              </dd>
+            </div>
+          </dl>
+        </Disclosure>
       </div>
     </section>
   );
@@ -805,12 +855,52 @@ export default function FocusPanel() {
         });
 
   return (
-    <div className="flex h-full flex-col gap-6 p-6">
+    /*
+     * ONE SCREEN: A PINNED BAND, TWO PANES, AND A PINNED CAVEAT.
+     *
+     * WHAT WAS MEASURED. Driven through a real browser at 1280x720 with no
+     * account read - the cold-launch state, which is what the owner actually
+     * sees - this panel emitted 1,241 px into a 672 px viewport. Just under two
+     * screens, from six sections stacked in one narrow column with the right
+     * third of the window empty, and ten em-dash readouts all saying the same
+     * one thing.
+     *
+     * The shape is now a fixed-height grid, and `min-h-0` on every row and every
+     * pane of the chain is what makes that true. It is also the easy thing to
+     * leave out: a grid child defaults to `min-height: auto` and refuses to
+     * shrink below its content, so one missing `min-h-0` anywhere and the page
+     * grows again with nothing on the screen to say that it has.
+     *
+     *   - the BAND is what can still be acted on today - or, with nothing read,
+     *     the single sentence saying so. It never scrolls away.
+     *   - the LEFT pane is the five schools. It is the CONTROL: picking one is
+     *     what makes the right pane compute.
+     *   - the RIGHT pane is the school that was picked, which is the ANSWER to
+     *     the gesture the reader just made, so it sits beside the gesture rather
+     *     than a screen below it.
+     *   - the FOOTER is the standing caveat about what the account never
+     *     carries. True on every account forever, so it is pinned rather than
+     *     left at the bottom of a scroll nobody reaches.
+     *
+     * Each pane scrolls inside itself. The page does not scroll at all.
+     */
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5">
       <MotionRules />
-      {!measured && <AccountBanner />}
 
-      {/* ---- the two things that can still be acted on today ---------------- */}
-      <section>
+      {/* ---- the band: today, or the one sentence saying today is unread ---- */}
+      {/*
+        THE PLATES DO NOT RENDER WHEN THERE IS NOTHING IN THEM.
+        ————————————————————————————————————————————
+        With no account read all three were dashes - five of them - and three
+        large plates of nothing is a hole, not an empty state: it reads as the
+        panel being broken rather than as the app not having been told anything
+        yet. The banner says it once, in a sentence, and carries the three
+        readouts' GAME facts one press down. A partial read still gets the
+        plates, because there a dash is a real difference between fields rather
+        than one fact wearing five costumes.
+      */}
+      {measured ? (
+      <section className="min-w-0">
         {/* The section owns the honesty its values used to repeat one word at a
             time. Each dash still explains itself on hover. */}
         <SectionTitle note={readPools && readNodes ? 'what expires and what overflows' : 'every dash is unread, not zero'}>
@@ -821,10 +911,20 @@ export default function FocusPanel() {
          * Wraps on the width this grid actually has, not on the window's.
          * `lg:` measures the viewport, so at a 1100px window the three plates
          * stayed side by side in ~330px each and every small-caps label broke
-         * in half. `auto-fit` with a 22rem floor drops the third plate onto its
-         * own row instead, and gives it the full width when it lands there.
+         * in half. `auto-fit` with a floor drops the third plate onto its own
+         * row instead, and gives it the full width when it lands there.
+         *
+         * THE FLOOR CAME DOWN FROM 22rem TO 21rem, AND THE ONE REM IS THE WHOLE
+         * DIFFERENCE. This container is 1,056px wide at 1280x720 - the window
+         * less the 184px rail and this panel's own padding - and three 22rem
+         * plates with their gutters want 1,062. Six pixels short, so the third
+         * plate wrapped, the band stood two rows deep at about 380px of a 632px
+         * screen, and the figure and the answer below it were left less room
+         * than either needs. At 21rem the three want 1,014, sit in one row, and
+         * each ends up 350px wide - past the ~330px where the small-caps labels
+         * start breaking mid-word, which is the defect the floor exists for.
          */}
-        <div className="mo-stagger grid gap-[3px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))]">
+        <div className="mo-stagger grid gap-[3px] [grid-template-columns:repeat(auto-fit,minmax(min(100%,21rem),1fr))]">
           {/* THE BOLD ELEMENT. Use-it-or-lose-it, so it is the only hero on the
               panel and the only thing wearing energy cyan.
 
@@ -1027,7 +1127,27 @@ export default function FocusPanel() {
           </div>
         </div>
       </section>
+      ) : (
+        <AccountBanner />
+      )}
 
+      {/*
+        ---- the control and the answer, side by side -----------------------
+
+        The figure was a full-width section with the card underneath it, so
+        choosing a school moved the answer to somewhere the reader was not
+        looking - and, at 1280x720, to somewhere off the bottom of the screen
+        entirely. Beside it, the cause and the effect are in one glance, and the
+        right third of the window that was empty is now carrying the answer.
+
+        Both panes take their own `overflow-y-auto`. In practice neither is
+        expected to use it; what the containers guarantee is that if one ever
+        does - a long verdict, four nested disclosures opened at once - it
+        scrolls without moving anything else on the screen and without the page
+        growing.
+      */}
+      <div className="grid min-h-0 min-w-0 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:grid-rows-[minmax(0,1fr)]">
+      <div className="flex min-h-0 min-w-0 flex-col overflow-y-auto pr-1">
       {/* ---- the five schools ---------------------------------------------- */}
       <Fold
         title="The five schools"
@@ -1098,9 +1218,10 @@ export default function FocusPanel() {
           />
         </div>
       </Fold>
+      </div>
 
       {/* ---- the one school a reader asked about --------------------------- */}
-      <section>
+      <section className="flex min-h-0 min-w-0 flex-col overflow-y-auto pr-1">
         <SectionTitle note={chosen === null ? 'arrow keys move, Enter picks' : 'Esc clears'}>
           {chosen === null ? 'One school' : chosen.name}
         </SectionTitle>
@@ -1142,9 +1263,15 @@ export default function FocusPanel() {
                   .
                 </>
               ) : (
-                <>
-                  Across all five: <Unknown /> of the ten waybound nodes.
-                </>
+                /* NOT A DASH, AND THIS ONE IS THE CLEAREST CASE ON THE PANEL.
+                   It read "Across all five: — of the ten waybound nodes", which
+                   is a sentence built around an unknown that the band above has
+                   already stated in full. The ten is the half that is a fact
+                   about the game and is true with the game never launched, so
+                   it survives as a fact rather than as a denominator under a
+                   dash — one of the ten em-dashes the cold-launch screen was
+                   measured printing, removed without losing anything. */
+                <>There are ten waybound nodes across the five schools, two in each.</>
               )}
             </div>
           </div>
@@ -1152,8 +1279,9 @@ export default function FocusPanel() {
           <Dossier d={dossier} name={chosen.name} creed={SCHOOL_CREED[chosen.key]} ink={SCHOOL_INK[chosen.key]} />
         )}
       </section>
+      </div>
 
-      <footer className="mo-arrive mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
+      <footer className="mo-arrive flex flex-wrap items-center gap-x-4 gap-y-1">
         {/* The gap a focus tracker's "spent" and "still needed" figures would
             fill, stated once. The derivation hardcodes both as unavailable, so
             the "Completion" section that used to render them could never show

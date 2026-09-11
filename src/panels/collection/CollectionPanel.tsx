@@ -477,9 +477,28 @@ function CategoryRow({ category, own, selected, onSelect, delay, measured }: Cat
         >
           {label}
         </span>
+        {/*
+          ELEVEN DASHES WERE ONE FACT WEARING ELEVEN COSTUMES.
+
+          Measured at 1280x720 with no account read: this printed "— / 119" on
+          every one of the eleven rows, which is the same single absence - the
+          game has not been run yet - typeset eleven times down the side of the
+          panel. The band above says it once, in a sentence.
+
+          The TOTAL is not unknown: it is counted from the live catalog and is
+          true before Warframe has ever been launched. So the unmeasured row
+          prints that, alone, and the sub-line below it drops the "N masterable"
+          that would now be saying it twice.
+        */}
         <span className="numeric shrink-0 text-[length:var(--text-micro)]" style={{ color: 'var(--text)' }}>
-          {measured ? own.owned : <span style={{ color: 'var(--text-faint)' }}>{UNKNOWN}</span>}
-          <span style={{ color: 'var(--text-faint)' }}> / {own.total}</span>
+          {measured ? (
+            <>
+              {own.owned}
+              <span style={{ color: 'var(--text-faint)' }}> / {own.total}</span>
+            </>
+          ) : (
+            own.total
+          )}
         </span>
       </div>
 
@@ -517,9 +536,10 @@ function CategoryRow({ category, own, selected, onSelect, delay, measured }: Cat
       ) : (
         // No bar and no percentage: an empty track reads as 0 % owned, which is a
         // claim about the player. The catalog counts behind the row are real, so
-        // those are what the row carries instead.
+        // those are what the row carries instead — minus the category total,
+        // which is now the row's own headline number rather than a second
+        // printing of it two lines down.
         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[length:var(--text-nano)]">
-          <span style={{ color: 'var(--text-muted)' }}>{own.total} masterable</span>
           {own.vaultedTotal > 0 && (
             <span style={{ color: 'var(--color-signal-rare)' }}>{own.vaultedTotal} vaulted</span>
           )}
@@ -590,6 +610,23 @@ function ItemRow({ tile, index, focused }: { tile: Tile; index: number; focused:
    * scrolling an opened row off-screen and back keeps it open.
    */
   const [open, setOpen] = useState(false);
+  /*
+   * THE CARD IS BUILT ON FIRST OPEN, NOT ON EVERY ROW.
+   *
+   * Measured in a real browser at 1280x720 with no account read: every CLOSED
+   * row still rendered a whole ItemDetail inside the reveal. The reveal clips
+   * it - `.rf-reveal > *` is `overflow: hidden` - so none of it was visible,
+   * but it was all laid out, and ItemDetail's fact grid sizes its pairs from a
+   * minimum column width that a 268px catalogue column cannot hold. The result
+   * was 156 elements sitting with their right edge 194px past the viewport,
+   * and a category of eight hundred rows paying for eight hundred detail cards
+   * of layout in an overlay composited over a running game.
+   *
+   * `everOpen` rather than `open`: unmounting on close would rebuild the card
+   * every time a row is toggled, and hiding it is what the reveal is for. Once
+   * a row has been opened it stays built.
+   */
+  const [everOpen, setEverOpen] = useState(false);
 
   return (
     <li
@@ -644,6 +681,7 @@ function ItemRow({ tile, index, focused }: { tile: Tile; index: number; focused:
       <button
         type="button"
         onClick={() => {
+          setEverOpen(true);
           setOpen((o) => !o);
         }}
         aria-expanded={open}
@@ -758,6 +796,10 @@ function ItemRow({ tile, index, focused }: { tile: Tile; index: number; focused:
 
       <div className="rf-reveal" data-open={open}>
         <div>
+          {/* See `everOpen` above: a closed row builds no card at all, because
+              eight hundred clipped cards were still eight hundred cards of
+              layout — and 194px of them hung off the side of the window. */}
+          {everOpen && (
           <div className="pt-2.5 pl-1" inert={!open}>
             <ItemDetail
               entry={entry}
@@ -773,6 +815,7 @@ function ItemRow({ tile, index, focused }: { tile: Tile; index: number; focused:
               hideCollectionLink
             />
           </div>
+          )}
         </div>
       </div>
     </li>
@@ -812,33 +855,34 @@ function AccountBanner() {
           'Establishing the game-events connection. This usually takes a few seconds after launch.',
         ] as const;
 
+  /*
+   * NO PLATE OF ITS OWN ANY MORE.
+   *
+   * This was a full-width chamfered section pinned above the hero, which made
+   * the cold-launch screen say the same thing three times in three costumes:
+   * this banner, then a "Showing the catalog" note inside the hero, then three
+   * completion figures each reading a dash. It is now the hero's answer slot -
+   * the same words, in the one place the reader is already looking, with the
+   * plate that surrounds it belonging to the hero.
+   */
   return (
-    <section
-      className="mo-field mo-sheen anim-rise flex items-start gap-3 px-4 py-3"
-      style={{
-        clipPath: CHAMFER,
-        background: 'linear-gradient(168deg, oklch(0.17 0.03 80 / 0.55), oklch(0.12 0.02 70 / 0.6))',
-        boxShadow: 'inset 2px 0 0 var(--color-orokin-500)',
-      }}
-    >
-      <div className="min-w-0">
-        <div className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
-          {title}
-        </div>
-        {/*
-          A <div> and a Clamp rather than a <p>: Clamp is a div holding a
-          button, and a div inside a p is closed by the parser at the div.
-
-          The longest of the three details is three sentences, and it is the
-          FIRST thing on the panel - three lines of explanation standing in
-          front of the ring they are explaining. The eyebrow above states the
-          situation, one line gives the reason, the rest is a press away.
-        */}
-        <div className="mt-1 text-[length:var(--text-small)] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-          <Clamp lines={1}>{detail}</Clamp>
-        </div>
+    <div className="min-w-0">
+      <div className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+        {title}
       </div>
-    </section>
+      {/*
+        A <div> and a Clamp rather than a <p>: Clamp is a div holding a
+        button, and a div inside a p is closed by the parser at the div.
+
+        The longest of the three details is three sentences, and it is the
+        first thing on the panel - three lines of explanation standing in
+        front of the numbers they are explaining. The eyebrow above states
+        the situation, two lines give the reason, the rest is a press away.
+      */}
+      <div className="mt-1 text-[length:var(--text-small)] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+        <Clamp lines={2}>{detail}</Clamp>
+      </div>
+    </div>
   );
 }
 
@@ -1146,125 +1190,145 @@ export default function CollectionPanel() {
 
   return (
     /*
-     * THE SCROLLER CARRIES NO PADDING OF ITS OWN.
+     * THE PANEL IS A FIXED-HEIGHT GRID, NOT A GROWING COLUMN.
      *
-     * The group header below the categories is sticky, and a scroll
-     * container's own padding is not something a sticky child can stick
-     * against: the header parked a padding's width down the scrollport and
-     * item rows scrolled up through the strip left above it. So the padding
-     * lives on the content instead, which makes top-0 flush with the top of
-     * the visible list — and the header, now opaque and full-bleed, actually
-     * covers what passes under it.
+     * Measured in a real browser at 1280x720 with no account read - the cold
+     * launch, which is what the owner actually sees: this was ONE scroller
+     * holding the ring, three completion figures, a folded eleven-row picker
+     * and only then the item list, so the catalogue the whole panel exists for
+     * started a screen and a half below the fold while a third of the window
+     * sat empty beside it.
+     *
+     * It is now the shape the Platinum panel proved. The ANSWER - what you are
+     * missing and how far along you are - is a band pinned at the top that
+     * never scrolls away. The REFERENCE - the picker, the provenance and the
+     * eight hundred catalogue rows - sits beside it in panes that scroll on
+     * their own. The page itself never scrolls at all.
+     *
+     * `min-h-0` on every row and column of the chain is what makes that true,
+     * and it is the easy thing to leave out: a grid child defaults to
+     * `min-height: auto` and refuses to shrink below its content, so one
+     * missing `min-h-0` anywhere and the whole thing grows again with no
+     * visible sign that anything is wrong.
      */
-    <div className="h-full overflow-y-auto">
-      <div className="flex min-h-full flex-col gap-7 p-7">
-        {!hasAccount && <AccountBanner />}
+    <div className="grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+      {/* ------------------------------------------------------------- answer */}
+      {/*
+        THE HERO IS A BAND, AND IT READS ACROSS RATHER THAN DOWN.
 
-        {/* --------------------------------------------------------------- hero
-            The ring is the one large element in the panel. Everything under it is
-            small, quiet and dense. */}
-        {/*
-          THE HERO GETS A Z AXIS AND A LIGHT.
+        Identity, title, the answer, the ring and the three figures were five
+        stacked blocks about 450px tall inside a 629px window. They are the
+        same five things, laid along the width the panel was already not using.
 
-          `mo-field` on the outer section is what the document-level pointer
-          tracker matches; it writes `--mxp/--myp/--mdx/--mdy` there and they
-          inherit, so nothing inside needs a handler. `mo-tilt` reads the
-          signed fractions and rotates the plate a few degrees toward the
-          cursor through a real `perspective()`, so the rim, the ring and the
-          three figures move together as one object.
+        `mo-field` on the outer element is what the document-level pointer
+        tracker matches; it writes `--mxp/--myp/--mdx/--mdy` there and they
+        inherit, so nothing inside needs a handler. `mo-tilt` reads the signed
+        fractions and rotates the plate through a real `perspective()`, so the
+        rim, the ring and the figures move together as one object. `mo-sheen`
+        goes on the INNER div and not the outer, because the outer is a
+        one-pixel rim - a light drawn on it lights the border and nothing else.
+      */}
+      <header
+        className="mo-field mo-tilt anim-rise min-w-0"
+        style={{ clipPath: CHAMFER, padding: 1, background: GOLD_RIM }}
+      >
+        <div className="mo-sheen min-w-0 px-5 py-4" style={{ clipPath: CHAMFER, background: GOLD_FILL }}>
+          {/*
+            IDENTITY AND TITLE ON ONE LINE.
 
-          `mo-sheen` goes on the INNER div and not the outer, because the
-          outer is a one-pixel rim - a light drawn on it lights the border and
-          nothing else.
-        */}
-        <section className="mo-field mo-tilt anim-rise" style={{ clipPath: CHAMFER, padding: 1, background: GOLD_RIM }}>
-          <div className="mo-sheen px-7 py-6" style={{ clipPath: CHAMFER, background: GOLD_FILL }}>
-            <div className="flex items-center gap-2.5">
-              <span aria-hidden className="size-[5px] rotate-45" style={{ background: 'var(--color-orokin-400)' }} />
-              <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
-                Collection
-              </span>
-            </div>
+            The title is the panel's SUBJECT, not its headline - the headline
+            is the answer under it - and as its own block at lead size it was
+            taking a fifth of a band that has to stay short enough for the
+            catalogue to be on the same screen.
+          */}
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span aria-hidden className="size-[5px] rotate-45" style={{ background: 'var(--color-orokin-400)' }} />
+            <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+              Collection
+            </span>
             <h1
-              className="mt-2 font-[family-name:var(--font-title)] text-[length:var(--text-lead)] tracking-[0.2em] uppercase"
+              className="min-w-0 font-[family-name:var(--font-title)] text-[length:var(--text-small)] tracking-[0.2em] uppercase"
               style={{ color: 'var(--color-orokin-200)' }}
             >
               Every masterable item, owned against what exists
             </h1>
+          </div>
 
-            {/* The ring below states a percentage and a fraction — how you are
-                doing, never what to do about it. This reads the answer the list
-                underneath already computed: state first, then mastery requirement
-                ascending, so the head of that sort is the cheapest thing left to
-                go and get. Three honest states, not two: an account can be
-                unread, read-and-clear, or read-and-owing, and each says a
-                different true thing rather than the same blank filled in. */}
-            {!hasAccount ? (
-              <div className="mt-4">
-                <div className="eyebrow">Showing the catalog</div>
-                <p className="wf-note mt-1">
-                  No account read yet, so this is every masterable item that exists — not a claim about what you
-                  should go and get next.
-                </p>
-              </div>
-            ) : tiles === null ? (
-              <div className="mt-4">
-                <div className="eyebrow">Cheapest pick unknown</div>
-                <p className="wf-note mt-1">
-                  {CATEGORY_LABEL[selected]}'s item list failed to fetch, so which one is cheapest to go and get
-                  cannot be said.
-                </p>
-              </div>
-            ) : easiestMissing ? (
-              /*
-                THE CATEGORY IS NAMED, because the answer is only about the
-                category. `tiles` is rebuilt per selected tab, so this is the
-                cheapest missing WARFRAME while the Warframes tab is open - and
-                it sits directly under a ring that counts the whole catalogue.
-                "The easiest one you are missing" read as a claim about
-                everything and would have been wrong for every tab but the
-                widest one.
-              */
-              <div className="mt-4">
-                <div className="eyebrow">
-                  {/* The label is plural ("Warframes"), so the sentence is built
-                      around it rather than in front of it - "the easiest
-                      warframes you are missing" names one item with a plural. */}
-                  Easiest of the {CATEGORY_LABEL[selected].toLowerCase()} you are missing
-                </div>
-                <div className="mt-1 text-[length:var(--text-lead)]" style={{ color: 'var(--color-orokin-200)' }}>
-                  {easiestMissing.entry.name}
-                </div>
-                <p className="numeric mt-1 text-[length:var(--text-micro)]" style={{ color: 'var(--text-faint)' }}>
-                  Mastery rank {easiestMissing.entry.masteryReq} to use it
-                </p>
-              </div>
-            ) : (
-              <div className="mt-4">
-                <div className="eyebrow">Nothing obtainable left</div>
-                <p className="wf-note mt-1">
-                  Every {CATEGORY_LABEL[selected].toLowerCase()} you can still get is already in your inventory.
-                </p>
-              </div>
-            )}
+          <div className="mt-3 flex min-w-0 flex-wrap items-center gap-x-8 gap-y-4">
+            {/*
+              THE ANSWER, AND WITH NO ACCOUNT IT IS THE ONLY SENTENCE.
 
-            <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[auto_1fr]">
-              <div className="flex items-center gap-6">
-                <Ring value={totalRatio} size={156} thickness={9} gap={70}>
-                  <div className="stat text-[length:var(--text-title)]" style={{ color: 'var(--color-orokin-300)' }}>
+              Four states, not two: no account read, the category's own fetch
+              failed, something is missing, or nothing obtainable is left. Each
+              says a different true thing rather than the same blank filled in.
+
+              The no-account branch is the account banner itself, which used to
+              be a second full-width plate above this one saying the same thing
+              in a different costume - a banner there, a title here, and a
+              third "Showing the catalog" note in between. It is stated once.
+            */}
+            <div className="min-w-0 flex-1 basis-[16rem]">
+              {!hasAccount ? (
+                <AccountBanner />
+              ) : tiles === null ? (
+                <>
+                  <div className="eyebrow">Cheapest pick unknown</div>
+                  <p className="wf-note mt-1">
+                    {CATEGORY_LABEL[selected]}&apos;s item list failed to fetch, so which one is cheapest to go and get
+                    cannot be said.
+                  </p>
+                </>
+              ) : easiestMissing ? (
+                /*
+                  THE CATEGORY IS NAMED, because the answer is only about the
+                  category. `tiles` is rebuilt per selected tab, so this is the
+                  cheapest missing WARFRAME while the Warframes tab is open -
+                  and it sits beside a ring that counts the whole catalogue.
+                  "The easiest one you are missing" read as a claim about
+                  everything and would have been wrong for every tab but the
+                  widest one.
+                */
+                <>
+                  <div className="eyebrow">
+                    {/* The label is plural ("Warframes"), so the sentence is built
+                        around it rather than in front of it - "the easiest
+                        warframes you are missing" names one item with a plural. */}
+                    Easiest of the {CATEGORY_LABEL[selected].toLowerCase()} you are missing
+                  </div>
+                  <div className="mt-1 text-[length:var(--text-lead)]" style={{ color: 'var(--color-orokin-200)' }}>
+                    {easiestMissing.entry.name}
+                  </div>
+                  <p className="numeric mt-1 text-[length:var(--text-micro)]" style={{ color: 'var(--text-faint)' }}>
+                    Mastery rank {easiestMissing.entry.masteryReq} to use it
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="eyebrow">Nothing obtainable left</div>
+                  <p className="wf-note mt-1">
+                    Every {CATEGORY_LABEL[selected].toLowerCase()} you can still get is already in your inventory.
+                  </p>
+                </>
+              )}
+            </div>
+
+            {hasAccount ? (
+              <div className="flex min-w-0 flex-1 basis-[18rem] items-center gap-5">
+                {/* The arc and the numeral in its centre are the SAME
+                    measurement, or the headline gauge quietly disagrees with
+                    its own label. Both are drawn from `totalRatio`: owned and
+                    total with the Founder items taken off each side. */}
+                <Ring className="shrink-0" value={totalRatio} size={118} thickness={8} gap={70}>
+                  <div className="stat text-[length:var(--text-lead)]" style={{ color: 'var(--color-orokin-300)' }}>
                     {totalPct == null ? UNKNOWN : <Counter value={totalRatio * 100} format={asPct} />}
                   </div>
-                  <div className="eyebrow mt-1">obtainable</div>
+                  <div className="eyebrow mt-0.5">obtainable</div>
                 </Ring>
 
-                <div className="flex flex-col gap-3">
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <div>
                     <div className="stat text-[length:var(--text-lead)]" style={{ color: 'var(--text)' }}>
-                      {hasAccount ? (
-                        <Counter value={totals.owned} format={asCount} />
-                      ) : (
-                        <span style={{ color: 'var(--text-faint)' }}>{UNKNOWN}</span>
-                      )}
+                      <Counter value={totals.owned} format={asCount} />
                       <span className="numeric text-[length:var(--text-small)]" style={{ color: 'var(--text-faint)' }}>
                         {' / '}
                         {totals.total}
@@ -1275,244 +1339,292 @@ export default function CollectionPanel() {
                         so it says so here rather than leaving the mastery panel's
                         catalog total looking like a different count. */}
                     <div className="eyebrow mt-1">
-                      {hasAccount ? 'items owned' : 'items in the catalog'}
+                      items owned
                       {totals.unobtainableExcluded > 0 && ` · ${totals.unobtainableExcluded} Founder-only excluded`}
                     </div>
                   </div>
                   <span aria-hidden className="h-px w-full" style={{ background: 'var(--hairline)' }} />
-                  {/* "Missing" is `total − owned`. With no account that is the whole
-                      catalog, so the three lines below become the catalog's own
-                      shape rather than a claim about an empty collection. */}
-                  {hasAccount ? (
-                    <div className="flex flex-col gap-1 text-[length:var(--text-micro)]">
-                      <span style={{ color: 'var(--color-orokin-400)' }}>{totals.masteredOwned} at max rank</span>
-                      <span style={{ color: 'var(--color-signal-rare)' }}>
-                        {totals.vaultedTotal - totals.vaultedOwned} missing &amp; vaulted
-                      </span>
-                      <span style={{ color: 'var(--text-muted)' }}>
-                        {totals.missing.length - (totals.vaultedTotal - totals.vaultedOwned)} missing &amp; farmable
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-1 text-[length:var(--text-micro)]">
-                      <span style={{ color: 'var(--text-faint)' }}>{UNKNOWN} at max rank — not measured</span>
-                      <span style={{ color: 'var(--color-signal-rare)' }}>{totals.vaultedTotal} vaulted, trade only</span>
-                      <span style={{ color: 'var(--text-muted)' }}>
-                        {totals.total - totals.vaultedTotal} farmable today
-                      </span>
-                    </div>
-                  )}
+                  {/* "Missing" is `total − owned`. */}
+                  <div className="flex flex-col gap-1 text-[length:var(--text-micro)]">
+                    <span style={{ color: 'var(--color-orokin-400)' }}>{totals.masteredOwned} at max rank</span>
+                    <span style={{ color: 'var(--color-signal-rare)' }}>
+                      {totals.vaultedTotal - totals.vaultedOwned} missing &amp; vaulted
+                    </span>
+                    <span style={{ color: 'var(--text-muted)' }}>
+                      {totals.missing.length - (totals.vaultedTotal - totals.vaultedOwned)} missing &amp; farmable
+                    </span>
+                  </div>
                 </div>
               </div>
+            ) : (
+              /*
+                WITH NOTHING READ, THE BAND PRINTS NUMBERS INSTEAD OF DASHES.
 
-              {/* The three-number completion. One figure would have to pick a single
-                  denominator, and each of these three answers a different question. */}
-              <div>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                  <Figure
-                    label="Of all mastery"
-                    value={!measured || completion.ofAvailable.pct == null ? UNKNOWN : asFinePct(completion.ofAvailable.pct)}
-                    denominator={
-                      // One glyph for "we cannot say", app-wide. The `?` here sat
-                      // directly under a `—` meaning the same thing.
-                      `${measured ? asCount(completion.earned) : UNKNOWN} / ${completion.ofAvailable.total == null ? UNKNOWN : asCount(completion.ofAvailable.total)}`
-                    }
-                  />
-                  <Figure
-                    label="Of obtainable"
-                    value={!measured || completion.ofObtainable.pct == null ? UNKNOWN : asFinePct(completion.ofObtainable.pct)}
-                    denominator={
-                      `${measured ? asCount(completion.earned) : UNKNOWN} / ${completion.ofObtainable.total == null ? UNKNOWN : asCount(completion.ofObtainable.total)}`
-                    }
-                  />
-                  <Figure
-                    label="To next rank"
-                    tone="energy"
-                    value={measured && completion.toNextRank.pct != null ? asPct(completion.toNextRank.pct) : UNKNOWN}
-                    denominator={
-                      measured && completion.toNextRank.xpToNextRank != null
-                        ? `${asCount(completion.toNextRank.xpToNextRank)} to MR ${completion.toNextRank.next}`
-                        : measured
-                          ? 'item ranks do not add up to the game’s rank'
-                          : hasAccount
-                            ? 'the game has not sent item ranks yet'
-                            : 'account not captured'
-                    }
-                  />
+                Measured at 1280x720 with no account: this half of the band was
+                a ring reading "—", an owned count reading "—", a "— at max
+                rank — not measured" line and three completion figures each
+                reading "—" over a "— / N" denominator. Six readouts, every one
+                of them the same single fact - nobody has run the game yet -
+                which the sentence to the left already states in words.
+                ————————————————————————————————————————————
+                Every number below is real and comes from the catalog, which is
+                game data and is worth reading before Warframe has ever been
+                launched. Nothing is lost: the two mastery denominators that
+                sat under the dashed figures are the last line here, and each
+                figure's own reasoning is one press away in "How these are
+                measured" beside the picker.
+              */
+              <div className="min-w-0 flex-1 basis-[18rem]">
+                <div className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+                  What the catalog holds
                 </div>
-
-                {/*
-                  THREE LEVELS, BECAUSE THERE ARE GENUINELY THREE.
-
-                  This was one fold holding ninety words of body copy: the
-                  equipment-only caveat, then a paragraph per figure, then the
-                  Founder exclusion, then two raw path lists. Opening it
-                  replaced three clean numbers with a page of prose and left the
-                  reader to work out which paragraph belonged to which figure.
-
-                  It is a hierarchy and it now looks like one. The verdict is
-                  the three figures above. The WORKING is one line - what the
-                  three of them count. Each figure's own reasoning is one level
-                  in, labelled with the figure's name so there is no matching
-                  up to do, and each states its verdict on the closed row so a
-                  reader can see which one is measured without opening any of
-                  them. The PROVENANCE - the raw item paths behind the two
-                  "not in the catalog" caveats - is a level in from that.
-
-                  Nothing was cut. Every sentence that was here is still here,
-                  under the label it belongs to.
-                */}
-                <Disclosure
-                  className="mt-5"
-                  eyebrow="Provenance"
-                  summary="How these are measured"
-                  answer={<span>equipment only</span>}
-                >
-                  <p className="wf-prose">
-                    All three count equipment only. Star chart nodes, junctions and intrinsics pay mastery too and are not
-                    in these totals — the mastery panel has those.
-                  </p>
-
-                  {howMeasured.map((h) => (
-                    <Disclosure
-                      key={h.label}
-                      depth={1}
-                      summary={h.label}
-                      // The closed row carries the figure's STATE, not the
-                      // figure: the number itself is forty pixels up in the
-                      // grid, and printing it twice on one screen is the
-                      // duplication this panel keeps having to be cured of.
-                      answer={<span>{measured ? 'measured' : 'not measured'}</span>}
-                    >
-                      <div
-                        className="max-w-[76ch] text-[length:var(--text-micro)] leading-relaxed"
-                        style={{ color: 'var(--text-muted)' }}
-                      >
-                        <Clamp lines={2}>{h.text}</Clamp>
-                      </div>
-                    </Disclosure>
-                  ))}
-
+                <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[length:var(--text-micro)]">
+                  <span className="stat text-[length:var(--text-lead)]" style={{ color: 'var(--text)' }}>
+                    {asCount(totals.total)}
+                  </span>
+                  <span style={{ color: 'var(--text-muted)' }}>masterable items</span>
                   {totals.unobtainableExcluded > 0 && (
-                    <p className="wf-note">
-                      {totals.unobtainableExcluded} Founder exclusives are removed from both sides of the obtainable
-                      figure.
-                    </p>
+                    <span style={{ color: 'var(--text-muted)' }}>
+                      {totals.unobtainableExcluded} Founder-only excluded
+                    </span>
                   )}
-                  {report.unmatched.length > 0 && (
-                    <Paths label="owned, and not in the catalog" paths={report.unmatched.map((u) => u.itemType)} />
-                  )}
-                  {picture.unknownTypes.length > 0 && (
-                    <Paths label="ranked, and not in the catalog — mastery understated" paths={picture.unknownTypes} />
-                  )}
-                </Disclosure>
-              </div>
-            </div>
-
-            {/* What the panel could NOT measure, and nothing else. Every line that
-                was merely true — the equipment-only caveat, the Founder exclusions,
-                a normalisation that succeeded — reads as a caption rather than a
-                warning, and belongs in the fold above. */}
-            {warned && (
-              <div className="mt-6 flex flex-wrap items-center gap-2 pt-4" style={{ borderTop: '1px solid var(--hairline)' }}>
-                {/* No "no account captured" chip here. A full-width banner says
-                    exactly that 400px above, on the same screen, and this strip is
-                    for provenance the banner does NOT cover. It was one of eight
-                    restatements of a single absence. */}
-                {hasAccount && !picture.fromLedger && (
-                  <Chip tone="warn">the game has not sent item ranks yet — mastery understated</Chip>
-                )}
-                {rankGap != null && rankGap !== 0 && (
-                  <Chip tone="warn">
-                    game reports MR {picture.reportedRank} · {rankGap > 0 ? `${rankGap} rank` : `${-rankGap} rank`}
-                    {Math.abs(rankGap) === 1 ? '' : 's'} {rankGap > 0 ? 'unaccounted for' : 'over-counted'}
-                  </Chip>
-                )}
-                {db.missingCategories.length > 0 && <Chip tone="warn">no catalog for {db.missingCategories.join(', ')}</Chip>}
-                {/* The consequence, not the pipeline stage: what a player loses by
-                    this is that the item is not counted as owned. */}
-                {report.unmatched.length > 0 && (
-                  <Chip tone="warn">
-                    {report.unmatched.length} owned item{report.unmatched.length === 1 ? '' : 's'} the catalog does not
-                    know — not counted as owned
-                  </Chip>
+                </div>
+                <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[length:var(--text-micro)]">
+                  <span style={{ color: 'var(--color-signal-rare)' }}>{totals.vaultedTotal} vaulted, trade only</span>
+                  <span style={{ color: 'var(--text-muted)' }}>{totals.total - totals.vaultedTotal} farmable today</span>
+                </div>
+                {/* The denominators of the two completion figures. They are
+                    catalog facts and do not need an account to be true; the
+                    figures themselves do, being a fraction of these. */}
+                {completion.ofObtainable.total != null && completion.ofAvailable.total != null && (
+                  <div className="numeric mt-1.5 text-[length:var(--text-micro)]" style={{ color: 'var(--text-faint)' }}>
+                    {asCount(completion.ofObtainable.total)} mastery obtainable ·{' '}
+                    {asCount(completion.ofAvailable.total)} counting the Founder exclusives
+                  </div>
                 )}
               </div>
             )}
+
+            {/* The three-number completion. One figure would have to pick a single
+                denominator, and each of these three answers a different question.
+                Account only: with nothing read all three are the same dash, and a
+                dash three times is not three readings. */}
+            {hasAccount && (
+              <div className="grid min-w-0 flex-1 basis-[16rem] grid-cols-1 gap-5 sm:grid-cols-3">
+                <Figure
+                  label="Of all mastery"
+                  value={!measured || completion.ofAvailable.pct == null ? UNKNOWN : asFinePct(completion.ofAvailable.pct)}
+                  denominator={
+                    // One glyph for "we cannot say", app-wide. The `?` here sat
+                    // directly under a `—` meaning the same thing.
+                    `${measured ? asCount(completion.earned) : UNKNOWN} / ${completion.ofAvailable.total == null ? UNKNOWN : asCount(completion.ofAvailable.total)}`
+                  }
+                />
+                <Figure
+                  label="Of obtainable"
+                  value={!measured || completion.ofObtainable.pct == null ? UNKNOWN : asFinePct(completion.ofObtainable.pct)}
+                  denominator={
+                    `${measured ? asCount(completion.earned) : UNKNOWN} / ${completion.ofObtainable.total == null ? UNKNOWN : asCount(completion.ofObtainable.total)}`
+                  }
+                />
+                <Figure
+                  label="To next rank"
+                  tone="energy"
+                  value={measured && completion.toNextRank.pct != null ? asPct(completion.toNextRank.pct) : UNKNOWN}
+                  denominator={
+                    measured && completion.toNextRank.xpToNextRank != null
+                      ? `${asCount(completion.toNextRank.xpToNextRank)} to MR ${completion.toNextRank.next}`
+                      : measured
+                        ? 'item ranks do not add up to the game’s rank'
+                        : 'the game has not sent item ranks yet'
+                  }
+                />
+              </div>
+            )}
           </div>
-        </section>
+        </div>
+      </header>
 
-        {/* ---------------------------------------------------------- categories */}
-        {/*
-          ELEVEN TILES, FOLDED, WITH THE SELECTION AS THE ANSWER.
+      {/* ---------------------------------------------------------- reference */}
+      {/*
+        TWO PANES, AND THE PICKER NO LONGER STANDS IN FRONT OF THE LIST.
 
-          This block sat permanently open between the hero and the item list -
-          eleven three-line tiles, each with a bar and three sub-counts, which
-          is most of a screen of chrome standing between the two things the
-          panel is actually for. It is a picker, and a picker's only unread
-          state is the one you have already picked.
+        The eleven category tiles were a fold sitting between the hero and the
+        item list, which is the worst place for a picker: closed it cost a
+        press to read, open it cost most of a screen, and either way the list
+        started below it. Beside the list it is simply visible - which is what
+        a picker is for - and it costs the list nothing, because the width it
+        takes is width the list was leaving empty at the right of the window.
 
-          Closed, the row says which category is open and how much of it you
-          hold, which is exactly what a reader would have scanned the eleven
-          tiles to find. Opening it is one press, and the list below is
-          unaffected either way.
+        Both panes scroll on their own. That is the point of the fixed grid
+        above: eight hundred catalogue rows can be as long as they like without
+        moving the answer off the top of the screen.
+      */}
+      <div className="grid min-h-0 min-w-0 grid-rows-[minmax(0,1fr)_minmax(0,2fr)] gap-4 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] xl:grid-rows-1">
+        <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto">
+          {/*
+            What the panel could NOT measure, and nothing else. Every line that
+            was merely true — the equipment-only caveat, the Founder exclusions,
+            a normalisation that succeeded — reads as a caption rather than a
+            warning, and belongs in the fold below.
 
-          NOT `defaultOpen`: the subject of this screen is the item list at the
-          bottom, and that is not folded at all. Opening a picker by default
-          because it is the only Disclosure on the screen is how "one open
-          section" becomes "every section open" again.
-        */}
-        <Disclosure
-          eyebrow={hasAccount ? 'Ghost mark = ceiling without trading' : 'Totals from the live catalog'}
-          summary="By category"
-          answer={
-            <span>
-              {CATEGORY_LABEL[selected]} ·{' '}
-              {hasAccount ? (
-                `${report.byCategory.get(selected)?.owned ?? 0} of ${report.byCategory.get(selected)?.total ?? 0}`
-              ) : (
-                // Never "0 of N" with no account: `ownership()` reports every
-                // item missing when it has nothing to subtract, and printing
-                // that as a fraction is a claim about an empty collection.
-                `${report.byCategory.get(selected)?.total ?? 0} in the catalog`
+            It leads this pane rather than trailing the band: a caveat about a
+            figure has to be on the same screen as the figure, and here it is
+            the first thing under it rather than the last thing after eight
+            hundred rows.
+          */}
+          {warned && (
+            <div className="flex flex-wrap items-center gap-2">
+              {/* No "no account captured" chip here. The band says exactly that
+                  in a sentence, on the same screen, and this strip is for
+                  provenance the sentence does NOT cover. It was one of eight
+                  restatements of a single absence. */}
+              {hasAccount && !picture.fromLedger && (
+                <Chip tone="warn">the game has not sent item ranks yet — mastery understated</Chip>
               )}
-            </span>
-          }
-        >
-          <div className="rf-staged grid grid-cols-1 gap-[3px] sm:grid-cols-2 xl:grid-cols-3" style={staggerFor(ITEM_CATEGORIES.length)}>
-            {ITEM_CATEGORIES.map((c, i) => (
-              <CategoryRow
-                key={c}
-                category={c}
-                own={report.byCategory.get(c)}
-                selected={c === selected}
-                onSelect={() => setSelected(c)}
-                delay={110 + i * 18}
-                measured={hasAccount}
-              />
+              {rankGap != null && rankGap !== 0 && (
+                <Chip tone="warn">
+                  game reports MR {picture.reportedRank} · {rankGap > 0 ? `${rankGap} rank` : `${-rankGap} rank`}
+                  {Math.abs(rankGap) === 1 ? '' : 's'} {rankGap > 0 ? 'unaccounted for' : 'over-counted'}
+                </Chip>
+              )}
+              {db.missingCategories.length > 0 && (
+                <Chip tone="warn">no catalog for {db.missingCategories.join(', ')}</Chip>
+              )}
+              {/* The consequence, not the pipeline stage: what a player loses by
+                  this is that the item is not counted as owned. */}
+              {report.unmatched.length > 0 && (
+                <Chip tone="warn">
+                  {report.unmatched.length} owned item{report.unmatched.length === 1 ? '' : 's'} the catalog does not
+                  know — not counted as owned
+                </Chip>
+              )}
+            </div>
+          )}
+
+          {/*
+            THREE LEVELS, BECAUSE THERE ARE GENUINELY THREE.
+
+            This was one fold holding ninety words of body copy: the
+            equipment-only caveat, then a paragraph per figure, then the
+            Founder exclusion, then two raw path lists. Opening it replaced
+            three clean numbers with a page of prose and left the reader to
+            work out which paragraph belonged to which figure.
+
+            It is a hierarchy and it now looks like one. The verdict is the
+            three figures in the band. The WORKING is one line - what the three
+            of them count. Each figure's own reasoning is one level in,
+            labelled with the figure's name so there is no matching up to do,
+            and each states its verdict on the closed row so a reader can see
+            which one is measured without opening any of them. The PROVENANCE -
+            the raw item paths behind the two "not in the catalog" caveats - is
+            a level in from that.
+
+            Nothing was cut. Every sentence that was here is still here, under
+            the label it belongs to.
+          */}
+          <Disclosure eyebrow="Provenance" summary="How these are measured" answer={<span>equipment only</span>}>
+            <p className="wf-prose">
+              All three count equipment only. Star chart nodes, junctions and intrinsics pay mastery too and are not in
+              these totals — the mastery panel has those.
+            </p>
+
+            {howMeasured.map((h) => (
+              <Disclosure
+                key={h.label}
+                depth={1}
+                summary={h.label}
+                // The closed row carries the figure's STATE, not the figure:
+                // the number itself is in the band above, and printing it twice
+                // on one screen is the duplication this panel keeps having to
+                // be cured of.
+                answer={<span>{measured ? 'measured' : 'not measured'}</span>}
+              >
+                <div
+                  className="max-w-[76ch] text-[length:var(--text-micro)] leading-relaxed"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  <Clamp lines={2}>{h.text}</Clamp>
+                </div>
+              </Disclosure>
             ))}
+
+            {totals.unobtainableExcluded > 0 && (
+              <p className="wf-note">
+                {totals.unobtainableExcluded} Founder exclusives are removed from both sides of the obtainable figure.
+              </p>
+            )}
+            {report.unmatched.length > 0 && (
+              <Paths label="owned, and not in the catalog" paths={report.unmatched.map((u) => u.itemType)} />
+            )}
+            {picture.unknownTypes.length > 0 && (
+              <Paths label="ranked, and not in the catalog — mastery understated" paths={picture.unknownTypes} />
+            )}
+          </Disclosure>
+
+          {/* ONE COLUMN, because this pane is 17rem wide. The two- and
+              three-column grid these tiles used to sit in was sized for the
+              full window, which is where they used to be. */}
+          <div className="min-w-0">
+            <div className="eyebrow mb-1.5">
+              {/* With no account the row's number is a catalog total rather than
+                  a fraction, so the word the eleven rows used to each carry -
+                  "masterable" - is said once, here, instead of eleven times. */}
+              {hasAccount
+                ? 'By category · ghost mark = ceiling without trading'
+                : 'By category · masterable items in the live catalog'}
+            </div>
+            <div className="rf-staged grid grid-cols-1 gap-[3px]" style={staggerFor(ITEM_CATEGORIES.length)}>
+              {ITEM_CATEGORIES.map((c, i) => (
+                <CategoryRow
+                  key={c}
+                  category={c}
+                  own={report.byCategory.get(c)}
+                  selected={c === selected}
+                  onSelect={() => {
+                    setSelected(c);
+                  }}
+                  delay={110 + i * 18}
+                  measured={hasAccount}
+                />
+              ))}
+            </div>
           </div>
-        </Disclosure>
+        </div>
 
         {/* --------------------------------------------------------------- list */}
         {/*
-          `mo-arrive` rather than `anim-rise` with a 190ms delay. This section
-          is always below the fold, which is the worst place for a time-based
-          entrance: on a frozen document timeline it sits nine pixels low
-          forever, and it fires whether or not anyone has scrolled to it.
-          Scroll-driven progress comes from position, so there is no clock in
-          it to stop, and where the browser has no scroll timelines the rule
-          does nothing at all - which is the right fallback, because the one
-          thing worse than no entrance is a time-based one.
+          `relative` ON THE PANE, AND IT IS LOAD-BEARING.
+
+          The deep-link scroll above walks `offsetTop` up through `offsetParent`
+          until it reaches the scroller it found. A static scroller is never an
+          `offsetParent`, so the walk would run straight past this pane to
+          `main` and return an offset carrying the whole band above it - which
+          is the "correct row, correctly highlighted, nine hundred pixels off
+          screen" failure this file already records once.
+
+          `mo-arrive` rather than `anim-rise` with a delay: scroll-driven
+          progress comes from position, so there is no clock in it to stop on
+          this overlay's frozen document timeline. Now that the pane is beside
+          the band rather than below the fold it is always in view, which holds
+          the rule at its end state - the settled one - which is the right
+          fallback rather than a section stranded nine pixels low forever.
         */}
-        <section className="mo-arrive flex flex-col">
-          {/* One scroller for the whole panel, not two nested ones. The controls
-              stick instead, so the filters stay reachable while the list runs long. */}
+        <section className="mo-arrive relative flex min-h-0 min-w-0 flex-col overflow-y-auto">
+          {/*
+            THE SCROLLER CARRIES NO PADDING OF ITS OWN.
+
+            The header below is sticky, and a scroll container's own padding is
+            not something a sticky child can stick against: the header parked a
+            padding's width down the scrollport and item rows scrolled up
+            through the strip left above it. This pane's inset is the grid's
+            own gap instead, so `top-0` is flush with the top of the visible
+            list and the header - opaque and full-bleed - actually covers what
+            passes under it. The `-mx-7 px-7` that used to fake that is gone
+            along with the padding which made it necessary.
+          */}
           <div
-            // Full-bleed to the scroller's edges (the padding now lives on the
-            // content wrapper, so -mx-7/px-7 is exactly that width) and opaque,
-            // so nothing scrolls through it at either edge.
-            className="sticky top-0 z-20 -mx-7 mb-3 flex flex-wrap items-center gap-3 px-7 py-2.5"
+            className="sticky top-0 z-20 mb-3 flex flex-wrap items-center gap-3 py-2.5"
             style={{ background: HEADER_PLATE }}
           >
             <h2
@@ -1528,20 +1640,23 @@ export default function CollectionPanel() {
               {tiles == null ? `${UNKNOWN} items` : `${shown.length} of ${tiles.length}`}
             </span>
             {/* The list counts every masterable item in the category; the
-                category row above counts what an account can actually obtain,
-                which is that minus the Founder exclusives. Two true numbers one
-                apart read as a contradiction unless the difference is named
-                where it happens — the row calls the same items "Founder-only". */}
+                category row beside it counts what an account can actually
+                obtain, which is that minus the Founder exclusives. Two true
+                numbers one apart read as a contradiction unless the difference
+                is named where it happens — the row calls the same items
+                "Founder-only". */}
             {founderHere > 0 && <span className="eyebrow">incl. {founderHere} Founder-only</span>}
 
             <div className="ml-auto flex flex-wrap items-center gap-2">
               <input
                 type="search"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                }}
                 placeholder="Filter by name"
                 aria-label="Filter items by name"
-                className="mo-focusable numeric w-44 px-3 py-[6px] text-[length:var(--text-micro)] outline-none placeholder:opacity-55"
+                className="mo-focusable numeric w-36 px-3 py-[6px] text-[length:var(--text-micro)] outline-none placeholder:opacity-55"
                 style={{
                   clipPath: CLIP.button,
                   background: 'oklch(0 0 0 / 0.35)',
@@ -1553,11 +1668,21 @@ export default function CollectionPanel() {
                   every item in the catalog and the filter would assert you own
                   nothing. */}
               {hasAccount && (
-                <Toggle on={missingOnly} onClick={() => setMissingOnly((v) => !v)}>
+                <Toggle
+                  on={missingOnly}
+                  onClick={() => {
+                    setMissingOnly((v) => !v);
+                  }}
+                >
                   Missing only
                 </Toggle>
               )}
-              <Toggle on={hideVaulted} onClick={() => setHideVaulted((v) => !v)}>
+              <Toggle
+                on={hideVaulted}
+                onClick={() => {
+                  setHideVaulted((v) => !v);
+                }}
+              >
                 Hide vaulted
               </Toggle>
             </div>
@@ -1624,12 +1749,12 @@ export default function CollectionPanel() {
             </ul>
           )}
         </section>
-
-        {/* No footer. "Totals from the live catalog, not hardcoded" is a promise
-            made to a code reviewer — a player has no model in which the
-            alternative existed — and the heading above the categories already
-            says where the totals come from. */}
       </div>
+
+      {/* No footer. "Totals from the live catalog, not hardcoded" is a promise
+          made to a code reviewer — a player has no model in which the
+          alternative existed — and the heading over the categories already says
+          where the totals come from. */}
     </div>
   );
 }

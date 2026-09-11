@@ -34,9 +34,16 @@ function CostDrill({ solved, head, atLeast }: { solved: Solved; head: string; at
     a reader who has learned what "measured" and "from the game" mean on one
     panel is not taught a second vocabulary on this one.
   */}
+  {/*
+    NO `mt-3`. These two drills used to sit directly under the statement, where
+    a top margin was the only thing separating them from it. They are now the
+    top of the reference column, whose flex parent owns the spacing - and a
+    margin ON TOP of a gap is the two of them added together, which on a panel
+    measured at 1,498 px into a 672 px viewport is a row of the board spent on
+    air. The gap is one declaration in one place and cannot drift per drill.
+  */}
   {solved.costLinks.get(head) !== undefined && (solved.costLinks.get(head)?.length ?? 0) > 0 && (
     <Disclosure
-      className="mt-3"
       accent="var(--color-tenno-300)"
       eyebrow="how long, and how that is known"
       summary={solved.costUnit === 'minutes' ? 'What the minutes are made of' : 'What the count is made of'}
@@ -82,9 +89,10 @@ function CostDrill({ solved, head, atLeast }: { solved: Solved; head: string; at
 function BehindDrill({ solved, head, unit, titleOf }: { solved: Solved; head: string; unit: string; titleOf: (id: string) => string }) {
   return (
     <>
+  {/* No `mt-3`, for the reason the cost drill above has none: the column that
+      holds these owns their spacing now, and a margin plus a gap is both. */}
   {(solved.behind.get(head)?.length ?? 0) > 0 && (
     <Disclosure
-      className="mt-3"
       accent="var(--color-tenno-300)"
       eyebrow="what stands behind it"
       summary="Which objectives this one opens"

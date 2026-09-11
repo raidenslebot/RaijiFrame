@@ -8,7 +8,7 @@
  */
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
-import { parseModsJson, MODS_URL } from '../src/data/moddb.ts';
+import { parseModsJson } from '../src/data/moddb.ts';
 import { parseWfcd } from '../src/data/itemdb.ts';
 import { plan, search, slotPlanFor, type Candidate } from '../src/data/optimise.ts';
 

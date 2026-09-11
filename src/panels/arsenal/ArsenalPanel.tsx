@@ -56,12 +56,41 @@
  * and how much Forma is buried in it. The catalog half is the same four levels
  * with the account facts absent instead of assumed.
  *
+ *   4. TWELVE EM DASHES ON THE FIRST SCREEN, WHICH IS THE MOST IN THE APP.
+ *      Driven through a real browser at 1280x720 with nothing read, the
+ *      cold-launch panel — the state the owner actually sees — printed a dash in
+ *      the answer column of every catalog row, and the first gear type opens by
+ *      default with CAP rows in it. Twelve rows, each ending in the same mark.
+ *
+ *      The convention line above them was honest and did not help: "every dash
+ *      is unread, not zero" makes each dash truthful and does nothing about
+ *      there being twelve of it, and a screen of them reads as a broken panel
+ *      whatever the footnote says. One fact stated twelve times is eleven
+ *      restatements, which is defect 3 again in a different costume.
+ *
+ *      So the dash is gone from the row and the fact moved up to the banner,
+ *      which now NAMES the readouts that are unread — rank, Forma, fittings —
+ *      with all nine of them and what fills each one press inside it. Nothing is
+ *      substituted for the dash: a zero would be a claim, and a catalog row
+ *      simply has no account column now.
+ *
  * ABSENT IS NEVER ZERO, AND IT IS STATED ONCE
  * ───────────────────────────────────────────
  * Rank, Forma and reactors are properties of your items, not of the game. With
- * no account they are unread — never rendered as a zero, and never explained
- * per row either: the banner declares the convention once for the whole screen,
- * the way `FocusPanel` does with "every dash is unread, not zero".
+ * no account they are unread — never rendered as a zero, and never printed as a
+ * placeholder per row either. The banner states the absence once for the whole
+ * screen and names what is in it, which is the stronger form of what
+ * `FocusPanel` does with "every dash is unread, not zero": there is no dash left
+ * on this screen for a convention to govern.
+ *
+ * THE SHAPE: PINNED HEAD, ONE SCROLLING PANE, PINNED FOOT
+ * ──────────────────────────────────────────────────────
+ * The panel root is a fixed-height grid, not a growing column. What the panel
+ * TELLS you — the refusal or the backlog hero, and the controls — is pinned at
+ * the top; what you LOOK UP in it — the tree, which is thousands of rows and is
+ * meant to be long — scrolls inside its own pane; what it CANNOT know is pinned
+ * at the bottom where it is always one press away instead of a thousand rows
+ * down. The page itself never scrolls.
  *
  * PRESENTATION
  * ────────────
@@ -745,9 +774,31 @@ function CatalogRow({ entry }: { entry: ItemDbEntry }) {
               no mastery
             </span>
           )}
-          <span className="numeric" style={{ color: 'var(--text-muted)' }}>
-            —
-          </span>
+          {/*
+            THERE IS NO ACCOUNT COLUMN HERE ANY MORE, AND THE DASH THAT WAS IS
+            THE DEFECT THIS COMMENT RECORDS.
+
+            This row used to end in an em dash standing in for the account facts
+            a catalog row cannot have — rank, Forma, fittings. Measured in a real
+            browser at 1280x720 with nothing read, the cold-launch panel printed
+            that dash TWELVE times, the most of any panel in the app: the first
+            gear type opens by default and lists CAP rows, so the reader's first
+            screen was twelve rows each terminating in the same punctuation mark.
+
+            Twelve dashes are not twelve facts. They are ONE fact — "your own
+            gear has not been read" — restated once per row in a costume, and a
+            screen of them is precisely the "most of the data is incorrect or
+            empty" reading this panel kept getting. The convention line above
+            them ("every dash is unread, not zero") made each dash honest and did
+            nothing about there being twelve of it.
+
+            The fact is not deleted and it is not substituted with a zero, which
+            would be a claim rather than an absence. It is stated ONCE, at the
+            top of the panel, where `AccountBanner` names which readouts are
+            unread and what fills them — with the full per-readout list one press
+            inside it. A row here now carries only what the export actually
+            knows, and a row with nothing notable to say says nothing.
+          */}
         </span>
       }
     >
@@ -1011,6 +1062,36 @@ function CatalogTree({ db, query }: { db: ItemDb; query: string }) {
 // ---------------------------------------------------------------------------
 
 /**
+ * EVERY ACCOUNT READOUT THIS PANEL DRAWS, AND WHAT WOULD FILL EACH ONE.
+ *
+ * This list is the per-row detail that the twelve em dashes used to carry, one
+ * dash at a time, on the twelve rows of the first open gear type. It is a
+ * module constant rather than a literal in the body because it is a fixed
+ * statement about the panel, not about any render: every entry names a readout
+ * that `ItemRow` actually draws when there IS an account — `RankCell`'s rank and
+ * cap, the Forma count beside it, `RemainingCell`, and the five `FITTINGS`
+ * glyphs — so nothing here is invented for the empty state.
+ *
+ * Order is the order those readouts appear on a row, left to right, so a reader
+ * who has seen the panel with an account can map each line back to the column it
+ * describes.
+ */
+const UNREAD_READOUTS: readonly Fact[] = [
+  { label: 'Rank and cap', value: 'the rank on your own copy, and how far its Forma has lifted the ceiling' },
+  { label: 'Forma', value: 'how many polarisations are in your copy' },
+  { label: 'Still owed', value: 'the ranks, or the Forma, between your copy and its maximum' },
+  { label: 'Reactor / catalyst', value: 'whether the mod capacity is doubled on your copy' },
+  { label: 'Exilus adapter', value: 'whether the utility slot is open on your copy' },
+  { label: 'Incarnon Genesis', value: 'whether a Genesis is installed on your copy' },
+  { label: 'Arcane slot', value: 'whether the arcane slot is unlocked on your copy' },
+  { label: 'Gilding', value: 'whether a modular weapon of yours has been gilded' },
+  {
+    label: 'Whether you own it',
+    value: 'the catalog below is every item the game contains, owned or not — which of them are yours is an account fact',
+  },
+];
+
+/**
  * The panel WITHOUT an account, and the ONE place the absence is stated.
  *
  * This used to be the whole panel: a centred empty state that replaced every
@@ -1021,9 +1102,16 @@ function CatalogTree({ db, query }: { db: ItemDb; query: string }) {
  * here until Warframe has run once" was true when it replaced the panel and is a
  * lie above a catalog.
  *
- * The answer on the summary row is the convention for the whole screen, declared
- * once: `FocusPanel` ships the same line, and it is what stops a thousand
- * catalog rows each having to explain their own dash.
+ * THIS BANNER IS NOW THE WHOLE OF THE ABSENCE, AND THAT IS THE POINT.
+ * ──────────────────────────────────────────────────────────────────
+ * It used to declare a CONVENTION — "every dash is unread, not zero" — for the
+ * twelve dashes the catalog rows below were printing. That was the wrong job:
+ * the convention made each dash honest, and a reader still met a first screen of
+ * twelve rows all terminating in a punctuation mark. The dashes are gone, so
+ * this row states the absence itself instead of annotating a symbol: the summary
+ * says the gear is unread, the answer NAMES which readouts, and the body lists
+ * all nine of them with what fills each — the per-row detail, once, one press
+ * down, instead of once per row in front of everybody.
  */
 function AccountBanner() {
   const running = useAccount((s) => s.gameRunning);
@@ -1056,13 +1144,49 @@ function AccountBanner() {
       <Disclosure
         summary={title}
         eyebrow="account"
-        answer="every dash is unread, not zero"
+        /*
+         * THE ANSWER NAMES THE READOUTS, IT NO LONGER EXPLAINS A PUNCTUATION
+         * MARK.
+         *
+         * This line used to read "every dash is unread, not zero". That was a
+         * correct convention and it solved the wrong half of the problem: it
+         * made each of the twelve dashes below honest without making there be
+         * fewer of them, so the screen still read as a panel full of nothing.
+         * The dashes are gone (see `CatalogRow`), so the convention has nothing
+         * left to govern; what a reader needs instead is the one sentence the
+         * twelve rows were collectively failing to say — WHICH figures are
+         * missing. The nine of them are named in full one press below.
+         *
+         * Not a count. "9 unread" would tell the player nothing they can act on;
+         * the names are what says whether the thing they came to look up is
+         * among them.
+         */
+        answer="rank, forma and fittings unread"
         accent="var(--color-orokin-300)"
       >
         {/* The one refusal on a no-account screen, so it is set at reading size
             rather than at the caption size a footnote would get. */}
         <div className="text-[length:var(--text-body)] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
           <Clamp lines={2}>{detail}</Clamp>
+        </div>
+
+        {/*
+          THE PER-ROW DETAIL, ONCE, INSTEAD OF ONCE PER ROW.
+
+          Every line here was previously implied by a dash on a catalog row and
+          explained by nothing. Stating it in one place costs nine lines behind a
+          press; stating it per row cost twelve dashes in front of one, on the
+          first screen, before the reader had asked anything.
+
+          `columns={1}` because the values are sentences: at the default of two
+          the label and its sentence end up at opposite ends of a wide row and
+          stop reading as a pair.
+        */}
+        <div className="mt-3">
+          <p className="wf-note">
+            What is read off your own gear, and so stays unread until Warframe has run once with RaijiFrame open:
+          </p>
+          <Facts columns={1} items={UNREAD_READOUTS} />
         </div>
       </Disclosure>
     </section>
@@ -1217,12 +1341,38 @@ export default function ArsenalPanel() {
   const remaining = totals.masterable - totals.mastered;
 
   return (
-    // The panel is the one scroller. A tree given `flex-1 min-h-0` here was
-    // scrolling inside whatever sliver the hero left over — 122px at the
-    // overlay's minimum height — while the panel itself had room.
-    <div className="flex h-full flex-col gap-5 overflow-y-auto p-7">
-      {/* The refusal, and the one statement of what a dash means on this screen.
-          Above the catalog rather than instead of it. */}
+    /*
+     * ONE SCREEN: A PINNED HEAD, ONE SCROLLING REFERENCE PANE, A PINNED FOOT.
+     *
+     * WHAT THIS REPLACED. The panel root was `flex h-full flex-col overflow-y-auto`
+     * — the panel itself was the one scroller, and everything on it was a sibling
+     * in one growing column. That measured as fitting, at 1.00 screens with
+     * nothing read, and it fits by luck rather than by construction: open the
+     * provenance fold, or land on an account with a hero and four gear types
+     * expanded, and the head scrolls away along with the answer it carries.
+     *
+     * The shape is now the one the Platinum panel already proved. The head (the
+     * refusal or the hero, the section title, the filter) and the foot (what the
+     * panel cannot know) are pinned rows of a fixed-height grid; the TREE is
+     * reference material — thousands of catalog rows, legitimately long — and it
+     * scrolls inside its own pane. The page cannot scroll, so nothing the reader
+     * is looking up can push what they are being told off the top of the screen.
+     *
+     * `min-h-0` is on every row of the chain, and leaving one out is the failure
+     * that has no symptom: a grid child defaults to `min-height: auto` and
+     * refuses to shrink below its content, so one omission anywhere and the whole
+     * thing grows back to a scrolling column with nothing on screen saying so.
+     * `minmax(0, 1fr)` is that same guarantee written into the track.
+     */
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5">
+      {/* ---- pinned head ----------------------------------------------------
+          The state of the account and the controls that narrow the pane below.
+          Its own flex column rather than three grid rows, because these three
+          are one thing — "what you are looking at, and how to cut it" — and
+          giving each its own track would let the grid stretch them apart. */}
+      <div className="flex min-w-0 flex-col gap-4">
+      {/* The refusal, and the one statement of which readouts are unread on this
+          screen. Above the catalog rather than instead of it. */}
       {!hasAccount && <AccountBanner />}
 
       {/* ---- headline ------------------------------------------------------
@@ -1351,7 +1501,7 @@ export default function ArsenalPanel() {
           "every item in the game, whether you own it or not" — the banner's own
           title ninety pixels above, reworded. The same defect this rebuild
           exists to remove, reintroduced to balance a flex row. */}
-      <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-3">
         {hasAccount && (
           <Tabs
             className="mr-auto"
@@ -1387,6 +1537,7 @@ export default function ArsenalPanel() {
           }}
         />
       </div>
+      </div>
 
       {/* ---- the tree ------------------------------------------------------
           SCROLL-DRIVEN, NOT CLOCK-DRIVEN, FROM HERE DOWN.
@@ -1398,8 +1549,17 @@ export default function ArsenalPanel() {
           its progress from scroll POSITION, so the tree settles as it comes into
           view and there is no clock in it to stop. Where the browser has no
           scroll timelines the rule does nothing at all, which is the correct
-          fallback: no entrance beats a time-based one. */}
-      <div className="mo-arrive shrink-0">
+          fallback: no entrance beats a time-based one.
+
+          THE PANE, NOT THE PAGE, IS THE SCROLLER FROM HERE DOWN. This is the
+          reference half of the panel — a gear type at a time, twelve rows deep,
+          eleven or twenty-seven groups of them — and it is the only thing on
+          this screen that is allowed to be longer than the window. The scroll
+          lives on the outer div so `mo-arrive` keeps its own element: the
+          entrance is a transform, and putting a transform on a scroll container
+          makes it the containing block for everything inside it. */}
+      <div className="min-h-0 overflow-y-auto pr-1">
+      <div className="mo-arrive">
         {hasAccount ? (
           <ArsenalTree
             rows={visible}
@@ -1429,6 +1589,7 @@ export default function ArsenalPanel() {
           <CatalogTree db={db} query={query} />
         )}
       </div>
+      </div>
 
       {/* ---- provenance ----------------------------------------------------
           The panel says what it cannot know. A completionism tool that hides its
@@ -1441,8 +1602,18 @@ export default function ArsenalPanel() {
           they do not believe. So the strip is one row that states the one fact a
           reader acts on - how much of the catalog is known - with the caveats a
           press below it. Nothing is deleted; the detail is the honesty, and it
-          moved one level down. */}
-      <div className="mo-arrive shrink-0">
+          moved one level down.
+
+          PINNED, NOT TRAILING. It used to be the last sibling in the scrolling
+          column, which meant the one row saying what the panel cannot know was
+          the one row you had to scroll past a thousand catalog items to find.
+          As the grid's third track it is always the bottom line of the screen,
+          and opening it takes height from the pane above rather than from the
+          window. `mo-arrive` is gone with the scroll it was reading: a
+          scroll-driven entrance on an element that is permanently in view is a
+          class that resolves to its end state and does nothing, which is worse
+          than no class because it reads as motion that exists. */}
+      <div className="min-w-0">
         <Disclosure
           eyebrow="What this panel cannot know"
           summary="Provenance"

@@ -257,12 +257,22 @@ window.__installPanelStates = ({ IDEAL, DEMO, FRAME_LADDER }) => {
           window.__exN = (opts.from ?? 0) + n;
           const box = doc.querySelector('.am-aside');
           const top = box.getBoundingClientRect().top;
-          let need = 0;
+          /*
+           * `need` USED TO BE ACCUMULATED HERE AND NEVER READ.
+           *
+           * It summed what every row REQUIRES - `scrollHeight` plus its margins
+           * - which is the honest figure for a column whose children can clip.
+           * Two measurements below replaced it and both are consumed: `height`
+           * (the last child's bottom against the box) catches the COLUMN
+           * overflowing, and `crushed` catches any single row whose content
+           * exceeds its own box, which is the case `scrollHeight` was there to
+           * see. Keeping a third total that nothing compares against is the
+           * shape of defect this repo has already recorded twice - a correct
+           * computation that reaches no consumer, and therefore proves nothing.
+           */
           const crushed = [];
           for (const el of box.children) {
-            const cs = frame.contentWindow.getComputedStyle(el);
             const r = el.getBoundingClientRect();
-            need += Math.max(el.scrollHeight, r.height) + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
             /*
              * THE ASSUMPTION LIST IS THE ONE THING ALLOWED TO CLIP, and it was
              * the first thing this instrument reported: 384 states with

@@ -95,6 +95,33 @@ This is the worst one and it has happened repeatedly.
   disabling one of that file's own assertions. **Read the assertion count, not the last line: a
   healthy full run is 815 `ok` lines.**
 
+### A2. Measuring only the easy shape
+
+Every panel has two shapes — with an account read and without — and until this session there was
+**no way to load an account in a browser at all**, so every measurement, screenshot and design
+judgement made outside Overwolf had been about the empty one.
+
+Measured at 1280×720, page height in screens:
+
+| panel | no account | real account |
+|---|---|---|
+| **syndicates** | **1.00** | **4.34** |
+| progression | 2.38 | 3.20 |
+| resources | 2.06 | 2.69 |
+| nemesis | 3.89 | 3.94 |
+| focus | 1.97 | **1.73** (its em dashes became data) |
+
+`syndicates` was the **best-behaved panel in the app** cold and the **worst** loaded, because its
+length is a function of how many affiliations the player has. A work list built from the cold
+measurement ranked it fifteenth of fifteen and would never have reached it.
+
+`src/app/desktop.tsx` now installs a dev-only handle (stripped from the Overwolf build by
+`import.meta.env.DEV`):
+
+```js
+await window.__rf.account(await (await fetch('/__review-acct.json')).json())
+```
+
 ### B. Not looking at the thing I built
 
 The owner has sent screenshots twice with *"still a complete disaster visually"* and *"what is
@@ -294,6 +321,13 @@ Measured this session:
 
 ### How to build anything visual
 
+19b. **Measure both shapes: with an account and without.** The cold state is not the worst case
+   and reporting only it hid the worst panel in the app. Load the real capture with
+   `await window.__rf.account(await (await fetch('/__review-acct.json')).json())` and
+   `__rf.clear()` to go back.
+19c. **Never measure the browser while a fan-out is writing.** Agents running `npm run build`
+   restart the dev server underneath you and the port changes; your measurement is then of a
+   moving target. Measure before the fan-out and after it, never during.
 20. **Render it and look at the picture.** Every time. `preview_start` the Vite config
     (`.claude/launch.json`, name `codex-lab`, port 5273) and drive it with the Playwright MCP —
     the Browser pane times out on the overlay artboard.
@@ -420,8 +454,16 @@ Current state: **815 assertions, 0 failures**; lint clean; `npm run build` ~400 
   `the-heavy-attack-rate-trap`).
 - **The slot solver has never seen a mixed-polarity build dump.** Capture is armed via
   `npm run dump`; every dump so far is `AP_UNIVERSAL ×8`.
-- **≥36.4 % of modding-screen opens have no `upgradeSlot` line** and therefore no category for
-  their whole life.
+- **A visit with no `upgradeSlot` line never learns its category**, so it says "another slot" for
+  its whole life and produces no plan. The cause is located: `categoryOpen` (src/data/slot-learning.ts:186)
+  returns null when both `slot` and `unreadSlot` are null, and `lessonFrom` (:236) refuses to
+  teach anything without an index - so a placed mod whose compatibility class names exactly one
+  arsenal row (the `UNAMBIGUOUS` set, which already excludes the four weapon classes for the
+  mis-learn reason documented there) is thrown away. That class could name THIS VISIT's category
+  without teaching an index, which is a strictly additive fix in a case that currently has
+  nothing. **Frequency unmeasured**: the figure of record is >=36.4 % of opens, and
+  `npm run opens` on the current machine reports **0 card-screen opens** because the log has
+  rotated since. Do not implement it against the old number - re-measure first.
 - **Live rescore** is feasible for 87 % of placements and is not implemented.
 - **Re-sourcing the catalogue from DE** is blocked on the missing `type` field.
 

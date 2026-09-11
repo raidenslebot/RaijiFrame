@@ -348,9 +348,22 @@ function LineIndex({
             summary={line.planet}
             answer={
               <span className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-                <span style={{ color: measured ? 'var(--color-signal-good)' : 'var(--text-ghost)' }}>
-                  {measured ? String(clearedHere) : '—'} of {String(line.stations.length)} cleared
-                </span>
+                {/*
+                  THIRTY DASHES IS A WALL, EVEN WHEN EACH ONE IS HONEST.
+                  ————————————————————————————————————————————
+                  This row used to read "— of 12 cleared" on every line with no
+                  account read: thirty rows whose only content was the same
+                  missing fact, restated thirty times, in the pane that is
+                  supposed to carry what the diagram cannot. Nothing is lost by
+                  dropping it - the denominator is the station count, which the
+                  eyebrow on this same row already prints - and the one place
+                  that says the account is unread is the strip at the top.
+                */}
+                {measured && (
+                  <span style={{ color: 'var(--color-signal-good)' }}>
+                    {String(clearedHere)} of {String(line.stations.length)} cleared
+                  </span>
+                )}
                 {band !== null && <span style={{ color: 'var(--text-faint)' }}>levels {band}</span>}
                 {measured && openHere > 0 && (
                   <span style={{ color: 'var(--color-tenno-300)' }}>{String(openHere)} open now</span>
@@ -621,256 +634,338 @@ export default function StarChartPanel() {
   ).size;
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      {/* The objective used to sit in the readout strip as a fourth Readout,
-          set at the same --text-lead as Cleared/Open now/Regions - a stat
-          beside three other stats. But it is not a measurement, it is an
-          instruction (go here next), and disguising it as a fourth count
-          buried the one line on this screen that says what to do. It gets
-          its own line, above the counts, at title size. */}
-      {/*
-        AND IT IS ONLY AN INSTRUCTION IF THERE IS AN ACCOUNT BEHIND IT.
-        With nothing read, `recommend` runs against an empty picture and returns
-        the first mission in the game - so the panel said "go here next: E Prime,
-        you can start it now" to a player who may have cleared the whole chart
-        years ago. The three counts beside it already say they need the account;
-        the line that tells somebody what to do cannot be the one that guesses.
-      */}
-      {objective && cleared !== null && (
-        <div className="px-5 pt-4">
-          <p className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
-            Go here next
-          </p>
-          <div className="mt-1 flex flex-wrap items-baseline gap-3">
-            <h2
-              className="font-[family-name:var(--font-title)] text-[length:var(--text-title)] leading-none tracking-[0.04em]"
-              style={{ color: 'var(--color-orokin-200)' }}
+    /*
+     * ONE SCREEN, TWO PANES, AND NOTHING HANGING OFF THE RIGHT EDGE.
+     * ————————————————————————————————————————————
+     * THE MEASUREMENT THAT FORCED THIS. Driven through a real browser at
+     * 1280x720 with no account read, this panel scrolled SIDEWAYS by 172px.
+     * One declaration did it: the index beside the diagram asked for
+     * `min-w-[24rem]` inside a flex row whose other child is the 836px diagram,
+     * and the diagram is `shrink-0` by necessity - its octilinear geometry is
+     * asserted by `scripts/check-transit.ts` and must not be squeezed. 836 + 28
+     * + 384 does not fit in the ~1,056px this panel is given at 720p, so the
+     * index hung 172px past the window. Sideways overflow is the one failure a
+     * screenshot cannot show: the page looks finished and a third of the index
+     * is simply not there.
+     *
+     * The floor existed for a real reason - a `Disclosure` is a
+     * `container-type: inline-size` element and contributes zero max-content,
+     * so a shrink-to-fit parent collapses it to one letter per line (the trap
+     * documented on `.rf-disc`). A GRID TRACK answers that without a floor: a
+     * `minmax(0, 5fr)` column is a definite size for the disclosures to lay out
+     * against AND is allowed to be narrower than its content wants, which is
+     * exactly the pair of properties a flex basis could not give at once.
+     *
+     * So the shape is the one the Platinum panel already shipped: a fixed-height
+     * grid, a header that is pinned and never scrolls away, two panes that
+     * scroll inside themselves, and a page that does not scroll at all.
+     * `min-h-0` on every row and column of the chain is what makes that true and
+     * is the easy thing to leave out - a grid child defaults to
+     * `min-height: auto` and refuses to shrink below its content, so one
+     * omission anywhere and the page grows again with no visible sign.
+     *
+     * The diagram keeps its natural size and its own pane scrolls to it, which
+     * is what it already did: 1,460px tall was never going to fit a 720p window,
+     * and a transit map scaled to fit is a column of grey dots.
+     */
+    <div
+      className={`grid h-full min-h-0 gap-4 p-5 ${node ? 'grid-rows-[auto_minmax(0,1fr)_auto]' : 'grid-rows-[auto_minmax(0,1fr)]'}`}
+    >
+      {/* ROW ONE: pinned. The instruction, the counts it is measured against,
+          and the control that re-inks the diagram. None of it scrolls away,
+          because all three are the things the panes below are read against. */}
+      <div className="flex min-w-0 flex-col gap-3">
+        {/* The objective used to sit in the readout strip as a fourth Readout,
+            set at the same --text-lead as Cleared/Open now/Regions - a stat
+            beside three other stats. But it is not a measurement, it is an
+            instruction (go here next), and disguising it as a fourth count
+            buried the one line on this screen that says what to do. It gets
+            its own line, above the counts, at title size. */}
+        {/*
+          AND IT IS ONLY AN INSTRUCTION IF THERE IS AN ACCOUNT BEHIND IT.
+          With nothing read, `recommend` runs against an empty picture and returns
+          the first mission in the game - so the panel said "go here next: E Prime,
+          you can start it now" to a player who may have cleared the whole chart
+          years ago. The three counts beside it already say they need the account;
+          the line that tells somebody what to do cannot be the one that guesses.
+        */}
+        {objective && cleared !== null && (
+          <div>
+            <p className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+              Go here next
+            </p>
+            <div className="mt-1 flex flex-wrap items-baseline gap-3">
+              <h2
+                className="font-[family-name:var(--font-title)] text-[length:var(--text-title)] leading-none tracking-[0.04em]"
+                style={{ color: 'var(--color-orokin-200)' }}
+              >
+                {objective.title}
+              </h2>
+              <span className="eyebrow" style={{ color: 'var(--text-faint)' }}>
+                {route.length > 1
+                  ? `${String(route.length - 1)} station${route.length === 2 ? '' : 's'} away`
+                  : 'you can start it now'}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* The readouts lead, because the number a glance should learn is how much
+            of the system is behind you and how much is open right now. */}
+        <div className="flex flex-wrap items-start gap-x-7 gap-y-3">
+          {/*
+            THREE DASHES ARE NOT THREE READOUTS.
+            ————————————————————————————————————————————
+            Measured at 1280x720 with no account read: the first thing on this
+            screen was a row of three em dashes under three labels, and a
+            paragraph below them explaining that all three were unread. Four
+            elements, one fact. A reader learns nothing from the SHAPE of an
+            unknown number, so reserving the strip for it spends the top of the
+            screen on a form nobody can fill in.
+
+            So the strip appears once there is something in it, and until then
+            the same width carries the one sentence that says why - plus what the
+            diagram DOES know without an account, which is not nothing: the
+            station count and the number of lines are facts about the chart. What
+            each readout will say is one press away rather than three dashes
+            away, and the hover hints that were `title` attributes nobody could
+            discover are now written out there.
+          */}
+          {cleared !== null ? (
+            <>
+              <Readout
+                label="Cleared"
+                value={`${String(cleared)} / ${String(total)}`}
+                sub="stations on this diagram"
+              />
+              {/*
+                Both of these used to print `frontierIds.size` / `openRegions`
+                unconditionally, even with `inventory` null. `frontier()` walks
+                star-chart predecessors against `picture.clearedNodes`, and with
+                no account that set is simply empty (not "unknown") - so it
+                happily returned every prerequisite-free station as open, and a
+                count of the regions holding them. That is a confident number
+                computed from a premise ("nothing is cleared") that is not the
+                truth ("we have not read your account"). All three now live
+                inside one `cleared !== null` branch rather than each carrying
+                its own guard, so they cannot drift apart again: the strip is
+                either three measurements or it is not on the screen.
+              */}
+              <Readout
+                label="Open now"
+                value={String(frontierIds.size)}
+                tone="var(--color-tenno-300)"
+                sub={frontierIds.size === 1 ? 'mission you can start' : 'missions you can start'}
+                hint="Stations whose prerequisite you have cleared and whose own stated requirement the engine could confirm."
+              />
+              <Readout
+                label="Regions"
+                value={String(openRegions)}
+                sub={openRegions === 1 ? 'holds one of them' : 'hold one of them'}
+              />
+            </>
+          ) : (
+            /*
+              THE ONE PLACE THIS SCREEN SAYS IT HAS NOT READ THE ACCOUNT.
+
+              There were four: three sub-lines under the readouts and a fourth,
+              longer, where the filter goes. Four statements of one fact is the
+              shape that turns an honest panel into wallpaper - the eye stops on
+              the third copy and reads none of them.
+
+              So the convention is stated once, for the whole screen, and every
+              dash below it - in the line index, in a station's prerequisites - is
+              covered by it. Nothing is softened: it still says the dash is
+              unknown rather than none, and it still says what would settle it.
+            */
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+              <p className="wf-prose" style={{ color: 'var(--color-signal-warn)' }}>
+                Nothing has been read from your account yet, so this screen cannot say what you have cleared — that comes
+                from the game, and running Warframe once fills it in. The {String(total)} stations on this diagram, their
+                missions and their gates are facts about the chart and are drawn either way.
+              </p>
+              <Disclosure
+                accent="var(--color-signal-warn)"
+                eyebrow="what fills in"
+                summary="Three counts, once the game has run"
+                answer="what each one measures"
+              >
+                <ul className="flex flex-col gap-1.5">
+                  {[
+                    {
+                      label: 'Cleared',
+                      text: `How many of the ${String(total)} stations on this diagram are behind you.`,
+                    },
+                    {
+                      label: 'Open now',
+                      text: 'Missions you can start: stations whose prerequisite you have cleared and whose own stated requirement the engine could confirm.',
+                    },
+                    { label: 'Regions', text: 'How many of the lines below hold one of those missions.' },
+                  ].map((r) => (
+                    <li key={r.label} className="flex min-w-0 flex-wrap items-baseline gap-x-3">
+                      <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+                        {r.label}
+                      </span>
+                      <span className="wf-note min-w-0">{r.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Disclosure>
+            </div>
+          )}
+          <div
+            /*
+             * `w-[34ch] shrink-0`, AND THE MISSING FLOOR WAS THE UGLIEST THING ON
+             * THIS SCREEN.
+             * ————————————————————————————————————————————
+             * This was `ml-auto max-w-[36ch] self-center`: a maximum with no
+             * minimum, in a flex row. Once the three readouts and the gaps had
+             * taken the width, flex shrank this item to ZERO and its text wrapped
+             * one character per line - measured in the running app at width 0,
+             * height 524. So it was invisible as a panel, ran off the right edge
+             * as a vertical column of single letters, AND inflated the header row
+             * to 548px, which is where the enormous empty band above the diagram
+             * came from and why the 1460px chart was left 250px to draw in.
+             *
+             * One missing width floor produced the void, the squeeze and the
+             * stray glyphs at once. A definite basis with `shrink-0` lets the
+             * row wrap it onto its own line when the readouts fill the width,
+             * which is what it should have done in the first place.
+             */
+            className="mo-field mo-sheen ml-auto w-[34ch] max-w-full shrink-0 self-center"
+          >
+            {/*
+              The one sentence that says what KIND of drawing this is. It is
+              orientation, worth reading once and never worth re-reading, so it
+              states its claim on the closed row and keeps the explanation one
+              press down instead of parking three lines beside the counts.
+            */}
+            <Disclosure
+              summary="Not a map of space"
+              eyebrow="how to read this"
+              answer="what it does encode"
+              accent="var(--color-tenno-300)"
             >
-              {objective.title}
-            </h2>
-            <span className="eyebrow" style={{ color: 'var(--text-faint)' }}>
-              {route.length > 1
-                ? `${String(route.length - 1)} station${route.length === 2 ? '' : 's'} away`
-                : 'you can start it now'}
-            </span>
+              <div className="text-[length:var(--text-micro)] leading-snug" style={{ color: 'var(--text-faint)' }}>
+                <Clamp lines={2}>
+                  Distance and position carry no meaning here — only what connects to what, and where you have got to.
+                </Clamp>
+              </div>
+            </Disclosure>
           </div>
         </div>
-      )}
 
-      {/* The readouts lead, because the number a glance should learn is how much
-          of the system is behind you and how much is open right now. */}
-      <div className={`flex flex-wrap items-start gap-7 px-5 pb-3 ${objective ? 'pt-3' : 'pt-4'}`}>
-        <Readout
-          label="Cleared"
-          value={cleared === null ? null : `${String(cleared)} / ${String(total)}`}
-          sub="stations on this diagram"
-        />
+        {/* The sentence that used to sit here - "every dash on this screen is
+            unread, not zero" - now stands in the readout strip's own place,
+            because that is where the dashes were. One fact, one element, one
+            position on the screen. */}
+
         {/*
-          Both of these used to print `frontierIds.size` / `openRegions`
-          unconditionally, even with `inventory` null. `frontier()` walks
-          star-chart predecessors against `picture.clearedNodes`, and with no
-          account that set is simply empty (not "unknown") - so it happily
-          returns every prerequisite-free station as open and a count of the
-          regions holding them. That is a confident number computed from a
-          premise ("nothing is cleared") that is not the truth ("we have not
-          read your account"), and it disagreed with Cleared right next to it,
-          which already shows a dash for the same missing account. Gated on
-          the same `cleared === null` check as Cleared, so the three agree.
+          THE FOCUS CONTROL.
 
-          THE SUB-LINE NO LONGER CARRIES THE APOLOGY, AND THAT IS THE FIX.
-          Each of these three said "needs your account" under its dash, and the
-          filter below said it a fourth time in a longer sentence: one screen,
-          four statements of one fact. The sub-line says what the number IS, in
-          every state, and the single line under the row says once that the
-          dashes are unread. `FocusPanel` shipped that shape today.
+          Offered only once there is an account behind it: "open now" and "not
+          open yet" are both claims about the player, and with nothing read every
+          station would fall into the locked band — a filter answering entirely
+          from our own missing data. The line above has already said why it is
+          missing, so the row simply does not appear rather than repeating it.
         */}
-        <Readout
-          label="Open now"
-          value={cleared === null ? null : String(frontierIds.size)}
-          tone="var(--color-tenno-300)"
-          sub={frontierIds.size === 1 && cleared !== null ? 'mission you can start' : 'missions you can start'}
-          hint="Stations whose prerequisite you have cleared and whose own stated requirement the engine could confirm."
-        />
-        <Readout
-          label="Regions"
-          value={cleared === null ? null : String(openRegions)}
-          sub={openRegions === 1 && cleared !== null ? 'holds one of them' : 'hold one of them'}
-        />
-        <div
-          /*
-           * `w-[34ch] shrink-0`, AND THE MISSING FLOOR WAS THE UGLIEST THING ON
-           * THIS SCREEN.
-           * ————————————————————————————————————————————
-           * This was `ml-auto max-w-[36ch] self-center`: a maximum with no
-           * minimum, in a flex row. Once the three readouts and the gaps had
-           * taken the width, flex shrank this item to ZERO and its text wrapped
-           * one character per line - measured in the running app at width 0,
-           * height 524. So it was invisible as a panel, ran off the right edge
-           * as a vertical column of single letters, AND inflated the header row
-           * to 548px, which is where the enormous empty band above the diagram
-           * came from and why the 1460px chart was left 250px to draw in.
-           *
-           * One missing width floor produced the void, the squeeze and the
-           * stray glyphs at once. A definite basis with `shrink-0` lets the
-           * row wrap it onto its own line when the readouts fill the width,
-           * which is what it should have done in the first place.
-           */
-          className="mo-field mo-sheen ml-auto w-[34ch] max-w-full shrink-0 self-center"
-        >
-          {/*
-            The one sentence that says what KIND of drawing this is. It is
-            orientation, worth reading once and never worth re-reading, so it
-            states its claim on the closed row and keeps the explanation one
-            press down instead of parking three lines beside the counts.
-          */}
-          <Disclosure
-            summary="Not a map of space"
-            eyebrow="how to read this"
-            answer="what it does encode"
-            accent="var(--color-tenno-300)"
-          >
-            <div className="text-[length:var(--text-micro)] leading-snug" style={{ color: 'var(--text-faint)' }}>
-              <Clamp lines={2}>
-                Distance and position carry no meaning here — only what connects to what, and where you have got to.
-              </Clamp>
-            </div>
-          </Disclosure>
-        </div>
+        {cleared !== null && (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+              Bring forward
+            </span>
+            <Segmented
+              label="Which stations to bring forward"
+              value={focus ?? 'all'}
+              onChange={(id) => {
+                setFocus(id === 'all' ? null : (id as ChartFocus));
+              }}
+              accent="var(--color-tenno-300)"
+              options={[
+                { id: 'all', label: 'Everything', badge: map.stations.size, hint: 'The whole system at full strength' },
+                {
+                  id: 'available',
+                  label: 'Open now',
+                  badge: frontierIds.size,
+                  hint: 'Stations you can start, plus the one to go to next',
+                },
+                { id: 'cleared', label: 'Cleared', badge: cleared, hint: 'Stations behind you' },
+                {
+                  id: 'locked',
+                  label: 'Not open yet',
+                  // Derived, not counted twice: everything that is neither
+                  // cleared nor on the frontier. Kept above zero so a completed
+                  // chart does not offer a band with nothing in it.
+                  badge: Math.max(0, map.stations.size - cleared - frontierIds.size),
+                  hint: 'Stations whose prerequisite you have not cleared',
+                },
+              ]}
+            />
+          </div>
+        )}
       </div>
-
-      {/*
-        THE ONE PLACE THIS SCREEN SAYS IT HAS NOT READ THE ACCOUNT.
-
-        There were four: three sub-lines under the readouts and a fourth,
-        longer, where the filter goes. Four statements of one fact is the shape
-        that turns an honest panel into wallpaper - the eye stops on the third
-        copy and reads none of them, and the differences between the readouts
-        drown in a sentence they all share.
-
-        So the convention is stated once, for the whole screen, and every dash
-        below it - here, in the line index, in a station's prerequisites - is
-        covered by it. Nothing is softened: it still says the dash is unknown
-        rather than none, and it still says what would settle it.
-      */}
-      {cleared === null && (
-        <p
-          /* A measure, because it is a paragraph. At full width it ran to 190
-             characters a line, which is roughly twice what an eye tracks back
-             from without losing the row. */
-          className="max-w-[86ch] px-5 pb-3 text-[length:var(--text-body)]"
-          style={{ color: 'var(--color-signal-warn)' }}
-        >
-          Every dash on this screen is unread, not zero — what you have cleared is read from the game, so run Warframe
-          once and it fills in. The stations, their missions and their gates below are facts about the chart and are
-          shown either way.
-        </p>
-      )}
-
-      {/*
-        THE FOCUS CONTROL.
-
-        Offered only once there is an account behind it: "open now" and "not
-        open yet" are both claims about the player, and with nothing read every
-        station would fall into the locked band — a filter answering entirely
-        from our own missing data. The line above has already said why it is
-        missing, so the row simply does not appear rather than repeating it.
-      */}
-      {cleared !== null && (
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 pb-3">
-          <span className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
-            Bring forward
-          </span>
-          <Segmented
-            label="Which stations to bring forward"
-            value={focus ?? 'all'}
-            onChange={(id) => {
-              setFocus(id === 'all' ? null : (id as ChartFocus));
-            }}
-            accent="var(--color-tenno-300)"
-            options={[
-              { id: 'all', label: 'Everything', badge: map.stations.size, hint: 'The whole system at full strength' },
-              {
-                id: 'available',
-                label: 'Open now',
-                badge: frontierIds.size,
-                hint: 'Stations you can start, plus the one to go to next',
-              },
-              { id: 'cleared', label: 'Cleared', badge: cleared, hint: 'Stations behind you' },
-              {
-                id: 'locked',
-                label: 'Not open yet',
-                // Derived, not counted twice: everything that is neither
-                // cleared nor on the frontier. Kept above zero so a completed
-                // chart does not offer a band with nothing in it.
-                badge: Math.max(0, map.stations.size - cleared - frontierIds.size),
-                hint: 'Stations whose prerequisite you have not cleared',
-              },
-            ]}
-          />
-        </div>
-      )}
 
       {/*
         THE DIAGRAM, AND BESIDE IT THE THINGS IT CANNOT HOLD.
         ————————————————————————————————————————————
-        The chart is 836 x 1460 in a pane about 1200 wide, so there were four
-        hundred pixels of nothing to its right while the panel showed 561
-        characters in total. The index goes there rather than under the
-        diagram: a companion 1460 pixels below the thing it accompanies is one
-        nobody scrolls to, and this way the two are read together - a hop in
-        the plan, the same station on the map.
+        The index goes beside the diagram rather than under it: a companion
+        1,460 pixels below the thing it accompanies is one nobody scrolls to,
+        and this way the two are read together - a hop in the plan, the same
+        station on the map.
 
-        The chart keeps its full width and stays first in the scroller, which
-        `scrollToPlanet` depends on: it scrolls this container to a line's own
-        y, and that only stays true while the diagram starts at the top of it.
+        This was ONE scroller holding a flex row, which is the arrangement the
+        comment on the root records as overflowing the window. Two grid TRACKS
+        instead, each scrolling inside itself. `min-w-0` and `min-h-0` on both
+        are load-bearing: without them a grid item's automatic minimum is its
+        content, both panes grow to the 836px diagram and the index, and the
+        panel is exactly as wide and as tall as it was before.
+
+        The chart is alone in its scroller, which `scrollToPlanet` depends on:
+        it scrolls that container to a line's own y, and that only stays true
+        while the diagram starts at the top of it.
       */}
-      <div ref={chartRef} className="min-h-0 flex-1 overflow-auto px-5 pb-5">
-        <div className="flex items-start gap-7">
-          <div className="shrink-0">
-            <TransitChart
-              map={map}
-              stateOf={stateOf}
-              frontier={frontierIds}
-              objective={objective?.id ?? null}
-              selected={selected}
-              onSelect={setSelected}
-              measured={cleared !== null}
-              focus={focus}
-            />
-          </div>
+      <div className="grid min-h-0 grid-cols-[minmax(0,7fr)_minmax(0,5fr)] gap-5">
+        <div ref={chartRef} className="min-h-0 min-w-0 overflow-auto">
+          <TransitChart
+            map={map}
+            stateOf={stateOf}
+            frontier={frontierIds}
+            objective={objective?.id ?? null}
+            selected={selected}
+            onSelect={setSelected}
+            measured={cleared !== null}
+            focus={focus}
+          />
+        </div>
 
-          {/* `flex-1` gives a definite basis, which a disclosure REQUIRES: it
-              is a `container-type: inline-size` element and contributes zero
-              max-content, so a shrink-to-fit parent collapses it to one letter
-              per line. See the trap documented on `.rf-disc`. */}
-          <div className="mo-in-up flex min-w-[24rem] flex-1 flex-col gap-5 pt-1">
-            {/* The route is an instruction, so it is not behind a press. It is
-                also a claim about the player, so it appears only once there is
-                an account to make it from. */}
-            {cleared !== null && (
-              <JourneyPlan route={route} catalog={loaded.catalog} clearedNodes={picture.clearedNodes} />
-            )}
+        {/* The reference pane. Thirty lines and 355 stations are legitimately
+            long, so they scroll HERE - what they may no longer do is push the
+            instruction at the top of the screen out of the window. */}
+        <div className="mo-in-up flex min-h-0 min-w-0 flex-col gap-5 overflow-y-auto pr-1">
+          {/* The route is an instruction, so it is not behind a press. It is
+              also a claim about the player, so it appears only once there is
+              an account to make it from. */}
+          {cleared !== null && (
+            <JourneyPlan route={route} catalog={loaded.catalog} clearedNodes={picture.clearedNodes} />
+          )}
 
-            <section className="flex flex-col gap-1">
-              <p className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
-                Every line, station by station
-              </p>
-              <p className="text-[length:var(--text-body)]" style={{ color: 'var(--text-faint)' }}>
-                The dots carry where a station is. These carry what it is.
-              </p>
-              <div className="mt-1">
-                <LineIndex
-                  map={map}
-                  catalog={loaded.catalog}
-                  questNames={questNames}
-                  clearedNodes={picture.clearedNodes}
-                  frontierIds={frontierIds}
-                  measured={cleared !== null}
-                  openPlanet={objectivePlanet}
-                />
-              </div>
-            </section>
-          </div>
+          <section className="flex min-w-0 flex-col gap-1">
+            <p className="eyebrow" style={{ color: 'var(--color-orokin-300)' }}>
+              Every line, station by station
+            </p>
+            <p className="wf-note">The dots carry where a station is. These carry what it is.</p>
+            <div className="mt-1">
+              <LineIndex
+                map={map}
+                catalog={loaded.catalog}
+                questNames={questNames}
+                clearedNodes={picture.clearedNodes}
+                frontierIds={frontierIds}
+                measured={cleared !== null}
+                openPlanet={objectivePlanet}
+              />
+            </div>
+          </section>
         </div>
       </div>
 
@@ -878,7 +973,13 @@ export default function StarChartPanel() {
           station in the system is already on the diagram above. */}
       {node && (
         <div
-          className="mo-in-up shrink-0 border-t px-5 py-4"
+          /* The third grid row, and it only exists while a station is
+             selected - the template above adds the `auto` track with it, so an
+             empty band never reserves height or a gap. The negative margins
+             put it back against the panel edges the root's own padding pulled
+             it in from, which is what makes it read as a band under the panes
+             rather than as another card inside them. */
+          className="mo-in-up -mx-5 -mb-5 border-t px-5 py-4"
           style={{ borderColor: 'oklch(1 0 0 / 0.08)', background: 'oklch(0.11 0.02 265 / 0.6)' }}
         >
           <div className="flex flex-wrap items-baseline gap-3">

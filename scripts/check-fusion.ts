@@ -24,7 +24,6 @@ import {
   purseOf,
   rankCost,
   RARITY_FACTOR,
-  type FusionRarity,
 } from '../src/data/fusion.ts';
 
 let checks = 0;

@@ -15,7 +15,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { parseLine, type LogEvent } from '../src/core/eelog.ts';
-import { IDLE, fold, netEdits, step, type Session, type UpgradeSlot } from '../src/data/automod-session.ts';
+import { IDLE, fold, netEdits, step, type Session } from '../src/data/automod-session.ts';
 import { CARD, GRID, GRID_SLOTS_SHOWN, MEASURED_AT, asideBox, fullBox, slotBox, type Box } from '../src/data/automod-place.ts';
 import { resolveIn } from '../src/data/build.ts';
 import { categoryForModClass, categoryOpen, learnSlot, lessonFrom, loadLearnedSlots } from '../src/data/slot-learning.ts';

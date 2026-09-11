@@ -434,7 +434,7 @@ process.exitCode = failed ? 1 : 0;
 
   // An entry with an ETag, so the next read is conditional.
   const warm = async (g: GentleReader, key: string) => {
-    const first = await g.read(key, policy, async () => ({ body: '{"v":1}', etag: 'W/\"1\"' }), (b) => JSON.parse(b) as { v: number });
+    const first = await g.read(key, policy, async () => ({ body: '{"v":1}', etag: 'W/"1"' }), (b) => JSON.parse(b) as { v: number });
     assert.equal(first.value.v, 1);
   };
 

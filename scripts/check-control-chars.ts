@@ -31,7 +31,20 @@ const ROOT = new URL('..', import.meta.url).pathname.replace(/^\//, '');
 const LOOK_IN = ['src', 'scripts', 'docs'];
 const EXTENSIONS = ['.ts', '.tsx', '.mjs', '.js', '.css', '.json', '.md', '.html'];
 
-/** Everything under 0x20 except tab, newline and carriage return, plus DEL. */
+/**
+ * Everything under 0x20 except tab, newline and carriage return, plus DEL.
+ *
+ * THE RULE IS RIGHT ABOUT EVERY OTHER FILE AND WRONG ABOUT THIS ONE.
+ * `no-control-regex` exists because a control character inside a pattern is
+ * almost always an escape somebody mangled - which is the exact defect this
+ * scanner was written to catch, and which has now happened three times here: a
+ * NUL that made a file binary to ripgrep while every gate still passed, a
+ * BACKSPACE that turned a polarity regex into one matching nothing, and a
+ * BACKSPACE that silently disabled an assertion inside a gate file. The scanner
+ * has to name the bytes it hunts for, so this is the one file in the repo where
+ * they belong, and the rule is silenced at exactly this line.
+ */
+// eslint-disable-next-line no-control-regex
 const FORBIDDEN = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
 
 function walk(dir: string, out: string[]): string[] {

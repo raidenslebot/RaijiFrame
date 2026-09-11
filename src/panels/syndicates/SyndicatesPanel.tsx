@@ -289,8 +289,27 @@ function Lead({ row }: { row: SyndicateRow }) {
         background: `linear-gradient(150deg, ${tone}, color-mix(in oklab, ${tone} 18%, transparent) 44%, transparent 78%)`,
       }}
     >
+      {/*
+        A GRID, BECAUSE THE FLEX ROW HANDED THE PARAGRAPH THE WIDTH AND THE
+        NAME THE SCRAPS.
+        ————————————————————————————————————————————
+        Measured in a real browser at 1280x720 with an account read: the left
+        block - the eyebrow, the badges, the syndicate's NAME at 41.6px and the
+        rank bar - was 250px wide, and the right block, whose tallest thing is
+        an explanatory sentence, was 708px. That is what `flex-1` beside an
+        auto-sized item does: the left item's flex basis is 0, the right one's
+        is its max-content, and `.wf-prose` carries a 70ch measure, so the
+        paragraph claimed 70ch and the name was left to wrap onto three lines.
+        The plate was 281px tall and the bold element was the narrowest thing
+        on it.
+
+        Two tracks state the intent instead of leaving it to basis arithmetic:
+        the answer column is capped, and everything it does not need goes to
+        the name. Below `lg` the tracks collapse to one and it stacks exactly
+        as the wrapped flex row did.
+      */}
       <div
-        className="relative flex flex-wrap items-end justify-between gap-x-10 gap-y-5 px-6 py-5"
+        className="relative grid items-end gap-x-10 gap-y-5 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,26rem)]"
         style={{
           clipPath: CHAMFER,
           background:
@@ -426,7 +445,21 @@ function RankLadder({ row, ladder }: { row: SyndicateRow | null; ladder: Ladder 
         return (
           <li
             key={t.title}
-            className="flex items-center gap-3 px-2.5 py-1"
+            /*
+             * WRAPS, because this table now lives in a column and not across
+             * the whole window.
+             * ————————————————————————————————————————————
+             * The fixed parts of this row - the rank, the 9.5rem range, the
+             * 3.4rem width and the 3.5rem "you" marker - come to 358px before
+             * the bar gets a pixel, and the row sits two disclosures deep
+             * (each level adds 0.85rem of rail plus 1.5rem of body padding).
+             * Inside the 604px ladder pane that leaves 287px, so the marker
+             * would have hung off the right of the plate. The bar group is the
+             * only part that can give, so it is given a floor and the row is
+             * allowed to break rather than to overhang: at full width nothing
+             * changes, because a row that fits does not wrap.
+             */
+            className="flex flex-wrap items-center gap-3 px-2.5 py-1"
             style={{
               background: here && row !== null ? `color-mix(in oklch, ${row.color} 14%, transparent)` : 'transparent',
               boxShadow: here && row !== null ? `inset 2px 0 0 0 ${row.color}` : undefined,
@@ -448,7 +481,10 @@ function RankLadder({ row, ladder }: { row: SyndicateRow | null; ladder: Ladder 
             >
               {t.min.toLocaleString()} to {t.max.toLocaleString()}
             </span>
-            <span className="flex min-w-0 flex-1 items-center gap-2">
+            {/* A floor rather than `min-w-0`: with a zero floor this group's
+                hypothetical size is zero, so the row above would never wrap and
+                the fixed columns after it would simply overhang. */}
+            <span className="flex min-w-[6rem] flex-1 items-center gap-2">
               <span
                 aria-hidden
                 className="h-[5px] flex-1 overflow-hidden"
@@ -683,14 +719,26 @@ function SyndicateRowItem({ row, index }: { row: SyndicateRow; index: number }) 
       <div className="w-[11rem] shrink-0">
         <div className="eyebrow">Daily left</div>
         {row.dailyRemaining === null ? (
-          <>
-            <div className="numeric mt-1 text-[length:var(--text-lead)] leading-none" style={{ color: 'var(--text-muted)' }}>
-              —
-            </div>
-            <div className="mt-1.5 text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
-              {row.isNightwave ? 'no daily cap' : row.sharedPool ? 'shared with the six' : 'daily standing not tracked here yet'}
-            </div>
-          </>
+          /*
+           * THE REASON, WITHOUT THE DASH IN FRONT OF IT.
+           * ————————————————————————————————————————————
+           * Measured in a real browser with a real account read: the panel
+           * carried NINE em-dash readouts and eight of them were this one div,
+           * once per syndicate, 26px of --text-lead each, every one of them
+           * directly above a sentence that already said the same thing in
+           * words. A dash is how this app writes "we did not measure that", and
+           * it earns its place where a number would otherwise be invented - but
+           * eight of them down one column is not a refusal, it is a texture, and
+           * the line underneath was carrying the whole meaning anyway.
+           *
+           * The reason stays per row because it is not the same reason on every
+           * row: the six originals share one pool, Nightwave has no cap at all,
+           * and the rest are counters this build cannot map. Only the dash is
+           * gone.
+           */
+          <div className="mt-1 text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
+            {row.isNightwave ? 'no daily cap' : row.sharedPool ? 'shared with the six' : 'daily standing not tracked here yet'}
+          </div>
         ) : (
           <>
             <div className="mt-1 flex items-baseline gap-1.5">
@@ -1154,31 +1202,206 @@ export default function SyndicatesPanel() {
 
   return (
     /*
-     * `min-h-full`, not `h-full`: the shell's <main> is the scroller and has a
-     * definite height, so `h-full` pinned this root to the viewport and the
-     * ladder - `flex-1 min-h-0` with no scroll container of its own - shrank
-     * below its rows and painted them over the "Not joined" section and the
-     * footer. The no-account branch documents the same trap.
+     * ONE SCREEN, AND THE PAGE ITSELF DOES NOT MOVE.
+     *
+     * THE MEASUREMENT THAT FORCED THIS. This panel was the best-behaved thing
+     * in the app on a cold launch - 1.00 screens, nothing to scroll - and the
+     * worst in the app the moment an account arrived. Driven through a real
+     * browser at 1280x720 with the eight syndicate affiliations of a real
+     * capture, it emitted 2,728px into a 629px viewport: 4.34 screens, and the
+     * length was a function of how many syndicates the player has standing
+     * with, so nothing measured on an empty account could ever have seen it.
+     * A flat column of four sibling sections - the lead, the allowance, eight
+     * ladder rows at 147px each, fourteen roster rows - has no shape; it just
+     * gets longer the more the player has played.
+     *
+     * The shape is now a fixed-height grid with three rows, and the
+     * subordination is structural rather than a promise:
+     *
+     *   - the ANSWER - which syndicate is closest to a rank, and whether
+     *     today's standing covers it - is the first row. It never scrolls
+     *     away, because the whole panel exists to say it.
+     *   - the second row is two PANES. The ladder, which is as long as the
+     *     player's account, scrolls inside the left one. Today's allowance and
+     *     the syndicates not joined are reference - things to look up - and
+     *     scroll inside the right one. Neither can push the answer off screen.
+     *   - the footer is the third row: one line of provenance, always visible.
+     *
+     * `min-h-0` on every row and column of the chain is what makes that true
+     * and is the easy thing to leave out: a grid child's default
+     * `min-height: auto` refuses to shrink below its content, so one missing
+     * `min-h-0` anywhere and the whole thing grows again, the page scrolls
+     * exactly as before, and nothing on screen says anything is wrong.
+     *
+     * `h-full`, and the panes carry the scrolling. The note this replaces said
+     * `min-h-full` was needed because the ladder had no scroll container of
+     * its own and would otherwise paint over the footer. It now has one.
      */
-    <div className="flex min-h-full flex-col gap-6 p-6">
+    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5">
+      {/* ---- row one: the answer, pinned ------------------------------- */}
       {rows.length === 0 ? (
-        <div className="grid flex-1 place-items-center">
+        <div className="grid place-items-center py-4">
           <EmptyState
             title="No syndicate standing yet"
             detail="Your account has no syndicate standing recorded yet. Every syndicate and its ladder is below; the six originals unlock after Vor's Prize, the open-world ones on first visit."
             className="w-full max-w-[52ch]"
           />
         </div>
+      ) : lead !== null ? (
+        <Lead row={lead} />
       ) : (
-        <>
-          {lead !== null && <Lead row={lead} />}
+        /* An EMPTY element, not nothing. The three rows are positioned by
+           child order, so a branch that renders `false` would slide the panes
+           into the header row and the footer into the panes' row - the whole
+           layout off by one, silently, only on an account whose every
+           syndicate is maxed or unladdered. */
+        <div />
+      )}
 
-          {/* ---- today's allowance, quiet on purpose: it is one budget, not a
-                  decision, and the decision is already made above ------------ */}
+      {/* ---- row two: two panes, each scrolling itself ----------------- */}
+      {/*
+        The split follows the account: with no standing at all there is no
+        ladder to put in the left pane, and a 7fr column of nothing beside the
+        roster reads as the panel being broken rather than as the player not
+        having joined anything yet.
+      */}
+      {/*
+        THE ROWS ARE DECLARED, NOT LEFT IMPLICIT, AND THAT IS THE WHOLE FIX.
+        ————————————————————————————————————————————
+        Below `xl` the two panes stack, and a bare `grid` gives stacked children
+        IMPLICIT rows, which are auto-sized: each pane would be as tall as its
+        content, the container would overflow, and the page would scroll again -
+        at every width except the one this was measured at. The overlay is
+        composited over a game and is routinely narrower than a browser window,
+        so that is the normal case, not the edge one. Two `minmax(0,1fr)` rows
+        stacked, one row beside two columns at `xl`.
+      */}
+      <div
+        className={
+          rows.length === 0
+            ? 'grid min-h-0 grid-rows-[minmax(0,1fr)]'
+            : 'grid min-h-0 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] xl:grid-rows-[minmax(0,1fr)]'
+        }
+      >
+        {rows.length > 0 && (
+          <section className="mo-arrive flex min-h-0 flex-col">
+            <SectionTitle count={visible.length} note={lead === null ? 'sorted by gap to next rank' : 'the closest is above'}>
+              The ladder
+            </SectionTitle>
+
+            {/*
+              THE LEGEND AND THE FILTER SHARE A ROW WHEN THERE IS ROOM FOR ONE.
+              ————————————————————————————————————————————
+              Stacked they were 95px of header above a list that now has about
+              200px to live in. Side by side they are 45px. The legend carries a
+              floor rather than `min-w-0` so that when there ISN'T room the row
+              breaks instead of clamping the sentence to a 164px stub - a
+              one-line Clamp in a narrow column shows about four words and a
+              "more" button, which is not a legend, it is a rumour of one.
+            */}
+            <div className="mb-2.5 flex flex-wrap items-start justify-between gap-x-5 gap-y-1">
+              <div className="min-w-[18rem] flex-1">
+                <LadderLegend />
+              </div>
+              <Segmented
+                label="Which syndicates to show"
+                value={shown}
+                onChange={setShown}
+                options={[
+                  { id: 'all', label: 'All', badge: rest.length, hint: 'Every syndicate your account carries standing for' },
+                  {
+                    id: 'reach',
+                    label: 'In reach',
+                    badge: model.rankUpsToday,
+                    hint: "Today's remaining allowance covers the gap to the next rank",
+                  },
+                  {
+                    id: 'ceiling',
+                    label: 'Wasting',
+                    badge: model.atCeiling,
+                    hint: 'At the rank ceiling — further standing is discarded',
+                  },
+                  {
+                    id: 'maxed',
+                    label: 'Maxed',
+                    badge: rest.filter((r) => r.maxed).length,
+                    hint: 'At the top rank, nothing left to earn',
+                  },
+                ]}
+              />
+            </div>
+
+            {/*
+              THE LIST SCROLLS, THE PAGE DOES NOT.
+
+              This is the thing whose height is the player's account: eight rows
+              here, twenty-two on a finished one, at roughly 150px each. It is
+              also the only part of the panel that is legitimately that long,
+              which is exactly why it is the part that gets a scroller of its
+              own rather than being allowed to lengthen the page.
+
+              `min-h-0` beside `flex-1`: a flex item will not shrink below its
+              content without it, so the scroller would be as tall as its rows
+              and would scroll nothing at all.
+            */}
+            {/*
+              THE MESSAGE REPLACES THE LIST, IT DOES NOT FOLLOW IT.
+              ————————————————————————————————————————————
+              An empty list is a fact about the FILTER, not about the account,
+              so it says which - silence here would read as "you have no
+              syndicates", which is the opposite of true. It used to be rendered
+              after the list, which was harmless while the page grew and is not
+              now: the scroller is `flex-1`, so an empty one still claims the
+              whole pane and the sentence explaining the emptiness was pushed to
+              the very bottom of it, a screen's worth of nothing above it.
+            */}
+            {visible.length === 0 ? (
+              <p className="wf-note">
+                {shown === 'reach'
+                  ? "No syndicate's next rank is inside today's remaining allowance."
+                  : shown === 'ceiling'
+                    ? 'Nothing is sitting at its rank ceiling — no standing is being discarded.'
+                    : 'No syndicate is at its top rank yet.'}
+              </p>
+            ) : (
+              <ul className="mo-stagger flex min-h-0 flex-1 flex-col gap-[3px] overflow-y-auto pr-1">
+                {visible.map((row, i) => (
+                  <SyndicateRowItem key={row.tag} row={row} index={i} />
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
+        {/*
+          ---------------------------------------------- the reference pane.
+
+          Today's budget and the ladders of every syndicate the player has not
+          joined. Both are things to LOOK UP - neither decides anything - and
+          both are as long as they are, so they share one scroller. The budget
+          is first because it is the one of the two that is about today.
+        */}
+        <div className="flex min-h-0 flex-col gap-4 overflow-y-auto pr-1">
+          {rows.length > 0 && (
           <section className="mo-arrive">
             <SectionTitle note="00:00 UTC">Daily allowance</SectionTitle>
 
-            <div className="grid gap-[3px] lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+            {/*
+              AUTO-FIT, BECAUSE THE PANE IS NOT THE WINDOW.
+              ————————————————————————————————————————————
+              This was `lg:grid-cols-[1.4fr_1fr_1fr_1fr]`, a VIEWPORT query, and
+              the strip now lives in a 5fr pane roughly 412px wide. The viewport
+              at which the pane gets narrow is exactly the viewport at which the
+              media query says "you are wide" - the two are inverted - so a
+              breakpoint here would put four 100px columns in a 412px pane and
+              wrap every label onto three lines.
+
+              `auto-fit` over a 13rem floor is measured against the GRID's own
+              width, which is the only width that matters: four columns when the
+              panes are stacked and the strip has the window, one column when it
+              is in the pane. No breakpoint can be wrong because there is none.
+            */}
+            <div className="grid gap-[3px] [grid-template-columns:repeat(auto-fit,minmax(13rem,1fr))]">
               <div className="rf-plate mo-field mo-sheen mo-lift relative px-4 py-3" style={{ clipPath: CHAMFER, background: PLATE }}>
                 <span aria-hidden className="absolute top-0 bottom-0 left-0 w-[2px]" style={{ background: 'var(--color-orokin-400)' }} />
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -1211,19 +1434,33 @@ export default function SyndicatesPanel() {
                   </div>
                 )}
 
+                {/*
+                  ONE STATEMENT OF ONE FACT.
+                  ————————————————————————————————————————————
+                  With the review account read, `counted` is false AND four
+                  pools are unmapped, so this printed "daily standing for these
+                  syndicates is not tracked here yet" and, on the same line,
+                  "4 pools not counted — daily standing not tracked here yet".
+                  The same sentence, twice, a centimetre apart, above a column
+                  of rows each saying it a third time. The second line is the
+                  better one - it carries the count and its `title` names the
+                  pools - so when nothing is counted it is the only one shown.
+                */}
                 <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                  <span className="numeric text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
-                    {counted
-                      ? `${fmt(spent)} spent · ${totals.pools} pool${totals.pools === 1 ? '' : 's'}`
-                      : 'daily standing for these syndicates is not tracked here yet'}
-                  </span>
-                  {totals.unmapped.length > 0 && (
+                  {counted && (
+                    <span className="numeric text-[length:var(--text-micro)]" style={{ color: 'var(--text-muted)' }}>
+                      {fmt(spent)} spent · {totals.pools} pool{totals.pools === 1 ? '' : 's'}
+                    </span>
+                  )}
+                  {(!counted || totals.unmapped.length > 0) && (
                     <span
                       className="text-[length:var(--text-micro)]"
                       style={{ color: 'var(--color-signal-warn)' }}
-                      title={totals.unmapped.join(', ')}
+                      title={totals.unmapped.length > 0 ? totals.unmapped.join(', ') : undefined}
                     >
-                      {totals.unmapped.length} pool{totals.unmapped.length === 1 ? '' : 's'} not counted — daily standing not tracked here yet
+                      {totals.unmapped.length > 0
+                        ? `${String(totals.unmapped.length)} pool${totals.unmapped.length === 1 ? '' : 's'} not counted — daily standing not tracked here yet`
+                        : 'daily standing for these syndicates is not tracked here yet'}
                     </span>
                   )}
                 </div>
@@ -1273,90 +1510,37 @@ export default function SyndicatesPanel() {
               ))}
             </div>
           </section>
+          )}
 
-          {/* ---- the ladder ------------------------------------------------- */}
-          <section className="mo-arrive">
-            <SectionTitle count={visible.length} note={lead === null ? 'sorted by gap to next rank' : 'the closest is above'}>
-              The ladder
-            </SectionTitle>
-            <LadderLegend />
+          {/* ---- the ones you have not joined ------------------------------ */}
+          {unjoined.length > 0 && (
+            <section>
+              <SectionTitle count={unjoined.length} note="ladders are game data — open one to see its ranks">
+                Not joined
+              </SectionTitle>
+              {/*
+                Capturing an account used to DELETE these.
 
-            <div className="mb-2.5 flex flex-wrap items-center justify-end gap-3">
-              <Segmented
-                label="Which syndicates to show"
-                value={shown}
-                onChange={setShown}
-                options={[
-                  { id: 'all', label: 'All', badge: rest.length, hint: 'Every syndicate your account carries standing for' },
-                  {
-                    id: 'reach',
-                    label: 'In reach',
-                    badge: model.rankUpsToday,
-                    hint: "Today's remaining allowance covers the gap to the next rank",
-                  },
-                  {
-                    id: 'ceiling',
-                    label: 'Wasting',
-                    badge: model.atCeiling,
-                    hint: 'At the rank ceiling — further standing is discarded',
-                  },
-                  {
-                    id: 'maxed',
-                    label: 'Maxed',
-                    badge: rest.filter((r) => r.maxed).length,
-                    hint: 'At the top rank, nothing left to earn',
-                  },
-                ]}
-              />
-            </div>
+                The roster with its rank ladders only rendered on the
+                no-account branch, so the moment the game ran once, every
+                syndicate the player had not joined vanished - and with it the
+                answer to "is Cavia worth starting?". The account view knew
+                strictly more and showed strictly less, which is backwards.
+              */}
+              <ul className="mo-stagger flex flex-col gap-[3px]">
+                {unjoined.map((tag, i) => (
+                  <CatalogRowItem key={tag} tag={tag} index={i} />
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
+      </div>
 
-            <ul className="mo-stagger flex flex-col gap-[3px]">
-              {visible.map((row, i) => (
-                <SyndicateRowItem key={row.tag} row={row} index={i} />
-              ))}
-            </ul>
-
-            {/* An empty list is a fact about the filter, not about the account,
-                so it says which. Silence here would read as "you have no
-                syndicates", which is the opposite of true. */}
-            {visible.length === 0 && (
-              <p className="wf-note mt-2">
-                {shown === 'reach'
-                  ? "No syndicate's next rank is inside today's remaining allowance."
-                  : shown === 'ceiling'
-                    ? 'Nothing is sitting at its rank ceiling — no standing is being discarded.'
-                    : 'No syndicate is at its top rank yet.'}
-              </p>
-            )}
-          </section>
-
-        </>
-      )}
-
-      {/* ---- the ones you have not joined ------------------------------ */}
-      {unjoined.length > 0 && (
-        <section>
-          <SectionTitle count={unjoined.length} note="ladders are game data — open one to see its ranks">
-            Not joined
-          </SectionTitle>
-          {/*
-            Capturing an account used to DELETE these.
-
-            The roster with its rank ladders only rendered on the
-            no-account branch, so the moment the game ran once, every
-            syndicate the player had not joined vanished - and with it the
-            answer to "is Cavia worth starting?". The account view knew
-            strictly more and showed strictly less, which is backwards.
-          */}
-          <ul className="mo-stagger flex flex-col gap-[3px]">
-            {unjoined.map((tag, i) => (
-              <CatalogRowItem key={tag} tag={tag} index={i} />
-            ))}
-          </ul>
-        </section>
-      )}
-
-      <footer className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-2">
+      {/* ---- row three: provenance, one line, never scrolled away -------
+              `mt-auto` is gone with the flex column that needed it: this is a
+              grid row of its own now, so it is at the bottom by position. */}
+      <footer className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <span className="eyebrow">Thresholds: game export and wiki, cross-checked</span>
         <span className="eyebrow">Daily pools reset 00:00 UTC</span>
         {inventoryAt !== null && (
