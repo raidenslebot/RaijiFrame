@@ -70,6 +70,43 @@
  * the hierarchy the game does not have - it has one weight and three
  * lightnesses.
  */
+/*
+ * THE GAME'S OWN BODY FACE, VENDORED - AND THE APP WAS SHIPPING SEGOE UI.
+ *
+ * `docs/research/ui-color-type.md` measured this and it sat unacted on: the
+ * game sets its UI text, form controls, chat and inventory in **Roboto**,
+ * stated verbatim on the wiki's Fonts page and corroborated by DE's own Steve
+ * Sinclair in 2018 ("No surprise, Roboto is solid"). The app's `--font-sans`
+ * was `Segoe UI Variable Text` - a different face, with different proportions,
+ * a different g and a different 1 - on an overlay whose whole brief is to be
+ * indistinguishable from the game.
+ *
+ * WHAT IS HONEST ABOUT THIS AND WHAT IS NOT. The wiki says specifically an OLD
+ * ~2013 Roboto, which differs from the current one most visibly on the capital
+ * R and the numeral 1. This is current Roboto (v51). It is not the exact build,
+ * and that is a real remaining difference - but it is the same typeface family
+ * by the same designer with the same metrics and skeleton, which Segoe UI is
+ * not. Closing the rest would mean sourcing a decade-old binary, and this is
+ * the step that takes the overlay from a foreign face to the right one.
+ *
+ * ONE FILE, NOT THREE. Google serves Roboto v51 as a VARIABLE font: the 400,
+ * 500 and 700 downloads came back byte-identical (43,136 bytes, md5 the same).
+ * Shipping three copies of one file to declare three weights is 86 KB of
+ * nothing, so it is declared once over the whole axis and the browser
+ * interpolates.
+ *
+ * LOCAL, because Overwolf loads these windows from disk over file:// and the
+ * app must work with the game closed and the network absent. Nothing here
+ * reaches for fonts.googleapis.com at runtime.
+ */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/roboto-var.woff2') format('woff2-variations');
+}
+
 @font-face {
   font-family: 'Chakra Petch';
   font-style: normal;
@@ -149,7 +186,13 @@
   --font-title: 'Cinzel', 'Trajan Pro', 'Constantia', Georgia, serif;
   /* Bold condensed for actions - the "CHANGE LOADOUT" treatment. */
   --font-display: 'Chakra Petch', 'Bahnschrift', 'DIN Alternate', 'Segoe UI Variable Display', system-ui, sans-serif;
-  --font-sans: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  /*
+   * Roboto first, because that is what the game uses. Segoe stays as the
+   * fallback rather than being deleted: if the vendored file ever fails to load
+   * the app degrades to the face it shipped with for months, not to whatever
+   * `sans-serif` resolves to on the machine.
+   */
+  --font-sans: 'Roboto', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'Cascadia Mono', 'Consolas', ui-monospace, monospace;
 
   /* ---- The scale, rebuilt on a 12px floor ---------------------------------

@@ -27,7 +27,7 @@
  * Run: node scripts/check-ui-tokens.ts
  */
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const SRC = new URL('../src/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
@@ -507,7 +507,49 @@ hard('no entrance starts larger than it ends', GROWS_OUTWARD, 'an overlay elemen
 
 /* ------------------------------------------------------------------ verdict */
 
+
+/*
+ * THE SPEC MEASURED THE GAME'S BODY FACE AND THE APP IGNORED IT FOR MONTHS.
+ *
+ * `docs/research/ui-color-type.md` records that the game sets its UI text, form
+ * controls, chat and inventory in ROBOTO - stated verbatim on the wiki's Fonts
+ * page, corroborated by DE's Steve Sinclair in 2018. `--font-sans` was
+ * `Segoe UI Variable Text`: a different face with different proportions, on an
+ * overlay whose entire brief is to be indistinguishable from the game.
+ *
+ * THREE WAYS IT CAN SILENTLY REVERT, all three checked below. The worst is the
+ * third: the FILE going missing leaves the CSS still saying Roboto and the page
+ * still rendering - in the fallback - with nothing anywhere saying so. `faces
+ * that fell back` is a failure this project has already recorded once.
+ *
+ * What a Node gate cannot check is whether the browser actually rendered in it.
+ * That was measured in the real page: a probe span reading "Rg1" at 200 px is
+ * 348 px wide in Roboto against 333 px in the Segoe fallback, and the loaded
+ * one measured 348.
+ */
+const THEME = readFileSync(join(SRC, 'styles/theme.css'), 'utf8');
+const fontProblems: string[] = [];
+{
+  const stack = /--font-sans:\s*([^;]+);/.exec(THEME);
+  if (!stack) fontProblems.push('there is no --font-sans at all');
+  else if (!/^'Roboto'/.test((stack[1] ?? '').trim())) {
+    fontProblems.push(`--font-sans does not lead with Roboto: ${(stack[1] ?? '').trim().slice(0, 64)}`);
+  }
+  const face = /@font-face\s*\{[^}]*font-family:\s*'Roboto'[^}]*\}/.exec(THEME);
+  if (!face) fontProblems.push('Roboto is named in the stack but never declared, so it resolves to whatever the machine has');
+  else {
+    const url = /url\('([^']+)'\)/.exec(face[0]);
+    if (!url) fontProblems.push('the Roboto face declares no source');
+    else if (!url[1].startsWith('/fonts/')) fontProblems.push(`Roboto is loaded from ${String(url[1])}, which breaks with no network`);
+    else if (!existsSync(join(SRC, '..', 'public', url[1]))) {
+      fontProblems.push(`the app asks for ${String(url[1])} and it is not in public/ - the page renders in the fallback and says nothing`);
+    }
+  }
+}
+hard('the app is set in the face the GAME is set in, and ships it', fontProblems, 'the overlay is meant to be indistinguishable from the game');
+
 for (const line of report) console.log(line);
 console.log('');
 assert.equal(failures, 0, `${String(failures)} design-system rule(s) broken`);
+
 console.log('the design system holds, and the debt above is not growing');
