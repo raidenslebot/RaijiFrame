@@ -21,7 +21,8 @@
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ARMOUR_CAP, ARMOUR_FLOOR, ATTENUATION, BLEED_COEFFICIENT, DOT_TICKS, HUNTER_MUNITIONS, RULES, STEEL_PATH_LEVELS, UNKNOWN, armourAtLevel, bleedTick, combinedStrip, corrosiveStrip, enemyDamageMultiplier, enemyDamageReduction, heatStripCeiling, igniteTick, landsAt, mitigatedBy, moddedBaseDamage, netArmour, poisonTick, procTotal, procTypeWeights, viralMultiplier } from '../src/data/armour.ts';
+import {
+  liveStatusTypes, ARMOUR_CAP, ARMOUR_FLOOR, ATTENUATION, BLEED_COEFFICIENT, DOT_TICKS, HUNTER_MUNITIONS, RULES, STEEL_PATH_LEVELS, UNKNOWN, armourAtLevel, bleedTick, combinedStrip, corrosiveStrip, enemyDamageMultiplier, enemyDamageReduction, heatStripCeiling, igniteTick, landsAt, mitigatedBy, moddedBaseDamage, netArmour, poisonTick, procTotal, procTypeWeights, viralMultiplier } from '../src/data/armour.ts';
 
 let checks = 0;
 let failures = 0;
@@ -419,6 +420,80 @@ ok('armour by level reproduces the research table, and level 9999 is the cap by 
   assert.ok(
     armourAtLevel({ baseArmour: 100, baseLevel: 60, level: 100 }) < armourAtLevel({ baseArmour: 100, baseLevel: 1, level: 100 }),
     'the curve counts from level 1 rather than from the unit\'s own base level',
+  );
+});
+
+
+ok('the live status-type count is bounded by the types that exist and by the rate', () => {
+  /*
+   * WHAT THIS IS FOR. Condition Overload is "+80% melee damage per Status Type
+   * affecting the target", and the optimiser now credits it - so the count is a
+   * multiplier on the single biggest damage term a melee build has. Getting it
+   * too HIGH is the dangerous direction: it would make the mod look better than
+   * it is and push it into builds that should not carry it.
+   *
+   * Sabotaging the objective gate found that a lower bound alone cannot catch
+   * that - `expected += 1` per type, crediting every type whether it is live or
+   * not, satisfied every assertion there. So the properties are pinned here,
+   * on the function, where they are cheap and exact.
+   */
+  const four = new Map([
+    ['slash', 0.25],
+    ['heat', 0.25],
+    ['toxin', 0.25],
+    ['viral', 0.25],
+  ]);
+
+  assert.equal(liveStatusTypes({ procsPerSecond: 0, shares: four }), 0, 'a weapon that procs nothing has status types on the target');
+
+  // A rate far below one proc per lifetime keeps almost nothing up.
+  const trickle = liveStatusTypes({ procsPerSecond: 0.001, shares: four });
+  assert.ok(trickle < 0.05, `one proc every thousand seconds sustains ${trickle.toFixed(3)} status types`);
+
+  /*
+   * THE CEILING IS THE NUMBER OF TYPES THAT EXIST, and it is approached, never
+   * reached: `1 - exp(-x)` is strictly below 1 for every finite rate. A count
+   * at or above the type count means something is crediting types rather than
+   * measuring them.
+   */
+  const flood = liveStatusTypes({ procsPerSecond: 1000, shares: four });
+  /*
+   * `<= 4`, NOT `< 4`, AND THE DIFFERENCE IS FLOATING POINT RATHER THAN MATHS.
+   * `1 - exp(-x)` is strictly below 1 for every finite x, but `exp(-250)` is
+   * smaller than the gap between 1 and its neighbour, so it rounds to exactly
+   * 1 and four types sum to exactly 4. The property worth pinning is that the
+   * count never EXCEEDS the number of types that exist - that is the direction
+   * that would make the mod look better than it is and push it into builds
+   * that should not carry it.
+   */
+  assert.ok(flood <= 4, `an absurd proc rate credits ${flood.toFixed(4)} of 4 types, so the count is not a probability`);
+  assert.ok(flood > 3.99, `an absurd proc rate credits only ${flood.toFixed(4)} of 4 types, so the count never converges`);
+
+  // Monotone in the rate: more procs can never mean fewer types live.
+  let last = -1;
+  for (const rate of [0, 0.01, 0.05, 0.1, 0.5, 1, 5, 20]) {
+    const n = liveStatusTypes({ procsPerSecond: rate, shares: four });
+    assert.ok(n >= last, `the count fell from ${last.toFixed(3)} to ${n.toFixed(3)} as the proc rate rose`);
+    last = n;
+  }
+
+  /*
+   * A TYPE WITH NO SHARE IS NOT ON THE TARGET. A build that deals no toxin
+   * cannot have a toxin proc up, and crediting it would be the same invention
+   * as crediting an unfired weapon.
+   */
+  const noToxin = new Map([['slash', 0.5], ['heat', 0.5], ['toxin', 0]]);
+  const withToxin = new Map([['slash', 0.5], ['heat', 0.5], ['toxin', 0.0001]]);
+  assert.ok(
+    liveStatusTypes({ procsPerSecond: 10, shares: noToxin }) < liveStatusTypes({ procsPerSecond: 10, shares: withToxin }),
+    'a damage type the build does not deal is being counted as a status on the target',
+  );
+
+  /* And a type the game has no duration for cannot be counted at all. */
+  assert.equal(
+    liveStatusTypes({ procsPerSecond: 10, shares: new Map([['not-a-damage-type', 1]]) }),
+    0,
+    'a type with no known duration is being credited a lifetime',
   );
 });
 

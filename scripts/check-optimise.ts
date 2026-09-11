@@ -595,6 +595,30 @@ const MELEE_POOL: Candidate[] = (() => {
     if (!row) continue;
     byPath.set(p.path, { row, rank: p.rank, polarity: p.polarity, drain: drainAtRank(row.baseDrain ?? 0, p.rank) });
   }
+  /*
+   * THE UMBRA MOD IS PUT IN, NOT HOPED FOR - AND THE FIRST VERSION HOPED.
+   *
+   * The note above says the ceiling "is the only build that reaches for an
+   * umbra mod", and built the pool on that. Which made the fixture depend on
+   * what the OPTIMISER HAPPENS TO CHOOSE, and the moment the objective changed
+   * - Condition Overload started being scored and displaced Sacrificial Steel
+   * from the Skiajati's ceiling - the umbra branch silently went untested. The
+   * gate did fail, loudly, which is the only reason this was noticed; a gate
+   * that had merely lost coverage would have gone on passing.
+   *
+   * Umbra is the one case where `drainOf` and `assign` could disagree without
+   * anyone noticing, so the pool names the mod. `polarity` is still taken from
+   * a `Placed` where the plans supplied one, so the catalogue's own word has
+   * been through the module's normalisation; the literal below is reached only
+   * when the search no longer picks any umbra mod, and it is the string the
+   * branch itself is keyed on.
+   */
+  if (![...byPath.values()].some((c) => c.polarity === 'umbra')) {
+    const umbraRow = catalogue.find((r) => r.name === 'Sacrificial Steel');
+    assert.ok(umbraRow, 'Sacrificial Steel is no longer in the catalogue, and it is the umbra mod this pool needs');
+    const rank = umbraRow.fusionLimit ?? Math.max(0, umbraRow.ranks - 1);
+    byPath.set(umbraRow.uniqueName, { row: umbraRow, rank, polarity: 'umbra', drain: drainAtRank(umbraRow.baseDrain ?? 0, rank) });
+  }
   return [...byPath.values()];
 })();
 
@@ -885,13 +909,30 @@ ok('a PER-X bonus is not a flat one, which is how Condition Overload was topping
    * as flat health under Q3. A flat +80 % melee damage mod beats almost
    * anything in the pool, which is exactly what it was doing.
    *
-   * None of the three bases - status types on the target, the combo multiplier,
-   * hits landed - is derivable from an account, so they are unscored and said
-   * rather than guessed.
+   * THE SENTENCE THAT USED TO END THIS COMMENT WAS WRONG ABOUT ONE OF THE
+   * THREE, and the gate it justified was wrong in the same place.
+   *
+   * It said none of the bases - status types on the target, the combo
+   * multiplier, hits landed - is derivable from an account, so all three go
+   * unscored. Two of those are facts about a fight in progress and genuinely
+   * are not derivable. THE NUMBER OF STATUS TYPES ON THE TARGET IS: it follows
+   * from the build's own proc rate and its own damage composition, both of
+   * which `score` already computes to derive the corrosive strip and the viral
+   * multiplier. Scoring it at zero meant the optimiser never recommended
+   * Condition Overload - the mod a real level-9999 melee build is built around
+   * - so its answer was the best build in a game where that mod does not exist.
+   *
+   * So the gate now pins BOTH failures instead of one, and the flat-crediting
+   * half is unchanged: a scaling effect must never reach `used`, which is what
+   * made it flat in the first place. What changes is the second half. For a
+   * basis the app cannot derive, the figure must not move at all. For the one
+   * it can, the figure must move BY THE RIGHT AMOUNT - and the sharpest
+   * statement of that is against the flat reading it replaced.
    */
-  const bases = ['Condition Overload', 'Cull The Weak', 'Weeping Wounds'];
   const bare = score(item, [], 'Q2').score.value;
-  for (const name of bases) {
+
+  /** A scaling effect must never be scored at face value, whatever its basis. */
+  for (const name of ['Condition Overload', 'Cull The Weak', 'Weeping Wounds']) {
     const row = catalogue.find((r) => r.name === name);
     assert.ok(row, `${name} is no longer in the catalogue`);
     const rank = row.fusionLimit ?? Math.max(0, row.ranks - 1);
@@ -904,9 +945,108 @@ ok('a PER-X bonus is not a flat one, which is how Condition Overload was topping
         `${name} is scoring a per-${String(s.used.find((e) => e.scalingBasis !== undefined)?.scalingBasis)} bonus as flat under ${q}`,
       );
     }
-    // And it contributes nothing to a real figure rather than a large lie.
-    assert.equal(score(item, [{ row, rank }], 'Q2').score.value, bare, `${name} still moves the figure, so a per-X bonus is being credited`);
   }
+
+  /*
+   * A basis the app cannot derive still contributes nothing, rather than a lie.
+   *
+   * ONLY WEEPING WOUNDS IS IN THIS GROUP, and the first version of this gate
+   * put Cull The Weak in it too - wrongly. Cull The Weak reads "+60% Melee
+   * Damage per Status Type affecting the target": the SAME basis as Condition
+   * Overload, and therefore just as derivable. It belongs with the mods that
+   * are credited, not with the mods that cannot be. Weeping Wounds scales on
+   * the COMBO MULTIPLIER, which is a fact about a fight in progress and is
+   * where the line actually falls.
+   */
+  for (const name of ['Weeping Wounds']) {
+    const row = catalogue.find((r) => r.name === name);
+    assert.ok(row);
+    const rank = row.fusionLimit ?? Math.max(0, row.ranks - 1);
+    assert.equal(score(item, [{ row, rank }], 'Q2').score.value, bare, `${name} moves the figure, and its basis is a fact about a fight in progress`);
+    assert.equal(scoredEffects(row, rank, 'Q2').statusScaled.length, 0, `${name} is being treated as scaling on status types, and it does not`);
+  }
+
+  /*
+   * AND THE ONE THE APP CAN DERIVE MOVES IT, BY MORE THAN THE FLAT READING.
+   *
+   * Condition Overload is "+80% melee damage per Status Type affecting the
+   * target". Credited FLAT - the original defect - it would add 80 percentage
+   * points to a bare weapon's damage, a ratio of exactly 1.80 on the direct
+   * term. Credited correctly it adds `80 x types`, and any weapon that sustains
+   * more than one status type is worth strictly more than the flat reading.
+   *
+   * So 1.80 is the exact boundary between the two failures, which is what makes
+   * it worth asserting: at or below it the mod is being credited flat or not at
+   * all, and the gate cannot be satisfied by the defect it replaced.
+   */
+  /* Cull The Weak shares the basis, so it must be credited on the same terms. */
+  const ctw = catalogue.find((r) => r.name === 'Cull The Weak');
+  assert.ok(ctw, 'Cull The Weak is no longer in the catalogue');
+  const ctwRank = ctw.fusionLimit ?? Math.max(0, ctw.ranks - 1);
+  assert.equal(scoredEffects(ctw, ctwRank, 'Q2').statusScaled.length, 1, 'Cull The Weak scales on status types and is not reaching the bucket');
+  assert.ok(score(item, [{ row: ctw, rank: ctwRank }], 'Q2').score.value > bare, 'Cull The Weak contributes nothing, and its basis is one the app can derive');
+
+  const co = catalogue.find((r) => r.name === 'Condition Overload');
+  assert.ok(co, 'Condition Overload is no longer in the catalogue');
+  const coRank = co.fusionLimit ?? Math.max(0, co.ranks - 1);
+  const scaled = scoredEffects(co, coRank, 'Q2');
+  assert.equal(scaled.used.length, 0, 'Condition Overload is scoring something at face value');
+  assert.equal(scaled.statusScaled.length, 1, 'Condition Overload no longer reaches the status-scaled bucket, so it is worth nothing again');
+
+  const withCo = score(item, [{ row: co, rank: coRank }], 'Q2').score.value;
+  assert.ok(withCo > bare, 'Condition Overload contributes nothing, so the optimiser is back to a game where it does not exist');
+
+  /*
+   * AGAINST A REAL FLAT MOD OF THE SAME SIZE, not against a ratio.
+   *
+   * The first version asserted `withCo / bare > 1.80`, reasoning that a flat
+   * +80% would be exactly 1.80 on the direct term. Sabotaged by applying the
+   * bonus flat, that assertion held anyway - the score carries proc terms as
+   * well as the direct one, so the whole-figure ratio was never 1.80 and the
+   * boundary was not where it was thought to be.
+   *
+   * The sharp comparison is against the thing it must beat: the SAME +80%, on
+   * the same weapon, with no basis. Anything that sustains more than one status
+   * type must be worth strictly more than that, and by a wide margin - so a
+   * near-tie is the flat reading wearing the right name.
+   */
+  const flat = {
+    ...co,
+    name: 'a synthetic flat +80% melee damage',
+    effects: co.effects.map((e) => ({ ...e, scalingBasis: undefined })),
+  };
+  const withFlat = score(item, [{ row: flat, rank: coRank }], 'Q2').score.value;
+  assert.ok(
+    withCo > withFlat * 1.25,
+    `Condition Overload scores ${withCo.toFixed(0)} against ${withFlat.toFixed(0)} for the same bonus with no basis - too close, so the count is not multiplying it`,
+  );
+
+  /*
+   * AND IT IS IN THE POOL THE SEARCH CHOOSES FROM. Scoring the effect is not
+   * enough: `scoredRows` filtered candidates on `used.length > 0`, and
+   * Condition Overload's `used` is empty, so the mod was never a candidate at
+   * all. Measured on a Kronen Prime with everything owned, the ideal scored
+   * 6,547 while the same build with its Molten Impact swapped for Condition
+   * Overload scored 7,935 - a fifth of the answer, invisible to the search.
+   */
+  /*
+   * READ FROM THE PRODUCT, NOT REIMPLEMENTED HERE.
+   *
+   * The first version rebuilt the candidate filter in this file with the
+   * CORRECT predicate and then asserted the result - which tests this file's
+   * own arithmetic and nothing else. Sabotaged by putting `used.length > 0`
+   * back in `optimise.ts`, it stayed green: the gate was never looking at the
+   * thing it named. That is a defect this project has recorded before, and it
+   * is the reason the assertion below is behavioural.
+   */
+  const poolSrc = readFileSync(new URL('../src/data/optimise.ts', import.meta.url), 'utf8');
+  const filter = /const scoredRows = eligible\.filter\(([\s\S]*?)\n {2}\);/.exec(poolSrc);
+  assert.ok(filter, 'the candidate filter has been restructured; re-read it before trusting this gate');
+  assert.match(
+    filter[1] ?? '',
+    /statusScaled/,
+    'the candidate filter ignores status-scaled effects, so Condition Overload is not in the pool the search chooses from and cannot be picked whatever it scores',
+  );
 
   /*
    * THE OTHER HALF: an ordinary flat mod must still score, or the fix has

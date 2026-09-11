@@ -503,6 +503,81 @@ export const VIRAL_MAX_STACKS = 10;
 export const VIRAL_DURATION_S = 6;
 
 /**
+ * HOW LONG EACH STATUS STAYS ON THE TARGET, in seconds.
+ *
+ * Three of these were already constants here and were scattered across the
+ * file; the rest come from the same wiki pages the strip model is built on.
+ * They are gathered because the count below needs EVERY type's lifetime, not
+ * just the three that strip or multiply.
+ *
+ * The four that carry no duration - impact, puncture and slash's own stagger
+ * behaviours aside - are the ones whose whole effect is instantaneous or is a
+ * stacking debuff whose duration the wiki states directly.
+ */
+export const STATUS_DURATION_S: Readonly<Record<string, number>> = {
+  impact: 6,
+  puncture: 6,
+  slash: DOT_DURATION_S,
+  heat: DOT_DURATION_S,
+  cold: 6,
+  electricity: DOT_DURATION_S,
+  toxin: DOT_DURATION_S,
+  blast: 6,
+  radiation: 12,
+  gas: DOT_DURATION_S,
+  magnetic: 6,
+  viral: VIRAL_DURATION_S,
+  corrosive: CORROSIVE_DURATION_S,
+  void: 6,
+};
+
+/**
+ * HOW MANY DISTINCT STATUS TYPES ARE LIVE ON THE TARGET, expected.
+ *
+ * WHY THIS EXISTS. `scoredEffects` drops every effect carrying a
+ * `scalingBasis`, and the single largest basis in the catalogue is "status type
+ * affecting the target" - 45 effects across the mod pool, led by CONDITION
+ * OVERLOAD, which is the mod a real level-9999 melee build is built around. The
+ * optimiser scored it at nothing, so it never recommended it, so the answer it
+ * gave was the best build in a game where Condition Overload does not exist.
+ * 85 mods in the catalogue are scored as worth nothing at all for this reason.
+ *
+ * THE POINT IS THAT THIS NEEDS NO ASSUMPTION ABOUT THE PLAYER. Most dropped
+ * conditions genuinely do - "on kill", "when aiming", "on bullet jump" depend
+ * on how somebody fights, and scoring them would mean inventing a playstyle.
+ * The number of status types on the target does not: it is a function of the
+ * build's own proc rate and its own damage composition, both of which the
+ * optimiser already computes to derive the corrosive strip and the viral
+ * multiplier.
+ *
+ * THE MATH. Each status type t arrives as its own process at rate
+ * `procsPerSecond x share(t)` and each instance lasts `STATUS_DURATION_S[t]`.
+ * For a Poisson arrival process the chance that AT LEAST ONE instance of t is
+ * live at a given moment is `1 - exp(-rate x lifetime)`, and the expected
+ * number of DISTINCT types live is the sum of those probabilities over types -
+ * exactly, by linearity of expectation, with no independence assumption needed
+ * between types because expectation is linear regardless.
+ *
+ * IT IS A FLOOR, in the same direction and for the same reason `heatStrip` is:
+ * a real weapon fires periodically rather than in a Poisson process, and a
+ * periodic arrival keeps a status up MORE reliably than a random one of the
+ * same rate. So a build is never credited with more types than it sustains.
+ */
+export function liveStatusTypes(input: { procsPerSecond: number; shares: ReadonlyMap<string, number> }): number {
+  const rate = Math.max(0, input.procsPerSecond);
+  if (rate === 0) return 0;
+  let expected = 0;
+  for (const [type, share] of input.shares) {
+    const lifetime = STATUS_DURATION_S[type];
+    if (lifetime === undefined || share <= 0) continue;
+    expected += 1 - Math.exp(-rate * share * lifetime);
+  }
+  return expected;
+}
+
+
+
+/**
  * The multiplier viral puts on damage to HEALTH: `2 + 0.25 * (stacks - 1)`.
  *
  * x2 at one stack, a quarter more for each after, x4.25 at ten. It works

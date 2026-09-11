@@ -56,6 +56,7 @@ import {
   heatStrip,
   igniteTick,
   landsAt,
+  liveStatusTypes,
   liveStacks,
   moddedBaseDamage,
   netArmour,
@@ -992,9 +993,16 @@ const SCORED_BY_QUESTION: Readonly<Record<Question, ReadonlySet<string>>> = {
  * rank is a non-negative integer, and it costs nothing.
  */
 const QUESTION_INDEX: Record<Question, number> = { Q1: 0, Q2: 1, Q3: 2 };
-const SCORED_CACHE = new WeakMap<ModRow, Map<number, { used: Effect[]; unscored: number }>>();
+const SCORED_CACHE = new WeakMap<ModRow, Map<number, { used: Effect[]; statusScaled: Effect[]; unscored: number }>>();
 
-export function scoredEffects(row: ModRow, rank: number, question: Question): { used: Effect[]; unscored: number } {
+/**
+ * The one scaling basis that is a property of the BUILD rather than of the
+ * fight. Matched loosely because the catalogue's wording varies in case and in
+ * whether it says "affecting the target"; every variant means the same thing.
+ */
+const PER_STATUS_TYPE = /status type/i;
+
+export function scoredEffects(row: ModRow, rank: number, question: Question): { used: Effect[]; statusScaled: Effect[]; unscored: number } {
   let byRank = SCORED_CACHE.get(row);
   if (!byRank) {
     byRank = new Map();
@@ -1007,6 +1015,8 @@ export function scoredEffects(row: ModRow, rank: number, question: Question): { 
   const hit = byRank.get(key);
   if (hit) return hit;
   const used: Effect[] = [];
+  /** Effects whose magnitude is `value x (status types live on the target)`. */
+  const statusScaled: Effect[] = [];
   let unscored = 0;
   for (const e of row.effects) {
     if (e.rank !== rank) continue;
@@ -1034,19 +1044,43 @@ export function scoredEffects(row: ModRow, rank: number, question: Question): { 
      * hit) under Q3. Condition Overload at a flat +80 % beats almost anything
      * in the ranking, which is exactly what it was doing.
      *
-     * None of the three bases is derivable from an account: status types on a
-     * target, the combo multiplier and hits landed are all facts about a fight
-     * in progress. So they go to `unscored`, which the panel already says out
-     * loud, rather than to a guess. That is the same rule the rest of this
-     * module keeps - a number the app cannot compute is named, never invented.
+     * THIS SAID ALL THREE BASES WERE UNDERIVABLE AND IT WAS WRONG ABOUT ONE.
+     *
+     * The combo multiplier and hits landed are genuinely facts about a fight in
+     * progress: they depend on how somebody plays, and scoring them would mean
+     * inventing a playstyle. STATUS TYPES ON THE TARGET ARE NOT. They are a
+     * function of the build's own proc rate and its own damage composition -
+     * both of which this very function's caller already computes, to derive the
+     * corrosive strip and the viral multiplier. The app had the number and
+     * refused to use it because a comment said it could not.
+     *
+     * This is the third time this project has shipped a false "the app cannot
+     * know that", and the cost here was the largest of the three: "Status Type
+     * affecting the target" is the biggest scaling basis in the catalogue - 45
+     * effects - and it is led by CONDITION OVERLOAD, which is the mod a real
+     * level-9999 melee build is built around. Scored at nothing, it was never
+     * recommended, so the optimiser's answer was the best build in a game where
+     * Condition Overload does not exist. 85 mods were worth nothing at all.
+     *
+     * So it gets its own bucket rather than being folded into `used`: `used` is
+     * applied per mod and this has to be multiplied by a count only the whole
+     * BUILD knows. Everything else still goes to `unscored`, which the panel
+     * says out loud - a number the app cannot compute is named, never invented.
      */
     const scales = e.scalingBasis !== undefined;
     const unconditional = e.conditions.length === 0 && !scales && (e.target === 'self' || e.target === 'squad');
     const elemental = e.op === 'add_pct' && e.damageType !== undefined && DAMAGE_ORDER.includes(e.damageType.toLowerCase() as (typeof DAMAGE_ORDER)[number]);
-    if (unconditional && e.value !== null && (SCORED_BY_QUESTION[question].has(e.stat) || elemental)) used.push(e);
+    const scorable = e.value !== null && (SCORED_BY_QUESTION[question].has(e.stat) || elemental);
+    const perStatus =
+      e.conditions.length === 0 &&
+      (e.target === 'self' || e.target === 'squad') &&
+      e.scalingBasis !== undefined &&
+      PER_STATUS_TYPE.test(e.scalingBasis);
+    if (unconditional && scorable) used.push(e);
+    else if (perStatus && scorable) statusScaled.push(e);
     else unscored++;
   }
-  const out = { used, unscored };
+  const out = { used, statusScaled, unscored };
   byRank.set(key, out);
   return out;
 }
@@ -1063,6 +1097,12 @@ export function score(item: ItemDbEntry, mods: ReadonlyArray<{ row: ModRow; rank
   let magPct = 0;
   /** Q2 only; Q1 never puts a status mod in `used`, so this stays zero there. */
   let statusPct = 0;
+  /**
+   * Per cent of damage PER STATUS TYPE live on the target - Condition Overload
+   * and the 44 other effects that scale on the same basis. Summed here and
+   * multiplied by the count below, once the build's own proc rate is known.
+   */
+  let statusScaledPct = 0;
   /** Q3 only, and zero under every other question for the same reason. */
   let healthPct = 0;
   let shieldPct = 0;
@@ -1074,6 +1114,7 @@ export function score(item: ItemDbEntry, mods: ReadonlyArray<{ row: ModRow; rank
 
   for (const m of mods) {
     const s = scoredEffects(m.row, m.rank, question);
+    for (const e of s.statusScaled) if (e.value !== null) statusScaledPct += e.value;
     unscored += s.unscored;
     for (const e of s.used) {
       const v = e.value ?? 0;
@@ -1175,7 +1216,9 @@ export function score(item: ItemDbEntry, mods: ReadonlyArray<{ row: ModRow; rank
     const amount = AMOUNTS[i] ?? 0;
     if (CONSUMED[i] === 0 && amount > 0) damage.push({ type: DAMAGE_ORDER[i]!, amount: amount * factor });
   }
-  const perShot = damage.reduce((n, d) => n + d.amount, 0);
+  // `let`, because a per-status bonus below rescales it; see there for why one
+  // pass is exact.
+  let perShot = damage.reduce((n, d) => n + d.amount, 0);
 
   const pellets = (item.multishot ?? 1) * (1 + multishotPct / 100);
   const cc = item.criticalChance === undefined ? null : item.criticalChance * (1 + ccPct / 100);
@@ -1206,6 +1249,52 @@ export function score(item: ItemDbEntry, mods: ReadonlyArray<{ row: ModRow; rank
   const reload = reloadTime(item.reloadTime ?? null, reloadPct);
   // Q3 asks about survival and never touches a rate, so an absent one costs it nothing.
   if (rate === null && question !== 'Q3') unscored++;
+
+  /*
+   * THE PER-STATUS BONUS, APPLIED HERE BECAUSE HERE IS WHERE IT CAN BE.
+   *
+   * Condition Overload reads "+80% Melee Damage per Status Type affecting the
+   * target" and the optimiser scored it at zero, so it never recommended the
+   * mod a real level-9999 melee build is built around. The count is not a fact
+   * about the fight: it follows from this build's own proc rate and its own
+   * damage composition, both of which are already computed a few lines below to
+   * derive the corrosive strip and the viral multiplier.
+   *
+   * THERE IS NO CIRCULARITY, and that is worth stating because it looks like
+   * there should be. The bonus raises `damagePct`, which scales every amount in
+   * `damage` by a common factor. The count depends on the proc RATE and the
+   * proc COMPOSITION: the rate is `procChance x (1 + statusPct/100)` times the
+   * shots per second, and the composition is the SHARES of `damage`, which a
+   * common factor leaves unchanged. `duty` is `direct / burst`, and both scale
+   * linearly with the same factor, so it cancels - `sustainedDps` is
+   * `burst x shots/(rate x reload + shots)`, and that multiplier holds no
+   * damage term at all. So the count is the same before and after, and one pass
+   * is exact rather than an approximation of a fixed point.
+   *
+   * Q2 ONLY. Q1 is defined as the floor with no status modelled at all, and
+   * crediting a status-scaled mod there would break the one property that makes
+   * Q1 worth having.
+   */
+  if (question === 'Q2' && statusScaledPct > 0 && perShot > 0) {
+    const dutyNow = magazine !== null && reload !== null && rate !== null && rate > 0 ? sustainedDps({ burstDps: 1, effectiveFireRate: rate, magazine, reload }) : 1;
+    const shotsPerSecondNow = rate === null ? 1 : rate * dutyNow;
+    const chanceNow = item.procChance === undefined ? null : item.procChance * (1 + statusPct / 100);
+    const perSecondNow = chanceNow !== null && shotsPerSecondNow > 0 ? procsPerShot(pellets, chanceNow) * shotsPerSecondNow : 0;
+    const types = liveStatusTypes({ procsPerSecond: perSecondNow, shares: procTypeWeights(damage) });
+    if (types > 0) {
+      /*
+       * A DAMAGE PER CENT IS ADDITIVE WITH THE OTHERS, which is why this
+       * rescales rather than multiplying at the end: `1 + (damagePct + bonus)/100`
+       * is not `(1 + damagePct/100) x (1 + bonus/100)`, and the game adds.
+       */
+      const before = 1 + damagePct / 100;
+      damagePct += statusScaledPct * types;
+      const after = 1 + damagePct / 100;
+      const rescale = before > 0 ? after / before : 1;
+      for (const d of damage) d.amount *= rescale;
+      perShot *= rescale;
+    }
+  }
 
   const burst = perShot * pellets * crit * (rate ?? 1);
   const direct = magazine !== null && reload !== null && rate !== null && rate > 0 ? sustainedDps({ burstDps: burst, effectiveFireRate: rate, magazine, reload }) : burst;
@@ -1739,7 +1828,26 @@ function prepare(input: PlanInput): Prepared {
   const question = input.question ?? 'Q1';
   const slotsOk = eligibleSlots(input.item);
   const eligible = input.catalogue.filter((r) => r.slot !== null && slotsOk.has(r.slot) && r.ranks > 0 && !r.isAura && !r.isFlawed);
-  const scoredRows = eligible.filter((r) => r.effects.some((e) => scoredEffects(r, e.rank, question).used.length > 0));
+  /*
+   * A ROW WITH ONLY A STATUS-SCALED EFFECT IS STILL A CANDIDATE, and leaving it
+   * out is why Condition Overload was never recommended even after its effect
+   * started being scored.
+   *
+   * This read `used.length > 0` and Condition Overload's `used` is EMPTY - its
+   * one effect is "+80% melee damage per Status Type affecting the target",
+   * which lives in `statusScaled` because its magnitude depends on the whole
+   * build rather than on the mod. So the search did not fail to pick it; the
+   * mod was never in the pool the search chooses from. Measured on a Kronen
+   * Prime with everything owned: the ideal build scored 6,547, and swapping its
+   * Molten Impact for Condition Overload scores 7,935 - a mod the optimiser
+   * could not see worth a fifth of the answer.
+   */
+  const scoredRows = eligible.filter((r) =>
+    r.effects.some((e) => {
+      const se = scoredEffects(r, e.rank, question);
+      return se.used.length > 0 || se.statusScaled.length > 0;
+    }),
+  );
 
   const idealPool: Candidate[] = [];
   const nowPool: Candidate[] = [];
@@ -1802,7 +1910,12 @@ function prepare(input: PlanInput): Prepared {
   for (const r of auraRows) {
     const max = r.fusionLimit ?? r.ranks - 1;
     const c = candidateAt(r, max);
-    if (r.effects.some((e) => scoredEffects(r, e.rank, question).used.length > 0)) auraPool.push(c);
+    // Same rule for the aura pool: an aura whose only effect scales on status
+    // types is still an aura worth considering.
+    if (r.effects.some((e) => {
+      const se = scoredEffects(r, e.rank, question);
+      return se.used.length > 0 || se.statusScaled.length > 0;
+    })) auraPool.push(c);
     else if (!biggest || c.drain < biggest.drain) biggest = c;
     byPath.set(r.uniqueName, r);
     const held = input.owned.get(r.uniqueName);
