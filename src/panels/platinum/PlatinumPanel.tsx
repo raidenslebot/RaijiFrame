@@ -680,11 +680,44 @@ function Rule() {
  * line each, which is a third of the height and reads left to right the way a
  * status bar does.
  */
-function Wallet({ pos }: { pos: { tradable: number | null; untradable: number | null; tradesLeft: number | null; tradesCap: number | null; ducats: number | null } }) {
+function Wallet({
+  pos,
+}: {
+  pos: {
+    held: number | null;
+    tradable: number | null;
+    untradable: number | null;
+    tradesLeft: number | null;
+    tradesCap: number | null;
+    ducats: number | null;
+  };
+}) {
+  /*
+   * THE CLAIM DEGRADES, NOT THE NUMBER.
+   *
+   * Tradable platinum is PremiumCredits minus PremiumCreditsFree, and it is
+   * null the moment either is missing. Caught on a real read carrying
+   * PremiumCredits 312 and no PremiumCreditsFree at all: the first cell of the
+   * panel printed an em dash while the figure it is derived from was sitting
+   * in the account. That is the "most of the data is empty" complaint in its
+   * purest form - not a number the app cannot know, a number it knows and
+   * refuses to say because it cannot say the SHARPER thing.
+   *
+   * An em dash is the honest rendering of a number nobody has, and it is the
+   * wrong rendering of a number nobody has QUALIFIED. So when the split is
+   * unknown the cell falls back to the platinum that is known, renames itself
+   * to what it is now claiming, and says in its own note which part it could
+   * not work out. Nothing is invented: the untradable share is not assumed to
+   * be zero, it is stated as unread.
+   */
+  const splitKnown = pos.tradable !== null;
+  const platinum = splitKnown
+    ? { label: 'Tradable platinum', value: pos.tradable, sub: pos.untradable ? `${int(pos.untradable)} untradable` : 'yours to trade away' }
+    : { label: 'Platinum', value: pos.held, sub: pos.held === null ? 'not read yet' : 'how much is tradable is not in this read' };
   return (
     <section className="anim-rise grid grid-cols-3 gap-[3px]">
       {[
-        { label: 'Tradable platinum', value: pos.tradable, sub: pos.untradable ? `${int(pos.untradable)} untradable` : 'yours to trade away', tone: 'var(--color-orokin-300)' },
+        { ...platinum, tone: 'var(--color-orokin-300)' },
         { label: 'Trades left today', value: pos.tradesLeft, sub: pos.tradesCap === null ? 'resets 00:00 UTC' : `of ${int(pos.tradesCap)}`, tone: undefined },
         { label: 'Ducats', value: pos.ducats, sub: 'Baro’s currency', tone: undefined },
         /*
@@ -1476,6 +1509,7 @@ export default function PlatinumPanel() {
         ducats,
         tradesLeft: pos.tradesLeft ?? null,
         tradablePlat: pos.tradable,
+        heldPlat: pos.held,
         standingBy,
         liveTiers,
         minutes: sessionMinutes,
@@ -1492,6 +1526,7 @@ export default function PlatinumPanel() {
       ducats,
       pos.tradesLeft,
       pos.tradable,
+      pos.held,
       standingBy,
       liveTiers,
       sessionMinutes,

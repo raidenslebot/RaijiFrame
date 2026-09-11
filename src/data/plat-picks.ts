@@ -344,6 +344,23 @@ export interface PickInputs {
    * Null when the account never said.
    */
   tradablePlat: number | null;
+  /*
+   * The wallet total, which is a CEILING on the line above.
+   *
+   * The two come from different fields and go missing separately:
+   * PremiumCredits is the total and PremiumCreditsFree is the part that can
+   * never be traded away, and tradable is the subtraction - so a read carrying
+   * the first and not the second knows exactly how much platinum the player
+   * has and nothing about how much of it can move. Measured on a real read:
+   * PremiumCredits 312, no PremiumCreditsFree, and the panel telling the
+   * player "your platinum has not been read from the game yet".
+   *
+   * It is here to say two true things in that state. Which half is missing,
+   * and - when the total itself is short of the price - that the purchase is
+   * refused rather than unknown, because no share of 312 buys something that
+   * costs 400.
+   */
+  heldPlat: number | null;
   /** Standing banked with each syndicate, by tag. Absent tag means unread. */
   standingBy: ReadonlyMap<string, number>;
   /** Relic tiers with a fissure live right now. Null when no worldstate. */
@@ -574,7 +591,22 @@ function completeSlot(inp: PickInputs): Slot {
          * method here that costs money up front, and being told to spend
          * platinum you do not have is worse than being told nothing.
          */
-        need('Platinum to buy with', 'platinum', best.toBuy, inp.tradablePlat, 'your platinum has not been read from the game yet'),
+        need(
+          'Platinum to buy with',
+          'platinum',
+          best.toBuy,
+          /*
+           * The tradable figure when there is one. Failing that, the total -
+           * but ONLY when the total already settles it. A player holding 312
+           * cannot buy a 400p part however their platinum is divided, so that
+           * is a refusal and not an unknown; a player holding 312 facing a
+           * 40p part might have 40 tradable or none, and that genuinely is one.
+           */
+          inp.tradablePlat ?? (inp.heldPlat !== null && inp.heldPlat < best.toBuy ? inp.heldPlat : null),
+          inp.heldPlat === null
+            ? 'your platinum has not been read from the game yet'
+            : `you hold ${String(inp.heldPlat)}, and how much of it can be traded away is not in this read`,
+        ),
       ],
       why: `${missing.join(' and ')} costs about ${String(round(best.toBuy))}p and the finished set sells at ${String(best.setPrice.median)}p`,
       where: null,

@@ -74,6 +74,7 @@ const EMPTY: PickInputs = {
   ducats: null,
   tradesLeft: 6,
   tradablePlat: 500,
+  heldPlat: 500,
   standingBy: new Map(),
   liveTiers: null,
   minutes: 60,
@@ -510,5 +511,83 @@ console.log('  ok    and refuses to order across units no exchange rate connects
 }
 
 console.log('  ok    the deck ranks what converts to an hour and refuses what does not');
+
+/* ------------------------------- the wallet total is a ceiling, not a blank */
+
+{
+  /*
+   * A READ CAN CARRY THE PLATINUM AND NOT THE SPLIT, and the panel used to
+   * treat that as knowing nothing.
+   *
+   * PremiumCredits is the total; PremiumCreditsFree is the part that can never
+   * be traded away; tradable is the subtraction. They go missing separately -
+   * measured on a real read carrying PremiumCredits 312 and no
+   * PremiumCreditsFree - and the requirement line said "your platinum has not
+   * been read from the game yet" while 312 sat in the account it had just read.
+   *
+   * Two things have to hold in that state, and they pull in opposite
+   * directions, which is why both are here: the total SETTLES the requirement
+   * when it is short of the price, and it leaves it genuinely open when it is
+   * not.
+   */
+  const sets = [
+    {
+      setSlug: 'ceiling_set',
+      name: 'Ceiling Set',
+      parts: ['held_a', 'held_b', 'costly_part'],
+      held: ['held_a', 'held_b'],
+      missing: ['costly_part'],
+      costs: new Map([['costly_part', price('costly_part', 400)]]),
+      setPrice: price('ceiling_set_set', 900),
+      toBuy: 400,
+      margin: 500,
+      perTrade: 250,
+      trades: 2,
+    },
+  ] as unknown as PickInputs['sets'];
+
+  const needOf = (inp: PickInputs): { met: boolean | null; unknown?: string } | null => {
+    const slot = bestPicks(inp).find((x) => x.kind === 'complete');
+    if (slot === undefined || !('pick' in slot)) return null;
+    const row = slot.pick.needs.find((n) => /platinum to buy with/i.test(n.what));
+    return row === undefined ? null : { met: row.met, ...(row.unknown === undefined ? {} : { unknown: row.unknown }) };
+  };
+
+  const short = needOf({ ...EMPTY, sets, tradablePlat: null, heldPlat: 312 });
+  const ample = needOf({ ...EMPTY, sets, tradablePlat: null, heldPlat: 5_000 });
+  const blind = needOf({ ...EMPTY, sets, tradablePlat: null, heldPlat: null });
+
+  if (short !== null && ample !== null && blind !== null) {
+    assert.equal(
+      short.met,
+      false,
+      'a player holding 312 was told a 400p purchase was UNKNOWN; no share of 312 buys something that costs 400',
+    );
+    assert.equal(
+      ample.met,
+      null,
+      'a player holding 5000 with an unread split was given a verdict the account cannot support - ' +
+        'all of it could be gift platinum, which buys nothing from another player',
+    );
+    assert.match(
+      ample.unknown ?? '',
+      /5000/,
+      'the unread line does not say what IS known, which is the whole defect: it read the platinum and said it had not',
+    );
+    assert.doesNotMatch(
+      ample.unknown ?? '',
+      /has not been read from the game/,
+      'the unread line still claims the platinum was never read, on a read that carried it',
+    );
+    assert.match(
+      blind.unknown ?? '',
+      /has not been read from the game/,
+      'with nothing read at all the line must still say so plainly',
+    );
+    console.log('  ok    the wallet total settles a purchase it cannot cover and never invents the tradable share');
+  } else {
+    throw new Error('the completion kind produced no platinum requirement to check');
+  }
+}
 
 console.log('\nthe five kinds hand down what they ranked\n');
