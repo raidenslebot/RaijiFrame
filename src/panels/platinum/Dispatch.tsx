@@ -701,9 +701,27 @@ function Card({
         </span>
       </div>
 
-      <p className="eyebrow mt-3" style={{ color: 'var(--text-faint)' }}>
-        {pick.verb}
-      </p>
+      {/*
+        THE VERB, ONLY WHEN THE KIND HAS NOT ALREADY SAID IT.
+
+        Photographed on a real account, the card read "SELL SOMETHING YOU HOLD"
+        and then, directly under it in the same style, "SELL". Two lines, one
+        word, no information in the second - and it sat between the kind and the
+        subject, which is the place a reader is travelling through to reach the
+        answer.
+        ————————————————————————————————————————————
+        Deleting it outright would be wrong: for `complete` the kind is "Finish
+        a set and sell it" and the verb is "Buy, then sell", which is genuinely
+        the instruction and is not in the label. So the test is CONTAINMENT -
+        the verb is dropped exactly when the kind already contains it, which is
+        a fact about the two strings rather than a list of kinds somebody has to
+        keep in step with `KIND_LABEL`.
+      */}
+      {!KIND_LABEL[pick.kind].toLowerCase().includes(pick.verb.toLowerCase()) && (
+        <p className="eyebrow mt-3" style={{ color: 'var(--text-faint)' }}>
+          {pick.verb}
+        </p>
+      )}
       <h3
         /*
          * `text-wrap: balance` because the subject is a MOD NAME and the app
@@ -743,7 +761,22 @@ function Card({
         className={`rf-detail ${dir < 0 ? 'rf-swap-back' : 'rf-swap-fwd'} flex min-w-0 flex-col`}
         style={{ animationDelay: '60ms' }}
       >
-        <Needs needs={pick.needs} />
+        {/*
+          THE TRADE COST WAS ON THE CARD TWICE, a few centimetres apart.
+
+          Under the figure: "costs 1 of the 6 trades you have left". In this
+          column: "A trade - needs 1 trade, you have 6". Same fact, same
+          numbers, two wordings - and the second is the one a reader meets
+          while looking for what ELSE the pick requires, which is what this
+          column is for.
+
+          The cost line stays, because a price belongs beside the figure it is
+          the price of. The requirement drops only when `pick.cost` has already
+          stated it; every other need - the platinum to buy with, the parts
+          already held, the standing - is untouched, and a trade requirement on
+          a pick whose cost line says nothing about trades still shows.
+        */}
+        <Needs needs={pick.needs.filter((n) => !(/\btrade/i.test(n.what) && /\btrade/i.test(pick.cost)))} />
         {open && <Working facts={pick.facts} />}
         {/* And under the working, the next "how do you know" - only for the
             kinds that name a tradeable item. A route has no market page, and a
@@ -888,7 +921,6 @@ export function Dispatch({
   onReorder,
   onMark,
   onReset,
-  tradesLeft,
   session,
   pricing,
 }: {
@@ -906,7 +938,6 @@ export function Dispatch({
   onMark: (ref: string, state: StepState) => void;
   /** Bring back everything waved away today, or one thing by its ref. */
   onReset: (ref?: string) => void;
-  tradesLeft: number | null;
   /** Where the session length came from, or null when never measured. */
   session: string | null;
   /**
@@ -1475,11 +1506,15 @@ export function Dispatch({
                 : `${reachable.toLocaleString()} of ${total.toLocaleString()} platinum here is within what you hold`}
             </Meta>
           )}
-          {tradesLeft !== null && (
-            <Meta>
-              {String(tradesLeft)} {tradesLeft === 1 ? 'trade' : 'trades'} left
-            </Meta>
-          )}
+          {/*
+            "6 TRADES LEFT" CAME OUT, because the wallet strip states it twenty
+            pixels above this line - "TRADES LEFT TODAY 6 OF 16" - and states it
+            better, with the cap beside it. Five eyebrow lines stood between the
+            heading and the first card and this was the one carrying nothing the
+            reader did not already have on screen. The cards still say what each
+            one costs against what is left, which is the form that is about a
+            decision rather than a status.
+          */}
           {/*
             THE GESTURE, SAID ONCE, WHERE IT IS TRUE OF ALL OF THEM.
 
@@ -1671,7 +1706,33 @@ export function Dispatch({
         </div>
       )}
 
-      {!allRefused && refusalGroups.length > 0 && <RefusalList groups={refusalGroups} />}
+      {/*
+        AND WHEN SOME KINDS DID DELIVER, THE REST GO BEHIND A DOOR.
+
+        The all-refused case above was fixed and this one was not, so the card
+        that succeeded sat on top of eight grey lines listing the four that did
+        not - photographed on a real account as "FINISH A SET AND SELL IT /
+        Nothing you hold is within two parts of a complete set. / This appears
+        as soon as you are one or two parts short of a set. / GO AND EARN IT /
+        No route your account can run has a rate yet. / ..." beneath an answer
+        the player had already been given.
+        ————————————————————————————————————————————
+        A refusal matters when there is NOTHING else: it is the only thing the
+        player has to go on. When there IS something, it is the answer to a
+        question they did not ask, and it is longer than the answer they did.
+        So it keeps every word and loses the room: the summary names which
+        kinds are empty, and opening it shows exactly the list that used to be
+        printed.
+      */}
+      {!allRefused && refusalGroups.length > 0 && (
+        <Disclosure
+          eyebrow="The other kinds"
+          summary={`${String(refusals.length)} ${refusals.length === 1 ? 'kind has' : 'kinds have'} nothing to offer yet`}
+          answer={<span style={{ color: 'var(--text-ghost)' }}>{refusals.map((r) => KIND_LABEL[r.kind].toLowerCase()).join(' \u00b7 ')}</span>}
+        >
+          <RefusalList groups={refusalGroups} />
+        </Disclosure>
+      )}
 
       {session !== null && <Meta>{session}</Meta>}
     </section>

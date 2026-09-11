@@ -1792,7 +1792,6 @@ export default function PlatinumPanel() {
             return { day: prev.day, steps: next };
           });
         }}
-        tradesLeft={pos.tradesLeft ?? null}
         session={sessionNote}
         pricing={auto.stage === null ? null : { stage: auto.stage, done: auto.done, total: auto.total }}
       />
