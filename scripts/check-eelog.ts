@@ -127,6 +127,11 @@ const LINES = {
   buildMods:
     'Modded Capacity: 34|WeaponMeleeStatusChanceSPMod-11|WeaponMeleeDamageModExpert-7|WeaponSlashDamageMod-7|AshenMandibleMod-5|WeaponCritChanceSPMod-6\r',
   buildDrain: 'Final Mod Drain: 4',
+  // Every interface the game builds, from the real log of a session that never
+  // finished logging in. The nested one is not hypothetical: HelminthBackground
+  // lives two directories down and would collide with a top-level name.
+  interfaceCreated: '6.216 Sys [Info]: Created /Lotus/Interface/Progress.swf',
+  interfaceNested: '20.111 Sys [Info]: Created /Lotus/Interface/Backgrounds/Helminth/HelminthBackground.swf',
   buildLoadOut: '6372.550 Sys [Info]: BuildLoadOut for SomePlayer',
   sendLoadOut: '6020.864 Sys [Info]: LotusHumanPlayer::SendLoadOut: SomePlayer loadout received',
 };
@@ -639,6 +644,16 @@ function parsesTheBuildDump() {
  */
 function theArsenalLinesNeverCarryTheName() {
   assert.equal(parseLine(LINES.buildLoadOut), null, 'BuildLoadOut for <player> produced an event');
+  /*
+   * AND THE NEW UNIVERSAL MATCHER IS IN THE SAME BLAST RADIUS. `Created
+   * /Lotus/Interface/<name>.swf` is a loose shape and it sits in the same file
+   * as the two lines that carry the player's name, so it is tested against
+   * them here rather than reasoned about.
+   */
+  for (const line of [LINES.buildLoadOut, LINES.sendLoadOut]) {
+    const e = parseLine(line);
+    assert.ok(e === null || e.type !== 'interface', 'a name-carrying line was parsed as an interface');
+  }
   assert.equal(parseLine(LINES.sendLoadOut), null, 'SendLoadOut: <player> produced an event');
   for (const line of [
     LINES.upgradeSlot, LINES.upgradeCardsOpen, LINES.upgradeCardsClose, LINES.arsenalOpen,
@@ -852,8 +867,47 @@ function theTailSkipsToTheEnd(): void {
   assert.equal(m[1], 'true', 'the tail replays EE.log from the first byte, which is where the account email is');
 }
 
+function parsesEveryInterfaceTheGameBuilds() {
+  /*
+   * THE SIGNAL THE APP WAS THROWING THIRTEEN FOURTEENTHS OF AWAY.
+   *
+   * `Created /Lotus/Interface/<name>.swf` is how the modding screen has always
+   * been detected, and the game emits it for every interface it puts up -
+   * fourteen distinct ones in fifteen hundred lines of a session that never
+   * finished logging in. One was matched and the rest fell through to null.
+   */
+  const e = parseLine(LINES.interfaceCreated);
+  assert.ok(e, 'an interface the game created was not parsed at all');
+  assert.equal(e.type, 'interface');
+  assert.equal(e.type === 'interface' ? e.name : null, 'Progress');
+  assert.equal(e.at, 6.216, 'the interface event lost its timestamp, which is what makes it comparable to an open');
+
+  /*
+   * THE LEAF, NOT THE PATH, and they are different for a real interface: the
+   * Helminth background lives two directories down. Matching only
+   * `[A-Za-z0-9_]+\.swf` would have missed it entirely, and taking the whole
+   * captured segment as the name would give the reducer a string no screen
+   * name will ever equal.
+   */
+  const nested = parseLine(LINES.interfaceNested);
+  assert.ok(nested && nested.type === 'interface', 'a nested interface path was not parsed');
+  assert.equal(nested.name, 'HelminthBackground', 'the nested interface kept its directories in its name');
+  assert.equal(nested.path, '/Lotus/Interface/Backgrounds/Helminth/HelminthBackground', 'the whole path is needed to tell two leaves apart');
+
+  /*
+   * AND THE MODDING SCREEN IS STILL A SCREEN. Its own `Created` line is matched
+   * earlier in the same function and must keep producing the event a whole
+   * reducer is built on - the generalisation must not swallow the one case
+   * that already worked.
+   */
+  const cards = parseLine(LINES.upgradeCardsCreated);
+  assert.ok(cards && cards.type === 'screen', 'the modding screen now parses as a plain interface, and its session never starts');
+  assert.equal(cards.name, 'UpgradeCards');
+}
+
 const checks = [
   neverLeaksTheEmailLine,
+  parsesEveryInterfaceTheGameBuilds,
   neverLeaksMachineOrAccountIdentifiers,
   redactionStripsPii,
   everyStringLeavingTheParserIsRedacted,

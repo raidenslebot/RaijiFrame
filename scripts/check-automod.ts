@@ -15,7 +15,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { parseLine, type LogEvent } from '../src/core/eelog.ts';
-import { IDLE, fold, netEdits, step, type Session } from '../src/data/automod-session.ts';
+import { IDLE, fold, netEdits, step, type PendingSlot, type Session } from '../src/data/automod-session.ts';
 import { CARD, GRID, GRID_SLOTS_SHOWN, MEASURED_AT, asideBox, fullBox, slotBox, type Box } from '../src/data/automod-place.ts';
 import { resolveIn } from '../src/data/build.ts';
 import { categoryForModClass, categoryFromPlacement, categoryOpen, learnSlot, lessonFrom, loadLearnedSlots } from '../src/data/slot-learning.ts';
@@ -86,7 +86,7 @@ ok('hovering a slot is not pressing it', () => {
 
 ok('the second open line twenty milliseconds later does not reset the session', () => {
   const opened = fold(events(L.pressSlot, L.goTo));
-  const pending = { slot: null, slotAt: null, unrecognised: null };
+  const pending = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
   const again = step(opened, events(L.created)[0]!, pending);
   assert.equal(again, opened, 'a repeat open within a second must return the same object');
 });
@@ -166,7 +166,7 @@ ok('a placement with no open is recorded and flagged, never dropped', () => {
 });
 
 ok('events that are not the arsenal\'s return the identical session object', () => {
-  const pending = { slot: null, slotAt: null, unrecognised: null };
+  const pending = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
   const e = parseLine('164.957 Script [Info]: EndOfMatch.lua: Mission Succeeded');
   assert.ok(e);
   const s: Session = { ...IDLE, phase: 'visible' };
@@ -1045,6 +1045,82 @@ ok('the observation only fills a null - it can never change an answer the log ga
     { kind: 'keep', category: 'warframe' },
     'an observation outranked the slot the log stated, which is a guess beating a reading',
   );
+});
+
+ok('a different screen opening ends the visit, instead of a ninety-second wait', () => {
+  /*
+   * HOW THE OVERLAY USED TO OUTSTAY THE SCREEN IT BELONGS TO.
+   *
+   * The modding screen closes by `Background::GoToPreviousScreen` logged from
+   * its own script - that is the back button, and it is not the only way out.
+   * The game's screen manager also moves the player straight to another named
+   * screen and says so with the same line this reducer already receives. It
+   * read the name, saw it was not UpgradeCards, and returned unchanged, so on
+   * that path nothing in the app knew the screen was gone and the strip sat on
+   * top of the game until a ninety-second silence watchdog took it down.
+   */
+  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
+  const open = step(IDLE, { at: 100, type: 'screen', name: 'UpgradeCards', open: true }, pending);
+  assert.equal(open.phase, 'opened', 'the visit did not start');
+
+  const left = step(open, { at: 112, type: 'screen', name: 'Navigation', open: true }, pending);
+  assert.equal(left.phase, 'idle', 'the player moved to another screen and the session stayed open');
+  assert.equal(left.closedAt, 112, 'the close did not record when it happened, so the trailing-HudVis guard cannot work');
+  assert.equal(left.leftFor, 'Navigation', 'the screen that ended the visit was not recorded');
+
+  /*
+   * AND IT IS RECOVERABLE, which is what makes erring toward down the right
+   * direction. If some screen reachable WITHOUT leaving the cards turns out to
+   * announce itself this way, the game's own narration brings the session back
+   * through the visible-before-open path. The opposite mistake - staying up -
+   * covers the game with a stale panel and nothing corrects it at all.
+   */
+  const back = step(left, { at: 200, type: 'hudVisible', screen: 'UpgradeCards', level: 1 }, pending);
+  assert.notEqual(back.phase, 'idle', 'a screen wrongly declared closed can never come back, which makes the guess unsafe');
+
+  /*
+   * A CLOSE of another screen says nothing about this one - the manager names
+   * the screen being OPENED, and a close arrives from the script that logged
+   * it. Treating both as an exit would end a visit on the dialog the player
+   * just dismissed to get back to their mods.
+   */
+  const reopened = step(IDLE, { at: 300, type: 'screen', name: 'UpgradeCards', open: true }, pending);
+  const other = step(reopened, { at: 305, type: 'screen', name: 'Navigation', open: false }, pending);
+  assert.equal(other.phase, 'opened', 'another screen CLOSING ended this visit');
+
+  // And at idle it is not news either way.
+  assert.equal(step(IDLE, { at: 400, type: 'screen', name: 'Market', open: true }, pending).phase, 'idle');
+});
+
+ok('an open records the interface it came from, which is the no-slot path measured at last', () => {
+  /*
+   * BETTER THAN SIX OPENS IN TEN CARRY NO SLOT PRESS, and for the whole life of
+   * such a visit the app has no category, no build and no plan. The reason it
+   * stayed that way is that nothing kept the one fact separating those opens
+   * from each other: what the game had built a moment earlier.
+   *
+   * NOTHING HERE MAPS A NAME TO A CATEGORY, and the gate is written to keep it
+   * that way - it asserts the evidence is carried, not that any interface means
+   * anything. Inventing that mapping is exactly the fabrication this project
+   * forbids; the point is that the next real session can answer it.
+   */
+  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
+  let s = step(IDLE, { at: 500.0, type: 'interface', name: 'ThemedContextMenu', path: '/Lotus/Interface/ThemedContextMenu' }, pending);
+  assert.equal(s.phase, 'idle', 'an interface being built started a modding session on its own');
+
+  s = step(s, { at: 500.4, type: 'screen', name: 'UpgradeCards', open: true }, pending);
+  assert.equal(s.cameFrom, 'ThemedContextMenu', 'the interface built on the way in was not carried into the visit');
+
+  /*
+   * AND IT EXPIRES ON THE SAME WINDOW THE SLOT PRESS USES. An interface from a
+   * menu the player used half an hour ago is not where this open came from, and
+   * carrying it would be worse than carrying nothing: it is a wrong answer in
+   * the place a right one is supposed to go.
+   */
+  const stale: PendingSlot = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
+  let t = step(IDLE, { at: 100, type: 'interface', name: 'Market', path: '/Lotus/Interface/Market' }, stale);
+  t = step(t, { at: 900, type: 'screen', name: 'UpgradeCards', open: true }, stale);
+  assert.equal(t.cameFrom, null, 'an interface from eight hundred seconds earlier was reported as where this open came from');
 });
 
 console.log(`\n${checks} checks, ${failures} failures\n`);

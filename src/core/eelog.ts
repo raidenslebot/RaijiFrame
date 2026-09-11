@@ -105,6 +105,26 @@ export type LogEvent = { at: number | null } & (
    */
   /** A menu screen opened or closed. `name` is the game's own screen name. */
   | { type: 'screen'; name: string; open: boolean }
+  /*
+   * EVERY INTERFACE THE GAME BUILDS, not just the one this app already knew.
+   *
+   * `Created /Lotus/Interface/<name>.swf` is the line the modding screen was
+   * already detected by, and the game emits it for EVERY interface it puts up.
+   * Counted on a real log from a session that never even finished logging in:
+   * fourteen distinct interfaces in fifteen hundred lines - Background,
+   * ThemedMainMenu, Progress, Bumper, Dialog, ToolTip, ItemInfoPopup,
+   * ThemedContextMenu, ContextAction, and a nested one under Backgrounds/.
+   *
+   * The app matched exactly one of them and dropped the other thirteen, which
+   * is the whole of "it cannot tell what the player is looking at". Keeping
+   * them costs one regex and gives the UI state a source that is deterministic,
+   * always emitted, and named by the game itself rather than inferred.
+   *
+   * `name` is the leaf, which is what the game's own screen manager uses;
+   * `path` is kept whole because a nested interface (HelminthBackground lives
+   * under Backgrounds/Helminth/) would otherwise collide with a top-level one.
+   */
+  | { type: 'interface'; name: string; path: string }
   /** "Upgrade" pressed on an arsenal slot: 0 warframe · 1 primary · 2 secondary · 3 melee. */
   | { type: 'upgradeSlot'; slot: number }
   /** A mod was put on or taken off the item being modded. `itemType` is the catalogue path. */
@@ -335,6 +355,20 @@ function matchLine(line: string, captureSquadNames: boolean): LogEvent | null {
    */
   if (/Created \/Lotus\/Interface\/DiegeticUpgradeCards\.swf/.test(line)) {
     return { at, type: 'screen', name: 'UpgradeCards', open: true };
+  }
+
+  /*
+   * Sys [Info]: Created /Lotus/Interface/Progress.swf
+   *
+   * AFTER the UpgradeCards case above, deliberately: that one screen keeps its
+   * own event type because a reducer already turns it into a session, and
+   * re-routing it through here would be a refactor pretending to be a feature.
+   * Everything else the game creates arrives as evidence.
+   */
+  const iface = /Created (\/Lotus\/Interface\/([A-Za-z0-9_]+(?:\/[A-Za-z0-9_]+)*))\.swf/.exec(line);
+  if (iface?.[1] && iface[2]) {
+    const leaf = iface[2].slice(iface[2].lastIndexOf('/') + 1);
+    return { at, type: 'interface', name: leaf, path: iface[1] };
   }
 
   // Script [Info]: DiegeticUpgradeCards.lua: DBG: HudVis 1
@@ -674,6 +708,7 @@ export class MissionTracker {
        */
       // eslint-disable-next-line no-fallthrough
       case 'screen':
+      case 'interface':
       case 'upgradeSlot':
       case 'modInstalled':
       case 'modOwned':

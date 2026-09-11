@@ -736,6 +736,21 @@ export function ledgerFromEvent(e: LogEvent, at: number, account: string): Ledge
      */
     case 'modOwned':
       return [];
+    /*
+     * NOT RECORDED, and the reason is the one this whole file is built on: the
+     * ledger records CHANGES TO THE ACCOUNT, and an interface being built
+     * changes nothing the player owns. The game narrates every one it puts up -
+     * a tooltip, a context menu, a confirmation dialog, the loading bar - so
+     * recording them would put hundreds of rows a session into an append-only
+     * file whose whole value is that every row in it is a thing that happened
+     * to the account.
+     *
+     * It is UI state, it is consumed as UI state by the session reducer, and it
+     * is deliberately dropped here rather than left to a default, so the
+     * coverage gate keeps naming this file the moment a new event appears.
+     */
+    case 'interface':
+      return [];
     // Visibility is a fact about the screen, not about the account.
     case 'hudVisible':
       return [];

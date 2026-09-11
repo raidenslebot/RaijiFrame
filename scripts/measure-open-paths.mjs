@@ -20,6 +20,12 @@
  * neither is one of the lines that carry a display name, and
  * `BuildLoadOut`/`SendLoadOut` are never touched.
  *
+ * It also tallies the interface the game built immediately before each open,
+ * split by whether a slot press came with it. That column exists because the
+ * share below cannot be closed without it: a visit with no slot press used to
+ * leave no record of how it was reached at all, so the question could not be
+ * put to a log. Names are reported; no name is given a meaning here.
+ *
  *   node scripts/measure-open-paths.mjs      # or: npm run opens
  */
 import { createReadStream, existsSync } from 'node:fs';
@@ -37,6 +43,22 @@ if (!existsSync(LOG)) {
 const stamp = /^(\d+\.\d+)/;
 let lastSlotAt = null;
 let lastSlotIndex = null;
+/*
+ * WHAT THE GAME BUILT ON THE WAY IN.
+ *
+ * The share below has been the app's largest functional hole for as long as it
+ * has been measured, and every attempt to close it foundered on the same thing:
+ * a visit with no slot press left NO record of how it was reached, so the
+ * question could not even be asked of a log. The game does narrate it - it
+ * builds an interface for everything it puts up and says so - and now that the
+ * parser keeps those lines, this counts them.
+ *
+ * It reports names and nothing else. No mapping from an interface to a category
+ * is made here or anywhere in the app: the point of this column is to find out
+ * whether one EXISTS, from the player's own log, rather than to invent one.
+ */
+let lastIface = null;
+let lastIfaceAt = null;
 const visits = [];
 
 const rl = createInterface({ input: createReadStream(LOG, 'latin1'), crlfDelay: Infinity });
@@ -56,10 +78,28 @@ for await (const line of rl) {
    * a few hundred ms earlier and the reducer dedupes the pair, so counting the
    * `Created` line counts visits rather than lines.
    */
+  /*
+   * Every OTHER interface. Checked before the card screen's own line so the
+   * modding screen can never be recorded as the thing that preceded itself.
+   * The capture is a Lotus path; it carries no player data of any kind.
+   */
+  const other = /Created (\/Lotus\/Interface\/(?!DiegeticUpgradeCards\.swf)[A-Za-z0-9_/]+)\.swf/.exec(line);
+  if (other && at !== null) {
+    lastIface = other[1].slice(other[1].lastIndexOf('/') + 1);
+    lastIfaceAt = at;
+    continue;
+  }
+
   if (/Created \/Lotus\/Interface\/DiegeticUpgradeCards\.swf/.test(line) && at !== null) {
     const gap = lastSlotAt === null ? null : at - lastSlotAt;
     const fresh = gap !== null && gap >= 0 && gap <= SLOT_LEADS_OPEN_SECONDS;
-    visits.push({ gapMs: fresh ? Math.round(gap * 1000) : null, index: fresh ? lastSlotIndex : null });
+    const fromGap = lastIfaceAt === null ? null : at - lastIfaceAt;
+    const fromFresh = fromGap !== null && fromGap >= 0 && fromGap <= SLOT_LEADS_OPEN_SECONDS;
+    visits.push({
+      gapMs: fresh ? Math.round(gap * 1000) : null,
+      index: fresh ? lastSlotIndex : null,
+      from: fromFresh ? lastIface : null,
+    });
   }
 }
 
@@ -79,6 +119,28 @@ if (visits.length > 0) {
   const share = Math.round((slotless / visits.length) * 1000) / 10;
   console.log(`\n  ${String(share)} % of visits reach the panel with no category, no build and no plan.`);
   console.log('  Those are the Mods-segment entries: no slot press and no GoToScreen, only the universal open.');
+}
+
+/*
+ * THE COLUMN THE BLIND SPOT HAS NEVER HAD. If the slotless visits share an
+ * interface and the others do not, that is the signal that names them - and if
+ * they do not, that is worth knowing too, because it says the answer is not in
+ * this line and the search should move on rather than continue by guesswork.
+ */
+if (visits.length > 0) {
+  const tally = (rows) => {
+    const m = new Map();
+    for (const v of rows) m.set(v.from ?? '(not narrated)', (m.get(v.from ?? '(not narrated)') ?? 0) + 1);
+    return [...m].sort((a, b) => b[1] - a[1]);
+  };
+  const show = (title, rows) => {
+    if (rows.length === 0) return;
+    console.log(`\n  ${title}`);
+    for (const [name, n] of tally(rows)) console.log(`    ${String(n).padStart(4)}  ${name}`);
+  };
+  console.log('\n  the interface the game built on the way in:');
+  show('opens WITH a slot press:', withSlot);
+  show('opens with NO slot line - the ones with no category:', visits.filter((v) => v.index === null));
 }
 
 const gaps = withSlot.map((v) => v.gapMs).sort((a, b) => a - b);

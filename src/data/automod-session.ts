@@ -103,6 +103,24 @@ export interface PendingSlot {
   slot: UpgradeSlot | null;
   slotAt: number | null;
   unrecognised: number | null;
+  /*
+   * The interface the game built most recently before this one, which is the
+   * only record of HOW a modding screen was reached when no slot line came
+   * with it.
+   *
+   * That path is not rare and it is not small: on a real log, better than six
+   * opens in ten emit no slot press at all, and for the whole life of such a
+   * visit the app has no category, no build and no plan. The reason it stayed
+   * unmeasured is that nothing kept the one fact that distinguishes those
+   * opens from each other - what the player was looking at a moment earlier.
+   *
+   * This is EVIDENCE, not a mapping. Nothing here turns an interface name into
+   * a category, because nothing has yet seen enough of them to know; it is
+   * recorded, published and traced so that the next real session answers a
+   * question that has been open since the panel was written.
+   */
+  lastInterface: string | null;
+  lastInterfaceAt: number | null;
 }
 
 export const SLOT_CATEGORY: Record<UpgradeSlot, 'warframe' | 'primary' | 'secondary' | 'melee'> = {
@@ -152,6 +170,18 @@ export interface Session {
    * screens be supported at all.
    */
   unreadSlot: number | null;
+  /*
+   * THE INTERFACE THE GAME BUILT IMMEDIATELY BEFORE THIS SCREEN, and the named
+   * screen that replaced it.
+   *
+   * Both are null for a visit that began or ended without the game saying so.
+   * Neither is interpreted anywhere: `cameFrom` is the measurement that the
+   * no-slot path has never had, and `leftFor` is the name of the screen that
+   * ended the visit, which is worth having in a trace when a visit ends for a
+   * reason the app did not previously recognise at all.
+   */
+  cameFrom: string | null;
+  leftFor: string | null;
   /** Every placement or removal since the open, in order. Cleared on the next open. */
   edits: Edit[];
   /** The last save's dump, assembled from its four lines. Survives until the next open. */
@@ -189,6 +219,8 @@ export const IDLE: Session = {
   fusions: [],
   seenWithoutOpen: false,
   closedAt: null,
+  cameFrom: null,
+  leftFor: null,
 };
 
 /*
@@ -256,8 +288,47 @@ export function step(s: Session, e: LogEvent, pending: PendingSlot): Session {
       return s;
     }
 
+    case 'interface':
+      /*
+       * Remembered outside the session for the same reason the slot press is:
+       * it precedes the open, and the open is what creates the session. One
+       * slot of memory, overwritten by each interface the game builds.
+       */
+      pending.lastInterface = e.name;
+      pending.lastInterfaceAt = e.at;
+      return s;
+
     case 'screen': {
-      if (e.name !== 'UpgradeCards') return s;
+      if (e.name !== 'UpgradeCards') {
+        /*
+         * A DIFFERENT SCREEN OPENING IS THIS ONE CLOSING, and until now this
+         * line was parsed and then dropped on the floor.
+         *
+         * The modding screen closes by `Background::GoToPreviousScreen` logged
+         * from its own script. That is the back button, and it is not the only
+         * way out: the game's screen manager also moves the player directly to
+         * another named screen, and it announces that with the same
+         * `Background::GoToScreen(screenName=...)` line this reducer already
+         * receives. The reducer read the name, saw it was not UpgradeCards, and
+         * returned unchanged - so on that path the overlay had no idea the
+         * screen was gone and stayed on top of the game until the controller's
+         * ninety-second silence watchdog fired.
+         *
+         * Ninety seconds of an overlay over a game the player has moved on
+         * from. That is the whole of "it does not know what I am looking at",
+         * and the signal to end it was already arriving.
+         *
+         * ERRING TOWARD DOWN IS THE RIGHT DIRECTION HERE. If some screen the
+         * player can reach WITHOUT leaving the cards - a confirmation, a
+         * fusion - turns out to announce itself this way, the cost is the strip
+         * going down early, and the game's own narration brings it back: a
+         * `HudVis` or a mod placed while idle revives the session through the
+         * visible-before-open path below. The opposite mistake covers the
+         * game's art with a stale panel and nothing at all corrects it.
+         */
+        if (!e.open || s.phase === 'idle') return s;
+        return { ...s, phase: 'idle', openedAt: null, closedAt: e.at, leftFor: e.name };
+      }
       if (e.open) {
         if (s.phase !== 'idle' && s.openedAt !== null && e.at !== null && Math.abs(e.at - s.openedAt) <= SAME_OPEN_SECONDS) {
           return s; // the arsenal path's second open line
@@ -268,10 +339,26 @@ export function step(s: Session, e: LogEvent, pending: PendingSlot): Session {
         // The unrecognised index belongs to this open only if the press was
         // fresh enough to belong to it at all - the same test the slot uses.
         const unreadSlot = slotIsFresh ? pending.unrecognised : null;
+        /*
+         * WHERE THIS OPEN CAME FROM, on the same freshness test as the slot.
+         *
+         * The interface that matters is the one the game built on the way in,
+         * not whatever it built when the player last used a menu half an hour
+         * ago - and the modding screen's own `Created` line arrives as a screen
+         * event rather than an interface one, so it can never be its own
+         * answer. An interface older than the slot window belongs to a
+         * different visit and is dropped.
+         */
+        const fromIsFresh =
+          pending.lastInterfaceAt !== null &&
+          e.at !== null &&
+          e.at - pending.lastInterfaceAt >= 0 &&
+          e.at - pending.lastInterfaceAt <= SLOT_LEADS_OPEN_SECONDS;
+        const cameFrom = fromIsFresh ? pending.lastInterface : null;
         pending.slot = null;
         pending.slotAt = null;
         pending.unrecognised = null;
-        return { ...IDLE, phase: 'opened', openedAt: e.at, slot, unreadSlot };
+        return { ...IDLE, phase: 'opened', openedAt: e.at, slot, unreadSlot, cameFrom };
       }
       // A close. With no open on record it is still a close, and it says so.
       return { ...s, phase: 'idle', openedAt: null, closedAt: e.at, seenWithoutOpen: s.phase === 'idle' ? true : s.seenWithoutOpen };
@@ -363,7 +450,7 @@ export function netEdits(edits: readonly Edit[]): { placed: string[]; lifted: st
  */
 export function fold(events: Iterable<LogEvent>): Session {
   let s = IDLE;
-  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null };
+  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
   for (const e of events) s = step(s, e, pending);
   return s;
 }

@@ -37,7 +37,7 @@ if (!existsSync(LOG)) {
    * two seconds BEFORE the open it belongs to, so the reducer needs somewhere to
    * hold it. Replaying without it would mis-attribute every session's slot.
    */
-  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null };
+  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
   let session: Session = IDLE;
 
   interface Visit {

@@ -94,7 +94,7 @@ function events(...lines: string[]): LogEvent[] {
   return lines.map(one);
 }
 
-const freshPending = () => ({ slot: null, slotAt: null, unrecognised: null });
+const freshPending = () => ({ slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null });
 
 /*
  * HOW MANY CONDITIONAL RENDERS `Aside` HAS, and which axis of the enumeration
@@ -684,7 +684,7 @@ ok('an arsenal slot this app does not recognise is recorded rather than discarde
    * Both halves are asserted because each fails silently: without the record
    * the number is gone, and without the trace nobody ever sees it.
    */
-  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null };
+  const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
   const at = (n: number): LogEvent => ({ at: 1, type: 'upgradeSlot', slot: n });
 
   for (const known of [0, 1, 2, 3]) {

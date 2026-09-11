@@ -240,7 +240,7 @@ let stopLogTail: (() => void) | null = null;
  * nothing: Overwolf does not document what a hidden window's timers do.
  */
 let session: Session = IDLE;
-const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null };
+const pending: PendingSlot = { slot: null, slotAt: null, unrecognised: null, lastInterface: null, lastInterfaceAt: null };
 const sessionListeners = new Set<() => void>();
 /** The game's client area in logical px; null until Overwolf reports it. */
 let area: { width: number; height: number } | null = null;
@@ -1404,7 +1404,31 @@ function observeArsenal(event: Parameters<typeof step>[1]): void {
   const was = session.phase;
   const openedAtBefore = session.openedAt;
   session = next;
-  if (was !== next.phase) trace('phase', { from: was, to: next.phase, slot: next.slot ?? 'none', edits: next.edits.length });
+  if (was !== next.phase) {
+    /*
+     * THE TWO FACTS THIS APP HAS NEVER HAD ABOUT A VISIT.
+     *
+     * `cameFrom` is the interface the game built on the way in. It is the only
+     * distinguishing record of the no-slot path - the majority of opens, which
+     * carry no category, no build and no plan for their whole life - and it has
+     * been unmeasurable until now because nothing kept it. It is traced rather
+     * than interpreted: no interface name is mapped to a category anywhere,
+     * because nothing has yet seen enough of them to know, and the same
+     * discipline that turned an out-of-range slot index from a permanent blind
+     * spot into one visit's measurement applies here.
+     *
+     * `leftFor` is the screen that replaced this one, which exists at all only
+     * because a screen change is no longer thrown away.
+     */
+    trace('phase', {
+      from: was,
+      to: next.phase,
+      slot: next.slot ?? 'none',
+      edits: next.edits.length,
+      cameFrom: next.cameFrom ?? (was === 'idle' ? 'not narrated' : 'n/a'),
+      ...(next.leftFor === null ? {} : { leftFor: next.leftFor }),
+    });
+  }
   /*
    * THE ACCOUNT IS RE-READ WHEN A MODDING SCREEN OPENS, and the reason is the
    * worst thing this overlay has done on screen.
