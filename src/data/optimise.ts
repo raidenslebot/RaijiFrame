@@ -1813,11 +1813,36 @@ function prepare(input: PlanInput): Prepared {
   return { eligible, scoredRows, idealPool, nowPool, byPath, auraPool, ownedAura };
 }
 
-export function plan(input: PlanInput): Plan {
+/**
+ * THE PLAN, COMPUTED BETWEEN YIELDS.
+ *
+ * WHAT WAS MEASURED. A plan on a half-owned account is 1,135 ms and it ran
+ * synchronously on the background page's controller. Instrumented with a
+ * `setInterval(…, 0)` running alongside it, **zero timer ticks fired for the
+ * whole 1,135 ms** - the log tail's callbacks, the strip's watchdog and the two
+ * Overwolf round trips that put the overlay on screen were all stalled behind
+ * it, every time a screen opened.
+ *
+ * WHAT THE SHAPE OF THAT SECOND IS, because it decides whether slicing helps at
+ * all: **10 searches, 1,133 ms between them, longest single search 206 ms.** A
+ * generator can only hand the thread back BETWEEN searches, so this converts a
+ * 1,135 ms freeze into ten stalls of at most 206 ms - and the controller gets
+ * the turn back nine times in the middle of work it used to be locked out of.
+ *
+ * It is the same shape `ladder` below already uses, for the same reason, and
+ * measured at the same order of magnitude per slice.
+ *
+ * `plan` IS KEPT AND IS EXACTLY THIS, DRAINED. Every gate in the suite and
+ * every offline caller goes through it, and a generator that yields `null`
+ * between searches computes precisely what the straight-line version computed,
+ * in the same order - so the synchronous answer cannot drift from the sliced
+ * one, because there is only one body.
+ */
+export function* planSteps(input: PlanInput): Generator<null, Plan, void> {
   const question = input.question ?? 'Q1';
   const { eligible, scoredRows, idealPool, nowPool, byPath, auraPool, ownedAura } = prepare(input);
 
-  const bestOver = (pool: Candidate[]): BuildResult => {
+  function* bestOver(pool: Candidate[]): Generator<null, BuildResult, void> {
     let out: BuildResult | null = null;
     for (const a of auraPool) {
       // An aura the account does not own cannot be part of what it can build
@@ -1825,12 +1850,16 @@ export function plan(input: PlanInput): Plan {
       if (a && pool !== idealPool && !input.owned.has(a.row.uniqueName)) continue;
       const at = a && pool !== idealPool ? (ownedAura.get(a.row.uniqueName) ?? a) : a;
       const r = search(question, input.item, pool, input.slots, at);
+      yield null;
       if (!out || r.score.value > out.score.value) out = r;
     }
-    return out ?? search(question, input.item, pool, input.slots);
+    if (out) return out;
+    const bare = search(question, input.item, pool, input.slots);
+    yield null;
+    return bare;
   };
-  const now = bestOver(nowPool);
-  const ideal = bestOver(idealPool);
+  const now = yield* bestOver(nowPool);
+  const ideal = yield* bestOver(idealPool);
 
   /*
    * THE CEILING, in two passes and no more.
@@ -1852,6 +1881,7 @@ export function plan(input: PlanInput): Plan {
   let ceilingAura: Candidate | null = null;
   for (const a of auraPool) {
     const r = search(question, input.item, idealPool, { ...input.slots, grid: universalGrid }, a);
+    yield null;
     if (!ceiling || r.score.value > ceiling.score.value) {
       ceiling = r;
       ceilingAura = a;
@@ -1859,6 +1889,7 @@ export function plan(input: PlanInput): Plan {
   }
   if (ceiling) {
     const refined = search(question, input.item, idealPool, { ...input.slots, grid: ceiling.placed.map((p) => p.polarity) }, ceilingAura);
+    yield null;
     if (refined.score.value > ceiling.score.value) ceiling = refined;
   }
   /*
@@ -1907,7 +1938,21 @@ export function plan(input: PlanInput): Plan {
     const row = byPath.get(p.path);
     if (!row) continue;
     const pool = [...nowPool.filter((c) => c.row.uniqueName !== p.path), candidateAt(row, p.rank)];
+    /*
+     * AND THIS LOOP IS MOST OF THE FREEZE, which the first pass at slicing
+     * missed entirely. It searches ONCE PER MISSING MOD - up to eight more
+     * searches after the four the aura and ceiling passes make - and none of
+     * them handed the thread back. The gate that pairs every search in here
+     * with a yield is what found it; counting yields would not have, and the
+     * first version of that gate did exactly that and caught nothing.
+     *
+     * The comment sits ABOVE the call rather than between it and the yield,
+     * because the gate reads a window after the search and a paragraph in that
+     * window pushes the yield out of it. The explanation belongs to the loop
+     * anyway; the yield belongs to the search.
+     */
     const withIt = search(question, input.item, pool, input.slots);
+    yield null;
     next.push({
       path: p.path,
       name: p.name,
@@ -1935,6 +1980,23 @@ export function plan(input: PlanInput): Plan {
     input.slots.grid,
   );
   return { now: withOwned(now), ideal: withOwned(ideal), ceiling: withOwned(ceiling), next, forma, candidates: { eligible: eligible.length, scored: scoredRows.length, owned: nowPool.length } };
+}
+
+/**
+ * The plan, computed in one go.
+ *
+ * ONE BODY, TWO WAYS TO RUN IT. Every gate in this suite, the bench, and every
+ * offline caller uses this; the controller drives `planSteps` directly so it
+ * can hand the thread back between searches. They cannot disagree, because
+ * there is nothing here to disagree with - a generator that yields `null`
+ * between searches computes exactly what the straight-line version computed, in
+ * the same order, and this drains it without looking at the yields.
+ */
+export function plan(input: PlanInput): Plan {
+  const steps = planSteps(input);
+  let step = steps.next();
+  while (!step.done) step = steps.next();
+  return step.value;
 }
 
 /**

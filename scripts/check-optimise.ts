@@ -2792,5 +2792,70 @@ ok('the grid size is stated as an assumption, in both lists, from the constant i
     for (const b of [p.now, p.ideal, p.ceiling]) assert.ok(b.placed.length <= GRID_SLOTS, `${name}: ${String(b.placed.length)} mods on a ${String(GRID_SLOTS)}-slot grid`);
   }
 });
+
+ok('the sliced plan and the synchronous one are ONE BODY, not two that must agree', () => {
+  /*
+   * WHAT THIS PROTECTS. A plan on a half-owned account is about 1.6 seconds and
+   * it ran straight through on the background page's controller. Instrumented
+   * with a zero-delay timer running alongside it, ZERO ticks fired for the
+   * whole of it: the log tail's callbacks, the strip's watchdog and the two
+   * Overwolf round trips that put the overlay on screen were all stalled behind
+   * it, on every screen open. Driven as a generator - one search per slice -
+   * the longest lockout falls from 1,014 ms to 387 ms, a 62 per cent cut, and
+   * five timer ticks get through instead of none.
+   *
+   * THE HAZARD IS A SECOND COPY. The obvious way to have both is to write the
+   * fast path once and the sliced path again beside it, and this repo has a
+   * name for what happens next: two spellings of one rule, drifting. Every gate
+   * in this file, the bench and every offline caller go through `plan`; only
+   * the controller drives `planSteps`. If `plan` ever stops being a drain over
+   * `planSteps` they can disagree, and the disagreement would be invisible -
+   * the suite would still pass, because the suite only ever calls `plan`.
+   *
+   * So the gate is structural: `plan` must contain no search of its own.
+   */
+  const src = readFileSync(new URL('../src/data/optimise.ts', import.meta.url), 'utf8');
+
+  const at = src.indexOf('export function plan(input: PlanInput): Plan {');
+  assert.ok(at > 0, 'plan is gone, or is no longer the synchronous entry point every gate uses');
+  const end = src.indexOf('\n}', at);
+  const body = src.slice(at, end);
+
+  assert.match(body, /planSteps\(input\)/, 'plan no longer runs planSteps, so there are two bodies and they can drift');
+  assert.doesNotMatch(body, /\bsearch\(/, 'plan searches on its own again - that is the second copy this gate exists to forbid');
+  assert.ok(body.length < 400, `plan is ${String(body.length)} characters; a drain is about six lines, and anything longer is logic that planSteps does not have`);
+
+  // And the generator is the one that actually does the work.
+  const gen = src.indexOf('export function* planSteps(');
+  assert.ok(gen > 0, 'planSteps is gone; the controller has nothing to slice');
+  assert.ok(gen < at, 'planSteps moved below plan, which is harmless but means this gate is reading the wrong span');
+
+  /*
+   * AND EVERY SEARCH HANDS THE THREAD BACK.
+   *
+   * THE FIRST VERSION OF THIS COUNTED YIELDS AND REQUIRED THREE. There are
+   * four, so deleting one left three and the gate stayed green - sabotaged
+   * three ways, caught none of them. A count with slack in it is not a check,
+   * it is a number that happens to be true.
+   *
+   * The property is one-to-one: a search that is not followed by a yield is a
+   * stretch the controller is locked out of, and the longest search is measured
+   * at 206 ms, so each one that loses its yield puts a fifth of a second back
+   * into the freeze. Matched pairwise rather than by total, so removing ANY of
+   * them fails - including the one a future search is added without.
+   */
+  const genBody = src.slice(gen, at);
+  const calls = [...genBody.matchAll(/\bsearch\(/g)];
+  assert.ok(calls.length >= 4, `planSteps makes ${String(calls.length)} search call(s); it is measured at ten searches over four call sites`);
+  for (const call of calls) {
+    const after = genBody.slice(call.index ?? 0, (call.index ?? 0) + 320);
+    assert.match(
+      after,
+      /\n\s*yield null;/,
+      `a search in planSteps is not followed by a yield, so the controller is locked out for the whole of it: ${after.split('\n')[0]?.trim() ?? ''}`,
+    );
+  }
+});
+
 console.log(`\n${checks} checks, ${failures} failures\n`);
 process.exit(failures === 0 ? 0 : 1);
