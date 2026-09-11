@@ -757,7 +757,7 @@ export default function IntrinsicsPanel() {
      * `min-h-0` anywhere and the whole thing grows back to 946 px with nothing
      * on screen to say that anything is wrong.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4 p-5">
       {/* ---- ROW 1: pinned. The account's state, then the decision. -------- */}
       <div className="flex min-w-0 flex-col gap-4">
         {!measured && <AccountBanner hasAccount={inventory !== null} />}

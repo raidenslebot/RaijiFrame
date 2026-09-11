@@ -1520,7 +1520,7 @@ export default function ResourcesPanel() {
      * omission anywhere and the whole thing grows again with nothing on screen
      * to say anything is wrong.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4 p-5">
       {/*
         THE PINNED ROW IS THE WALLET, OR THE REASON THERE ISN'T ONE.
         ————————————————————————————————————————————

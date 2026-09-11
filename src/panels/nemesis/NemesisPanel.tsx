@@ -1331,8 +1331,8 @@ export default function NemesisPanel() {
     <div
       className={
         hasFooter
-          ? 'grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5'
-          : 'grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5'
+          ? 'grid h-full min-h-0 min-w-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)_auto] gap-4 p-5'
+          : 'grid h-full min-h-0 min-w-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4 p-5'
       }
     >
       {/*

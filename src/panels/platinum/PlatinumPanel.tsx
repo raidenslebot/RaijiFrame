@@ -1698,7 +1698,7 @@ export default function PlatinumPanel() {
      * chain and the whole thing grows again and the page scrolls exactly as
      * before, with no visible sign that anything is wrong.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4 p-5">
       <style>{`
         /*
           These transitions may MOVE things, which the note here used to forbid.
@@ -1752,7 +1752,7 @@ export default function PlatinumPanel() {
         recommendation collapses to a band and the reference takes the width it
         was already not using.
       */}
-      <div className={hasAnswer ? 'grid min-h-0 gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : 'grid min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4'}>
+      <div className={hasAnswer ? 'grid min-h-0 gap-5 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : 'grid min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4'}>
         {/*
           THE ANSWER COMES FIRST, AND IT IS NOT A LIST.
 
@@ -2108,12 +2108,26 @@ export default function PlatinumPanel() {
               makes a long section read as layered rather than flat. Transform
               only, and a section never scrolled to simply has its heading a few
               pixels high. */}
-          <h2
-            className="mo-parallax font-[family-name:var(--font-title)] text-[length:var(--text-small)] tracking-[0.26em] uppercase"
-            style={{ color: 'var(--color-orokin-200)' }}
-          >
-            Ranked for you
-          </h2>
+          {/*
+            "RANKED FOR YOU" WAS THE SEVENTH HEADING BEFORE THE FIRST ROUTE.
+
+            Counted on a real account, the reference pane opened with: the view
+            rail (two lines, because five tabs wrap), its caption "ranked
+            against your account and your gear", the ranking's inputs with its
+            own summary, this heading, the route count, and "how this list is
+            ordered" with its own answer. Seven lines of label above one line of
+            content - the headings outnumbered the thing they head.
+
+            This one is the cut, because it is the only one that says nothing
+            the reader does not already have: the rail's active tab names the
+            view and the caption directly above says what the ranking is
+            against. The count below survives and carries the section, which is
+            what a heading is for when the content is a list of exactly that
+            many things.
+          */}
+          <span className="eyebrow" style={{ color: 'var(--color-orokin-200)' }}>
+            Ranked
+          </span>
           <span className="eyebrow" style={{ color: 'var(--text-faint)' }}>
             {/*
               "35 shown, 49 known" invited the obvious question and answered

@@ -2301,7 +2301,7 @@ export default function WorldstatePanel() {
      * the growth being measured above; a fixed height with scrolling panes
      * inside it is the same content with a floor under it.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4 p-5">
       <PanelRules />
 
       {/*

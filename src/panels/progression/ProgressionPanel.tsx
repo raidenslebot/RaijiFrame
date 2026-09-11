@@ -1920,7 +1920,7 @@ export default function ProgressionPanel() {
      * give both panes a definite height at every width, which is what lets each
      * of them scroll instead of the page.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4 p-5">
       {/*
         THE ANSWER, PINNED. One statement and, when there is no account, the one
         honest sentence saying so - not eleven readouts saying it eleven times.

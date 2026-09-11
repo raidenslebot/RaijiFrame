@@ -1211,7 +1211,7 @@ export default function CollectionPanel() {
      * missing `min-h-0` anywhere and the whole thing grows again with no
      * visible sign that anything is wrong.
      */
-    <div className="grid h-full min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4 p-5">
+    <div className="grid h-full min-h-0 min-w-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)] gap-4 p-5">
       {/* ------------------------------------------------------------- answer */}
       {/*
         THE HERO IS A BAND, AND IT READS ACROSS RATHER THAN DOWN.

@@ -1237,7 +1237,7 @@ export default function SyndicatesPanel() {
      * `min-h-full` was needed because the ladder had no scroll container of
      * its own and would otherwise paint over the footer. It now has one.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)_auto] gap-4 p-5">
       {/* ---- row one: the answer, pinned ------------------------------- */}
       {rows.length === 0 ? (
         <div className="grid place-items-center py-4">

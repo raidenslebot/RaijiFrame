@@ -884,7 +884,7 @@ export default function FocusPanel() {
      *
      * Each pane scrolls inside itself. The page does not scroll at all.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)_auto] gap-4 p-5">
       <MotionRules />
 
       {/* ---- the band: today, or the one sentence saying today is unread ---- */}

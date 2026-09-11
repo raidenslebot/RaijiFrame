@@ -669,7 +669,7 @@ export default function StarChartPanel() {
      * and a transit map scaled to fit is a column of grey dots.
      */
     <div
-      className={`grid h-full min-h-0 gap-4 p-5 ${node ? 'grid-rows-[auto_minmax(0,1fr)_auto]' : 'grid-rows-[auto_minmax(0,1fr)]'}`}
+      className={`grid h-full min-h-0 gap-4 p-5 ${node ? 'grid-rows-[minmax(0,auto)_minmax(9rem,1fr)_auto]' : 'grid-rows-[minmax(0,auto)_minmax(9rem,1fr)]'}`}
     >
       {/* ROW ONE: pinned. The instruction, the counts it is measured against,
           and the control that re-inks the diagram. None of it scrolls away,

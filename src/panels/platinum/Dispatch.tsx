@@ -423,16 +423,29 @@ function Card({
     });
   };
   /*
-   * THE LEAD SHOWS ITS WORKING WITHOUT BEING ASKED.
+   * THE WORKING STARTS CLOSED, AND IT USED TO START OPEN ON THE LEAD.
    *
-   * It is twice as wide as its neighbours and lays its content in two columns,
-   * and with only the requirement lines to put in the second one that column
-   * sat almost empty - the same hole the two-row span made, moved sideways. The
-   * subject of the picture is the card with room for the evidence, so it
-   * carries the evidence. The other four still open on a press, where the room
-   * has to be made rather than assumed.
+   * The argument for opening it was that the lead card is twice as wide and its
+   * second column would otherwise sit empty. That is a reason to put SOMETHING
+   * there; it is not a reason to put a seven-row audit table there, and
+   * photographed on a real account that is exactly what it was: a stack of
+   * "Median of the last closed day 10p measured / That day's range 9p to 13p
+   * measured / Median across the window 9.8p measured / Closed that day 66
+   * measured / You hold 1 yours / Per trade it returns 10p measured / Or at the
+   * kiosk, each 45 ducats published" - every row true, every row tagged, and
+   * collectively the machinery of the answer rather than the answer.
+   *
+   * THE HONESTY IS NOT LOST, because it was never carried by the table. Two
+   * lines above it the card already says "10p each and 66 of them closed on the
+   * last trading day, so it moves" - the same provenance as a sentence a person
+   * reads once. The table is the AUDIT, for the reader who wants to check it,
+   * and an audit belongs one press away.
+   *
+   * Empty space in the second column is a better problem than a full one: it is
+   * what lets the subject - a mod name that can run to four words - have the
+   * room to be read.
    */
-  const [open, setOpen] = useState(index === 0);
+  const [open, setOpen] = useState(false);
 
   /*
    * Every one of these writes a custom property and returns. No setState, so
@@ -658,7 +671,7 @@ function Card({
         <span aria-hidden className="absolute top-0 bottom-0 left-0 w-[2px]" style={{ background: 'var(--color-signal-warn)' }} />
       )}
 
-      <div className="rf-body flex min-w-0 flex-1 flex-col px-4 py-4">
+      <div className="rf-body flex min-w-0 flex-1 flex-col px-4 py-4" data-detail={open ? "true" : "false"}>
       {/*
         KEYED BY THE CANDIDATE, WHICH IS WHAT MAKES THE SWAP A MOVE.
         A CSS animation only restarts when the element does, and nothing else
@@ -692,7 +705,15 @@ function Card({
         {pick.verb}
       </p>
       <h3
-        className="rf-subject mt-1 font-[family-name:var(--font-title)] leading-tight tracking-[0.03em]"
+        /*
+         * `text-wrap: balance` because the subject is a MOD NAME and the app
+         * does not choose how long it is. "Gyre Prime Chassis Blueprint" in a
+         * 270 px column set itself as four stacked one-word lines - a ragged
+         * left-aligned tower that reads as a list rather than a name. Balancing
+         * spreads the same words over the same lines evenly, which is the
+         * difference between four words and four lines.
+         */
+        className="rf-subject mt-1 text-balance font-[family-name:var(--font-title)] leading-tight tracking-[0.03em]"
         style={{ color: 'var(--color-orokin-200)' }}
       >
         {pick.subject}
@@ -840,11 +861,19 @@ function Card({
                 : `back to the best of ${String(chain.length)}`}
             </button>
           )}
-          <Meta>
-            {chain.length > 1
-              ? `${String(at + 1)} of ${String(chain.length)} — pull it sideways to reorder, up and down for the rest`
-              : 'pull it sideways to reorder'}
-          </Meta>
+          {/*
+            THE POSITION, NOT THE TUTORIAL.
+
+            This read "1 of 5 - pull it sideways to reorder, up and down for the
+            rest" on EVERY card. Five cards, five copies of one instruction, and
+            two of them visible at once on a real screen: a sentence that
+            teaches a gesture is worth saying once and worth saying never again
+            after that, and it was competing for room with the answers it
+            describes. The deck's own header carries it now; what stays on the
+            card is where you are in its stack, which differs per card and is
+            the only part that was ever information.
+          */}
+          {chain.length > 1 && <Meta>{`${String(at + 1)} of ${String(chain.length)}`}</Meta>}
         </div>
       </div>
       </div>
@@ -1215,19 +1244,37 @@ export function Dispatch({
             one element that declared the container. The body is now the card's
             child, and the grid lands.
           */
-          .rf-body {
+          /*
+           * TWO COLUMNS ONLY WHEN THERE IS SOMETHING TO PUT IN THE SECOND ONE.
+           *
+           * The lead card spans two grid columns, and the note above this block
+           * had already worked out the consequence: with only the requirement
+           * lines to put on the right, "that column sat almost empty". The
+           * answer at the time was to open the working by default so the hole
+           * had something in it - which filled a void with a seven-row audit
+           * table and made the card unreadable instead of empty.
+           *
+           * Photographed with the working closed, the right half of the lead
+           * card was two short lines and about four hundred pixels of nothing,
+           * which is worse than either. So the split is CONDITIONAL: a card
+           * whose working is open has a second column of evidence and earns the
+           * two columns; a card whose working is closed is one column and keeps
+           * its width for the subject, which is a mod name the app does not
+           * choose the length of.
+           */
+          .rf-body[data-detail='true'] {
             display: grid;
             grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
             grid-template-areas: 'head detail' 'foot foot';
             align-content: start;
             column-gap: 1.75rem;
           }
-          .rf-head { grid-area: head; }
-          .rf-detail { grid-area: detail; }
-          .rf-foot { grid-area: foot; }
+          .rf-body[data-detail='true'] .rf-head { grid-area: head; }
+          .rf-body[data-detail='true'] .rf-detail { grid-area: detail; }
+          .rf-body[data-detail='true'] .rf-foot { grid-area: foot; }
           /* The hairline stops being a horizontal rule and becomes the seam
              between the two columns, which is what it is at this width. */
-          .rf-detail { border-left: 1px solid var(--hairline); padding-left: 1.5rem; }
+          .rf-body[data-detail='true'] .rf-detail { border-left: 1px solid var(--hairline); padding-left: 1.5rem; }
         }
 
         .rf-card {
@@ -1433,6 +1480,17 @@ export function Dispatch({
               {String(tradesLeft)} {tradesLeft === 1 ? 'trade' : 'trades'} left
             </Meta>
           )}
+          {/*
+            THE GESTURE, SAID ONCE, WHERE IT IS TRUE OF ALL OF THEM.
+
+            Every card used to print "pull it sideways to reorder, up and down
+            for the rest" in its own footer. On a real screen two of those were
+            visible at once and five existed, which is one instruction competing
+            five times with the answers it describes. It is a fact about the
+            DECK, not about any card in it, so it belongs on the deck - and only
+            while there is more than one card to reorder.
+          */}
+          {open.length > 1 && <Meta>pull a card sideways to reorder</Meta>}
           {dealt > 0 && (
             <button
               type="button"

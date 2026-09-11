@@ -1364,7 +1364,7 @@ export default function ArsenalPanel() {
      * thing grows back to a scrolling column with nothing on screen saying so.
      * `minmax(0, 1fr)` is that same guarantee written into the track.
      */
-    <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 p-5">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,auto)_minmax(9rem,1fr)_auto] gap-4 p-5">
       {/* ---- pinned head ----------------------------------------------------
           The state of the account and the controls that narrow the pane below.
           Its own flex column rather than three grid rows, because these three
