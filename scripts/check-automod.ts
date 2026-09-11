@@ -18,7 +18,8 @@ import { parseLine, type LogEvent } from '../src/core/eelog.ts';
 import { IDLE, fold, netEdits, step, type Session } from '../src/data/automod-session.ts';
 import { CARD, GRID, GRID_SLOTS_SHOWN, MEASURED_AT, asideBox, fullBox, slotBox, type Box } from '../src/data/automod-place.ts';
 import { resolveIn } from '../src/data/build.ts';
-import { categoryForModClass, categoryOpen, learnSlot, lessonFrom, loadLearnedSlots } from '../src/data/slot-learning.ts';
+import { categoryForModClass, categoryFromPlacement, categoryOpen, learnSlot, lessonFrom, loadLearnedSlots } from '../src/data/slot-learning.ts';
+import { publishDecision } from '../src/data/automod-publish.ts';
 import type { RawAccount } from '../src/data/account.ts';
 
 let checks = 0;
@@ -766,7 +767,18 @@ ok('the arsenal row this app was not born knowing is LEARNED from the first mod 
   for (const field of ['slot: input.session.slot', 'unreadSlot: input.session.unreadSlot', 'learned: input.learned']) {
     assert.ok(publish.includes(field), `the publish decision stopped handing categoryOpen its ${field}`);
   }
-  assert.ok(/publishDecision\(\{ session, learned \}\)/.test(bg), 'the controller no longer asks for the publish decision');
+  /*
+   * The call gained a third argument - `observed`, the category deduced from
+   * the mod the player placed on a screen the log never named. Pinning the
+   * exact two-argument form made this fail on an addition it has no opinion
+   * about, so it checks what it is actually for: that the controller asks at
+   * all, and that it hands over the session and the learned table.
+   */
+  const call = /publishDecision\(\{([^}]*)\}\)/.exec(bg);
+  assert.ok(call, 'the controller no longer asks for the publish decision');
+  for (const arg of ['session', 'learned']) {
+    assert.ok(new RegExp(`\\b${arg}\\b`).test(call[1] ?? ''), `the controller stopped handing the publish decision its ${arg}`);
+  }
   assert.ok(/lessonFrom\(\{ unreadSlot: session\.unreadSlot/.test(bg), 'the controller never asks what a placement taught');
   /*
    * BOTH SIGNALS, because one of them needs the player to do nothing.
@@ -912,6 +924,127 @@ ok('the architecture document states real numbers, not the ones that were true w
     if (String(actual) !== n) wrong.push(`check-${String(name)}: the document says ${String(n)}, the script has ${String(actual)}`);
   }
   assert.deepEqual(wrong, [], `the architecture document has drifted from the gates:\n        ${wrong.join('\n        ')}`);
+});
+
+
+console.log('\nnaming a screen the log never named');
+
+/*
+ * -----------------------------------------------------------------------------
+ * AT LEAST 36.4 PER CENT OF CARD-SCREEN OPENS CARRY NO `upgradeSlot` LINE.
+ *
+ * `learned` cannot reach them: it is keyed by the index the log carried, and
+ * there is no index. So the category was null for the whole visit, and a visit
+ * with no category resolves no build, plans nothing, and shows the player
+ * "another slot" from open to close.
+ *
+ * The mod they place is the evidence, and the controller was already reading
+ * its compatibility class - to decide whether there was a LESSON in it - and
+ * discarding the class whenever there was no index to attach it to.
+ * -----------------------------------------------------------------------------
+ */
+
+ok('a screen with no slot line is named by the first mod that can only go on one row', () => {
+  const seen = categoryFromPlacement({ slot: null, unreadSlot: null, compatName: 'Sentinel' });
+  assert.equal(seen, 'companion', 'a Sentinel mod names no screen, so the visit stays unreadable');
+
+  // And it reaches the panel: `publishDecision` is the one place that decides.
+  const visit: Session = { ...IDLE, phase: 'visible', openedAt: 1, slot: null, unreadSlot: null };
+  assert.deepEqual(
+    publishDecision({ session: visit, learned: {}, observed: seen }),
+    { kind: 'keep', category: 'companion' },
+    'the observation is made and then thrown away before anything renders it',
+  );
+  assert.deepEqual(
+    publishDecision({ session: visit, learned: {} }),
+    { kind: 'reset' },
+    'the visit resolves without the observation, so this gate is proving nothing',
+  );
+});
+
+ok('the four weapon classes still name nothing, because a sentinel weapon takes them', () => {
+  /*
+   * THE REFUSAL IS THE POINT, and it is the same one `UNAMBIGUOUS` was written
+   * for. A Deconstructor takes `Melee`, a Sweeper takes `Shotgun`, a Laser
+   * Rifle takes `Rifle` - so a player modding their companion's gun would be
+   * telling this app the screen is their primary. Permanently, in the version
+   * that learns; for one visit here, which is still a wrong weapon planned
+   * while the player looks at a sentinel's.
+   */
+  for (const compat of ['Rifle', 'Shotgun', 'Pistol', 'Melee', 'WARFRAME', 'ANY', 'Parazon']) {
+    assert.equal(
+      categoryFromPlacement({ slot: null, unreadSlot: null, compatName: compat }),
+      null,
+      `a ${compat} mod named a screen, and it cannot: more than one arsenal row takes it`,
+    );
+  }
+});
+
+ok('a screen the log DID name is never re-named by a placement', () => {
+  /*
+   * Guessing over a known answer is how a correct reading is replaced by a
+   * worse one. Both ways the log can name a screen are refused here.
+   */
+  assert.equal(
+    categoryFromPlacement({ slot: 0, unreadSlot: null, compatName: 'Sentinel' }),
+    null,
+    'a placement overrode the slot the log stated',
+  );
+  assert.equal(
+    categoryFromPlacement({ slot: null, unreadSlot: 7, compatName: 'Sentinel' }),
+    null,
+    'a placement overrode an index the account has already taught the app',
+  );
+});
+
+ok('the observation NEVER becomes a lesson, because there is no index to key it under', () => {
+  /*
+   * A lesson is a claim about an arsenal INDEX and is persisted; this is a
+   * claim about the screen in front of the player and dies with the visit. The
+   * two must not be able to turn into one another - a per-visit deduction
+   * written to localStorage would plan every future visit to that row from one
+   * companion screen.
+   */
+  assert.equal(
+    lessonFrom({ unreadSlot: null, compatName: 'Sentinel' }),
+    null,
+    'a placement with no index produced a lesson, which would be persisted under nothing',
+  );
+  const src = readFileSync(new URL('../src/app/background.ts', import.meta.url), 'utf8');
+  assert.ok(src.includes('observedCategory = seen;'), 'the controller no longer makes the observation');
+
+  /*
+   * THE CALL ITSELF, not the text between two landmarks. The first version of
+   * this sliced from `observedCategory = seen` to `learned = learnSlot(` and
+   * searched that - which is everything BETWEEN them and therefore excludes the
+   * `learnSlot(...)` call it was looking for. Sabotaged by writing
+   * `observedCategory ?? lesson.category` straight into that call, the gate
+   * stayed green. A check that reads past the thing it names is worse than
+   * none, because it reports the absence of what it never looked at.
+   */
+  const learnCall = /learned = learnSlot\([\s\S]*?\);/.exec(src);
+  assert.ok(learnCall, 'the controller no longer learns an arsenal index at all');
+  assert.doesNotMatch(
+    learnCall[0],
+    /observedCategory/,
+    'the per-visit observation is being written into the persisted table, which would plan every future visit to that row from one companion screen',
+  );
+
+  /*
+   * And it is cleared. Matched on the ASSIGNMENT rather than on the line it
+   * lives in, so the surrounding condition can be rewritten without this
+   * failing on a change it has no opinion about.
+   */
+  assert.match(src, /observedCategory = null;/, 'nothing clears the observation, so it outlives its visit');
+});
+
+ok('the observation only fills a null - it can never change an answer the log gave', () => {
+  const visit: Session = { ...IDLE, phase: 'visible', openedAt: 1, slot: 0, unreadSlot: null };
+  assert.deepEqual(
+    publishDecision({ session: visit, learned: {}, observed: 'companion' }),
+    { kind: 'keep', category: 'warframe' },
+    'an observation outranked the slot the log stated, which is a guess beating a reading',
+  );
 });
 
 console.log(`\n${checks} checks, ${failures} failures\n`);

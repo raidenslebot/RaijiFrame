@@ -233,6 +233,48 @@ const UNAMBIGUOUS: ReadonlySet<string> = new Set([
  * compatibility class has to name exactly one arsenal row, which the four
  * weapon classes do not.
  */
+/**
+ * WHAT A PLACEMENT SAYS ABOUT THIS VISIT, WHICH IS NOT WHAT IT TEACHES.
+ *
+ * THE GAP THIS CLOSES. `lessonFrom` refuses to teach anything without an index,
+ * correctly - there is nothing to write to `learned` when the log never said
+ * which row this is. But `categoryOpen` then returns null for the same visit,
+ * and the panel says "another slot" for its entire life: no category, so no
+ * resolved build, so no plan, so nothing to show. The figure of record is that
+ * at least 36.4 per cent of card-screen opens carry no `upgradeSlot` line at
+ * all, and every one of them was this.
+ *
+ * The mod the player places is the evidence, and it was already being read -
+ * the controller looks up its compatibility class on every placement to decide
+ * whether there is a LESSON in it. When there is no index the lesson is null
+ * and the class was thrown away, even though a `Sentinel` mod cannot go on
+ * anything but a sentinel.
+ *
+ * WHY THIS IS SAFE, AND IT IS THE SAME REASON `UNAMBIGUOUS` EXISTS. That set
+ * deliberately excludes the four weapon classes, because a sentinel weapon
+ * takes ordinary weapon mods - a Deconstructor takes `Melee`, a Sweeper takes
+ * `Shotgun` - so `Melee` names no row at all. This reads the same set, so it
+ * makes the same refusals.
+ *
+ * WHAT IT MUST NOT DO IS PERSIST. A lesson is a claim about an INDEX and
+ * outlives the session; this is a claim about the screen in front of the player
+ * right now and dies with it. There is no index to key it on, so there is
+ * nothing it could be written under even if somebody tried - which is the point
+ * of returning a bare category rather than the `{ index, category }` a lesson
+ * returns.
+ */
+export function categoryFromPlacement(input: {
+  slot: UpgradeSlot | null;
+  unreadSlot: number | null;
+  compatName: string | null | undefined;
+}): Category | null {
+  // A screen the app can already name needs no inference, and guessing over a
+  // known answer is how a correct reading gets overwritten by a worse one.
+  if (input.slot !== null || input.unreadSlot !== null) return null;
+  if (!input.compatName || !UNAMBIGUOUS.has(input.compatName)) return null;
+  return categoryForModClass(input.compatName);
+}
+
 export function lessonFrom(input: { unreadSlot: number | null; compatName: string | null | undefined }): { index: number; category: Category } | null {
   if (input.unreadSlot === null) return null;
   if (!input.compatName || !UNAMBIGUOUS.has(input.compatName)) return null;

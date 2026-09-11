@@ -35,6 +35,16 @@ export type LadderAction =
 export interface PublishInputs {
   session: Session;
   learned: LearnedSlots;
+  /*
+   * WHAT THE PLAYER'S OWN MODDING SAID ABOUT A SCREEN THE LOG DID NOT NAME.
+   *
+   * Null on every screen the app can already read. Set only on a visit with no
+   * `upgradeSlot` line at all, from the compatibility class of a mod that can
+   * only go on one arsenal row - see `categoryFromPlacement`. It dies with the
+   * visit; nothing writes it to `learned`, because there is no index to key it
+   * under.
+   */
+  observed?: Category | null;
 }
 
 /**
@@ -49,11 +59,19 @@ export interface PublishInputs {
  * spelling that let the two drift; a reset has no category at all.
  */
 export function publishDecision(input: PublishInputs): LadderAction {
-  const category = categoryOpen({
-    slot: input.session.slot,
-    unreadSlot: input.session.unreadSlot,
-    learned: input.learned,
-  });
+  /*
+   * THE OBSERVATION IS A LAST RESORT AND THE ORDER SAYS SO. `categoryOpen`
+   * answers from what the LOG said - the slot it named, or the index this
+   * account has already taught the app. Only when both are silent does the mod
+   * the player just placed get to speak, and it can only ever turn a null into
+   * an answer, never change one.
+   */
+  const category =
+    categoryOpen({
+      slot: input.session.slot,
+      unreadSlot: input.session.unreadSlot,
+      learned: input.learned,
+    }) ?? (input.observed ?? null);
   const open = input.session.phase !== 'idle' && category !== null;
   return open ? { kind: 'keep', category } : { kind: 'reset' };
 }

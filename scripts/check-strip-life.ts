@@ -782,7 +782,19 @@ ok('the controller wires the ladder to the CATEGORY, not to the slot index', () 
    * rather than deciding for itself - an inlined condition is how it went wrong
    * the first time.
    */
-  assert.ok(/publishDecision\(\{ session, learned \}\)/.test(src), 'the controller decides for itself again instead of asking publishDecision');
+  /*
+   * BY THE ASK, NOT BY THE ARGUMENT COUNT. The call gained `observed` - the
+   * category deduced from the mod the player placed on a screen the log never
+   * named - and pinning the exact two-argument form made this fail on an
+   * addition it has no opinion about. What it is FOR is that the controller
+   * asks rather than deciding for itself, and that it still hands over the two
+   * things the decision is made from.
+   */
+  const decide = /publishDecision\(\{([^}]*)\}\)/.exec(src);
+  assert.ok(decide, 'the controller decides for itself again instead of asking publishDecision');
+  for (const arg of ['session', 'learned']) {
+    assert.ok(new RegExp(`\\b${arg}\\b`).test(decide[1] ?? ''), `the controller stopped handing publishDecision its ${arg}`);
+  }
   /*
    * AND NOTHING THROWS THE RUNGS AWAY ON A PUBLISH. There WAS a clear branch
    * here, keyed to the decision - and review found that it could not be undone:

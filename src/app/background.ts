@@ -21,9 +21,9 @@ import { diffAccount, ledgerFromEvent, ledgerFromItems } from '../data/ledger';
 import { loadCatalog } from '../data/datasets';
 import { stepsToPlanet, type Catalog } from '../data/catalog';
 import { memoLast } from '../core/memo';
-import { learnSlot, lessonFrom, loadLearnedSlots, type LearnedSlots } from '../data/slot-learning';
+import { categoryFromPlacement, learnSlot, lessonFrom, loadLearnedSlots, type LearnedSlots } from '../data/slot-learning';
 import { hasSomethingToSay, ladderToShow, openPolicy, opensAScreen, publishDecision, SETTLE_WAIT_MS } from '../data/automod-publish';
-import { resolveIn } from '../data/build';
+import { resolveIn, type Category } from '../data/build';
 import { loadSnapshot, rollGenerationOnNextSave, saveSnapshot } from '../core/snapshot';
 import type { RawAccount } from '../data/account';
 import { useAccount } from '../core/store';
@@ -666,6 +666,28 @@ function planFor(build: NonNullable<AutomodState['build']>): { plan: AutomodStat
  */
 let learned: LearnedSlots = loadLearnedSlots(typeof localStorage === 'undefined' ? null : localStorage);
 
+/**
+ * WHAT THIS VISIT IS, WHEN THE LOG NEVER SAID - AND ONLY FOR THIS VISIT.
+ *
+ * At least 36.4 per cent of card-screen opens carry no `upgradeSlot` line at
+ * all. `learned` cannot help: it is keyed by the index the log carried, and
+ * there is no index. So those visits had no category for their whole life, and
+ * a visit with no category resolves no build, produces no plan, and shows the
+ * player "another slot" from open to close.
+ *
+ * The mod they place is the evidence, and the controller was already reading
+ * its compatibility class - to decide whether there was a LESSON in it - and
+ * throwing the class away whenever there was no index to attach it to. See
+ * `categoryFromPlacement`.
+ *
+ * SEPARATE FROM `learned` ON PURPOSE, and not merely unpersisted: a lesson is a
+ * claim about an arsenal INDEX and is supposed to outlive the session, while
+ * this is a claim about the screen in front of the player right now. Keyed by
+ * nothing, written to nothing, and cleared the moment the screen changes -
+ * which is the next line.
+ */
+let observedCategory: Category | null = null;
+
 /*
  * WHEN THE CURRENT SCREEN OPENED, in wall time, or null when none has. The
  * account is a snapshot; this is the moment the app started doubting it. See
@@ -795,7 +817,7 @@ function publishAutomod(): void {
    * extended to cover, and every gate passed, because none of them could import
    * this file to find out.
    */
-  const ladderAction = publishDecision({ session, learned });
+  const ladderAction = publishDecision({ session, learned, observed: observedCategory });
   /*
    * NOTHING IS NAMED FROM A SNAPSHOT THE PLAYER HAS ALREADY MOVED PAST.
    *
@@ -1240,7 +1262,24 @@ function observeArsenal(event: Parameters<typeof step>[1]): void {
    */
   let taught = false;
   if ((event.type === 'modInstalled' || event.type === 'modOwned') && modDb) {
-    const lesson = lessonFrom({ unreadSlot: session.unreadSlot, compatName: modDb.byPath.get(event.itemType)?.slot });
+    const compatName = modDb.byPath.get(event.itemType)?.slot;
+    /*
+     * THE OTHER HALF OF THE SAME LOOKUP, and it used to be discarded.
+     *
+     * A lesson needs an index. This does not - it needs only a mod that can go
+     * on exactly one arsenal row - so it answers for the screens a lesson
+     * cannot reach. First placement wins: a later mod on the same visit cannot
+     * be on a different row, so a second answer would either agree or be wrong,
+     * and overwriting is how a correct reading gets replaced by a worse one.
+     */
+    if (observedCategory === null) {
+      const seen = categoryFromPlacement({ slot: session.slot, unreadSlot: session.unreadSlot, compatName });
+      if (seen !== null) {
+        observedCategory = seen;
+        trace('named the screen from the mod the player placed', { category: seen, from: event.type });
+      }
+    }
+    const lesson = lessonFrom({ unreadSlot: session.unreadSlot, compatName });
     if (lesson) {
       const before = learned;
       learned = learnSlot(learned, lesson.index, lesson.category, typeof localStorage === 'undefined' ? null : localStorage);
@@ -1363,6 +1402,14 @@ function observeArsenal(event: Parameters<typeof step>[1]): void {
     }, SETTLE_WAIT_MS + 50);
   }
   if (next.phase !== 'idle') ensureCatalogues();
+  /*
+   * The observation belongs to ONE visit. A new open, or the screen closing,
+   * ends it - otherwise the category deduced from a companion screen would
+   * still be naming the next weapon the player opens.
+   */
+  if (next !== session || next.phase === 'idle') {
+    if (next.openedAt !== session.openedAt || next.phase === 'idle') observedCategory = null;
+  }
   if (next.phase === 'idle' && was !== 'idle') {
     publishAutomod();
     hideStrip();
