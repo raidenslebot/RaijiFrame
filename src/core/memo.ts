@@ -27,6 +27,23 @@
 export interface MemoLast<V> {
   /** The cached value when `key` matches the last one, otherwise `produce()`. */
   get(key: readonly unknown[], produce: () => V): V;
+  /**
+   * The cached value, or undefined. Asks without computing.
+   *
+   * WHY THIS EXISTS. `get` is the right shape for work that finishes inside the
+   * call, and the build plan no longer does: it is about 1.2 seconds of beam
+   * search and the controller now drives it in slices so the log tail, the
+   * watchdog and the window placement are not locked out for the whole of it.
+   * A sliced producer cannot RETURN a value, so the caller has to be able to
+   * ask "is it ready" and, separately, to put the answer in when it lands.
+   *
+   * Neither counts as a hit or a miss. `hits` and `misses` measure whether the
+   * memo is EARNING ITS KEEP, and a peek that starts a computation would be
+   * counted twice - once here and once when the result is seeded.
+   */
+  peek(key: readonly unknown[]): V | undefined;
+  /** Put a value in for a key whose work finished somewhere else. */
+  set(key: readonly unknown[], value: V): void;
   /** Answered from the cache. */
   readonly hits: number;
   /** Actually computed. Exposed so "is it memoised" is measurable, not assumed. */
@@ -37,9 +54,12 @@ export function memoLast<V>(): MemoLast<V> {
   let last: { key: readonly unknown[]; value: V } | null = null;
   let hits = 0;
   let misses = 0;
+  /** The one comparison, written once so `get` and `peek` cannot disagree. */
+  const matches = (key: readonly unknown[]): boolean =>
+    last !== null && last.key.length === key.length && last.key.every((k, i) => Object.is(k, key[i]));
   return {
     get(key: readonly unknown[], produce: () => V): V {
-      if (last !== null && last.key.length === key.length && last.key.every((k, i) => Object.is(k, key[i]))) {
+      if (matches(key) && last !== null) {
         hits++;
         return last.value;
       }
@@ -50,6 +70,12 @@ export function memoLast<V>(): MemoLast<V> {
       const value = produce();
       last = { key: [...key], value };
       return value;
+    },
+    peek(key: readonly unknown[]): V | undefined {
+      return matches(key) && last !== null ? last.value : undefined;
+    },
+    set(key: readonly unknown[], value: V): void {
+      last = { key: [...key], value };
     },
     get hits() {
       return hits;

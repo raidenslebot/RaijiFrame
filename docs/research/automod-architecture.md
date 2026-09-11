@@ -526,8 +526,8 @@ What exists against the plan above, each with the gate that holds it:
 | signal | `core/eelog.ts` (11 arsenal events) | `check-eelog`, `check-ledger` (source-anchoring) | 7 visits, 58 placements, 2 dumps in the real log; 0 name leaks |
 | session | `data/automod-session.ts` | `check-automod` (32) | dedupe within 1 s; slot within 2 s; late tail reported |
 | place | `data/automod-place.ts` | `check-automod` | 300 × 263 at 1680 × 1050, from the user's own capture; no overlap with six game rectangles |
-| window | `app/background.ts` + `app/automod.tsx` + manifest `automod` | `check-strip-life` (44), frozen-timeline, ui-tokens | 255 px of a 263 px budget; the window is reconciled against `getWindowState` at startup |
-| publish | `data/automod-publish.ts` | `check-strip-life` (44), `check-automod` (32) | the decision the controller cannot be gated on, driven directly: four known rows, a learned row, an unknown row, the Mods segment, idle |
+| window | `app/background.ts` + `app/automod.tsx` + manifest `automod` | `check-strip-life` (46), frozen-timeline, ui-tokens | 255 px of a 263 px budget; the window is reconciled against `getWindowState` at startup |
+| publish | `data/automod-publish.ts` | `check-strip-life` (46), `check-automod` (32) | the decision the controller cannot be gated on, driven directly: four known rows, a learned row, an unknown row, the Mods segment, idle |
 | card | `ui/ModCard.tsx` | Playwright composite over the player's own capture | 201 × 99 traced from the Fever Strike tray card; no element leaves the card's box |
 | resolve | `data/build.ts` | `check-build` (11) | every rung unknown by name; current rank unknown after Forma |
 | data | `data/moddb.ts`, `data/modstats.ts` (fan-out) | `check-moddb`, `check-modstats` | 1,516 kept rows; 7,141 effects; 3,171 refusals in 8 rules; 0 corrupt |

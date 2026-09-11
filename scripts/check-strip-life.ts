@@ -633,7 +633,34 @@ ok('the plan is recomputed when it can change, not every time anything is publis
     assert.ok(key[1]?.includes(part), `the plan cache key no longer carries ${part}, so a change to it will be served a stale plan`);
   }
   assert.ok(!/\bpurse\b/.test(key[1] ?? ''), 'the purse is in the key, which recomputes the whole search on every fusion');
-  assert.ok(/planCache\.get\(key,/.test(src), 'the plan no longer goes through the cache at all');
+  /*
+   * BOTH ENDS OF THE CACHE, because the plan is no longer computed inside a
+   * `get`.
+   *
+   * It used to be `planCache.get(key, produce)` and this pinned that call. The
+   * plan is about 1.2 seconds of beam search and it ran straight through on the
+   * controller - measured with a zero-delay timer beside it, ZERO ticks fired
+   * for the whole of it, so the log tail, the watchdog and the two Overwolf
+   * round trips that put the overlay up were all stalled behind it. It is now
+   * driven a search at a time, and a sliced producer cannot RETURN a value: the
+   * controller `peek`s, starts a pump on a miss, and the pump `set`s the answer
+   * when it lands.
+   *
+   * So both ends are asserted, and that is a stronger statement than the one
+   * call was. A `peek` with no `set` never fills the cache and every publish
+   * starts the search again - the exact waste this gate exists to prevent,
+   * wearing a different shape.
+   */
+  assert.ok(/planCache\.peek\(key\)/.test(src), 'nothing reads the plan cache, so every publish recomputes the search');
+  assert.ok(/planCache\.set\(key,/.test(src), 'nothing writes the plan cache, so the answer is thrown away and recomputed on the next publish');
+
+  /*
+   * AND THE PUMP IS GUARDED. A plan being built for a screen the player has
+   * left must stop, or it seeds the cache and republishes under a key nobody
+   * wants - the same class of bug as `ladderFor` and `stripGeneration`, and it
+   * fails just as quietly.
+   */
+  assert.ok(/planningKey !== key/.test(src), 'the sliced plan has no generation guard, so a superseded search still publishes');
 });
 
 ok('an arsenal slot this app does not recognise is recorded rather than discarded', () => {
@@ -2135,6 +2162,90 @@ ok('putting the overlay up costs TWO awaited Overwolf round trips, not five', ()
    */
   const toggle = bodyOf(OW, 'export async function toggleWindow(');
   assert.match(toggle, /await obtainWindow\(name\)/, 'toggleWindow reads a cached window state, which goes stale the moment anything else moves the window');
+});
+
+
+ok('the sliced plan actually slices, and stands aside for the window', () => {
+  const src = readFileSync(new URL('../src/app/background.ts', import.meta.url), 'utf8');
+  const body = bodyOf(src, 'function startPlan(');
+
+  /*
+   * ONE SEARCH PER SLICE, and the failure this forbids is the easiest one to
+   * write by accident: a `while (!step.done) step = steps.next()` inside the
+   * pump drains the generator in a single turn, which is the 1.2-second freeze
+   * back again with a generator in front of it. Every assertion about the cache
+   * still passes in that state - the plan is computed, cached and published -
+   * so nothing else here would notice.
+   */
+  assert.match(body, /steps\.next\(\)/, 'the pump no longer advances the plan at all');
+  assert.doesNotMatch(
+    body.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/.*/g, ' '),
+    /while\s*\([^)]*done/,
+    'the pump drains the generator in one turn, which is the whole freeze back with a generator in front of it',
+  );
+  assert.match(body, /setTimeout\(pump, 0\)/, 'the pump never reschedules itself, so the plan stops after one search');
+
+  /*
+   * AND IT YIELDS TO THE WINDOW. Both long jobs on this page - the plan and the
+   * ladder - have to stand aside while `showStrip` is making its Overwolf round
+   * trips, or a slice lands in front of the thing the player is waiting for.
+   */
+  /*
+   * THE GUARD, NOT THE NAME. The first version matched `/showInFlight\(\)/`,
+   * which a call whose `return` had been deleted still satisfies - sabotaged
+   * exactly that way, this assertion passed and the sweep only went red because
+   * an unrelated gate counted differently. What must hold is that the call
+   * GATES the slice: tested, and returning without advancing when it is true.
+   */
+  const guard = /if \(showInFlight\(\)\) \{[^}]*return;[^}]*\}/.exec(body.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/.*/g, ' '));
+  assert.ok(
+    guard,
+    'the plan pump calls showInFlight but does not return on it, so a search still runs in front of the window coming up',
+  );
+});
+
+ok('memoLast answers only for the key it holds, and can be filled from outside', () => {
+  /*
+   * `peek` and `set` were added so the controller could drive the plan in
+   * slices: a sliced producer cannot RETURN a value, so the caller asks whether
+   * the answer is ready and the pump puts it in when it lands. Neither had a
+   * check, and `peek` returning the last value REGARDLESS of the key is both
+   * the easiest mistake to make and the worst one - it would serve one weapon's
+   * plan under another weapon's name, which is precisely the failure
+   * `openPolicy` exists to prevent at the other end of the app.
+   */
+  const m = memoLast<string>();
+  const a = ['item-a', 1];
+  const b = ['item-b', 1];
+
+  assert.equal(m.peek(a), undefined, 'an empty memo answered for a key it has never seen');
+
+  m.set(a, 'plan-a');
+  assert.equal(m.peek(a), 'plan-a', 'set did not fill the memo');
+  assert.equal(m.peek(b), undefined, 'peek answered for a DIFFERENT key - one weapon\u2019s plan under another weapon\u2019s name');
+
+  // One slot: a second key replaces the first rather than joining it.
+  m.set(b, 'plan-b');
+  assert.equal(m.peek(b), 'plan-b');
+  assert.equal(m.peek(a), undefined, 'the memo is holding two entries, and it is documented as holding exactly one');
+
+  /*
+   * Neither counts as a hit or a miss. Those two numbers are how "is it
+   * memoised" is measured rather than assumed, and a peek that scored would
+   * count the same computation twice - once when it is asked for and once when
+   * it is seeded.
+   */
+  assert.equal(m.hits, 0, 'peek is counted as a cache hit, which double-counts every sliced computation');
+  assert.equal(m.misses, 0, 'set or peek is counted as a miss, so the memo reports work it never did');
+
+  // And `get` still behaves: a hit after a set, without recomputing.
+  let produced = 0;
+  const got = m.get(b, () => {
+    produced++;
+    return 'recomputed';
+  });
+  assert.equal(got, 'plan-b', 'get ignored a value that set had already put in');
+  assert.equal(produced, 0, 'get recomputed a value the memo was already holding');
 });
 
 console.log(`\n${checks} checks, ${failures} failures\n`);

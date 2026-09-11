@@ -48,7 +48,7 @@ import { fullBox } from '../data/automod-place';
 import { purseOf } from '../data/fusion';
 import { loadItemDb, type ItemDb } from '../data/itemdb';
 import { loadModDb, type ModDb } from '../data/moddb';
-import { ladder as ladderSteps, ownedRanks, plan as planBuild, questionFor, slotPlanFor, uncountedAttacks, type Plan, type PlanInput, type Rung } from '../data/optimise';
+import { ladder as ladderSteps, ownedRanks, planSteps, questionFor, slotPlanFor, uncountedAttacks, type Plan, type PlanInput, type Rung } from '../data/optimise';
 import type { LadderEnd, PendingSlot } from '../data/automod-session';
 
 // Publish the store on the controller's window object so `backgroundStore()` in
@@ -613,33 +613,97 @@ function planFor(build: NonNullable<AutomodState['build']>): { plan: AutomodStat
    * token needs.
    */
   const token = `ladder-${String(++ladderGeneration)}`;
-  return planCache.get(key, () => {
-    const t0 = performance.now();
-    const result = planBuild({
-      item,
-      catalogue: [...mods.byPath.values()],
-      owned: ownedRanks(account),
-      slots: slots.plan,
-      question,
-      canReach: canReachPlanet,
-      unlockPath,
-    });
+
+  /*
+   * READY? THEN ANSWER. Otherwise start the work and answer with nothing.
+   *
+   * THE MEASUREMENT THAT FORCED THIS. A plan on a half-owned account is about
+   * 1.2 seconds and it ran straight through, here, on the controller.
+   * Instrumented with a zero-delay timer alongside it, ZERO ticks fired for the
+   * whole of it - the log tail's callbacks, the strip's watchdog and the two
+   * Overwolf round trips that put the overlay on the screen were all stalled
+   * behind it, on every screen open. Driven a search at a time the longest
+   * lockout is 179 ms, an 85 per cent cut, and eleven ticks get through.
+   *
+   * `peek` rather than `get`, because a sliced producer cannot RETURN a value:
+   * the pump seeds the same cache when it lands and publishes again. Nothing
+   * caches the empty answer, so the next publish asks again and gets the real
+   * one the moment it exists.
+   */
+  const ready = planCache.peek(key);
+  if (ready) return ready;
+
+  const input = {
+    item,
+    catalogue: [...mods.byPath.values()],
+    owned: ownedRanks(account),
+    slots: slots.plan,
+    question,
+    canReach: canReachPlanet,
+    unlockPath,
+  };
+  startPlan(key, input, token, [...assumed, ...slots.assumed]);
+  /*
+   * NOTHING, NOT THE LAST WEAPON'S PLAN. A stale plan under a new weapon's name
+   * is the failure `openPolicy` exists to prevent at the other end of this
+   * file, and it would be worse here because the figure would look computed.
+   * The panel already draws "working it out" for a null plan.
+   */
+  return { plan: null, assumed: [...assumed, ...slots.assumed] };
+}
+
+/**
+ * THE PLAN, BUILT BETWEEN TIMEOUTS - the same shape as `startLadder` below.
+ *
+ * One search per slice. The longest single search measured 206 ms and the whole
+ * plan about 1.2 s over ten of them, so this is the difference between the
+ * controller being unavailable for a second and being unavailable for a fifth
+ * of one, ten times, with the turn handed back in between.
+ *
+ * `planningKey` is the generation guard, and it is the plan's own cache key rather
+ * than a counter: a pump whose key no longer matches what the controller wants
+ * is building an answer to a question nobody is asking, and stops. That is the
+ * same class of guard as `ladderFor` and `stripGeneration`, and it fails just
+ * as quietly without one.
+ */
+let planningKey: readonly unknown[] | null = null;
+
+function startPlan(key: readonly unknown[], input: PlanInput, token: string, assumed: string[]): void {
+  planningKey = key;
+  const steps = planSteps(input);
+  const t0 = performance.now();
+  const pump = (): void => {
+    if (planningKey !== key) return; // superseded; this plan is for a screen nobody is on
+    /*
+     * The overlay comes first, exactly as the ladder does. A slice that runs
+     * while the window is being placed puts its round trips behind a search.
+     */
+    if (showInFlight()) {
+      setTimeout(pump, 0);
+      return;
+    }
+    const step = steps.next();
+    if (!step.done) {
+      setTimeout(pump, 0);
+      return;
+    }
     trace('planned', {
-      item: item.name,
-      question,
+      item: input.item.name,
+      question: input.question ?? null,
       ms: Math.round(performance.now() - t0),
       hits: planCache.hits,
       misses: planCache.misses,
     });
+    planCache.set(key, { plan: step.value, assumed });
     /*
-     * The ladder is started here rather than by the caller, because HERE is the
-     * only place that knows the plan was actually recomputed. `planCache.get`
-     * hides that from everyone above it, which is the point of it - and a
-     * ladder restarted on every publish would undo the whole saving.
+     * The ladder is started HERE rather than by the caller, because here is the
+     * only place that knows the plan was actually recomputed - and a ladder
+     * restarted on every publish would undo the whole saving.
      */
-    startLadder({ item, catalogue: [...mods.byPath.values()], owned: ownedRanks(account), slots: slots.plan, question, canReach: canReachPlanet, unlockPath }, result, token);
-    return { plan: result, assumed: [...assumed, ...slots.assumed] };
-  });
+    startLadder(input, step.value, token);
+    publishAndShow();
+  };
+  setTimeout(pump, 0);
 }
 
 /*
