@@ -1,0 +1,6162 @@
+{
+  "version": "2026-08-31",
+  "source": "https://wiki.warframe.com/index.php?title=Module:Missions/data&action=raw",
+  "sourceNote": "Live official wiki raw wikitext (Lua Module:Missions/data), fetched 2026-08-31 through a browser session (Cloudflare blocks plain HTTP clients). MissionDetails held 357 entries; 2 were omitted for having no InternalName (\"Lunaro Arena\", \"Phorid Alert\"). NextNodes/PreviousNodes display names were resolved to InternalNames via the Name->InternalName map from the same table; all resolved, none dropped. Junction nodes carry type \"Solar Rail Junction\"; their 13 edges match the post-Update 39 (Isleweaver) topology. Mars Junction has no NextNodes in the source, so its next[] is empty. Two InternalNames are shared by two entries each in the source (not a parse artifact): \"ToggleBootLevel\" (Drifter's Camp / The Orbiter) and \"SolNode236\" (The Duviri Experience / Isleweaver); all four are edgeless, so keying by id must tolerate these collisions.",
+  "nodeCount": 355,
+  "unresolved": [],
+  "nodes": [
+    {
+      "id": "SolNode801",
+      "name": "Sanctuary Onslaught",
+      "planet": "Sanctuary Onslaught",
+      "type": "Sanctuary Onslaught",
+      "tileset": null,
+      "enemy": null,
+      "minLevel": 20,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The New Strange completed to access"
+    },
+    {
+      "id": "SolNode802",
+      "name": "Elite Sanctuary Onslaught",
+      "planet": "Sanctuary Onslaught",
+      "type": "Sanctuary Onslaught",
+      "tileset": null,
+      "enemy": null,
+      "minLevel": 60,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The New Strange completed to access and a level 30 Warframe"
+    },
+    {
+      "id": "PvpNode0",
+      "name": "Cephalon Capture",
+      "planet": "Saturn",
+      "type": "Conclave",
+      "tileset": "Tile Sets#Conclave Maps",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "PvpNode9",
+      "name": "Team Annihilation",
+      "planet": "Saturn",
+      "type": "Conclave",
+      "tileset": "Tile Sets#Conclave Maps",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "PvpNode10",
+      "name": "Annihilation",
+      "planet": "Saturn",
+      "type": "Conclave",
+      "tileset": "Tile Sets#Conclave Maps",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "SolNode94",
+      "name": "Apollodorus",
+      "planet": "Mercury",
+      "type": "Survival",
+      "tileset": "Grineer Galleon",
+      "enemy": "Infested",
+      "minLevel": 6,
+      "maxLevel": 11,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode223"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode223",
+      "name": "Boethius",
+      "planet": "Mercury",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Infested",
+      "minLevel": 8,
+      "maxLevel": 10,
+      "mastery": 3,
+      "next": [
+        "SolNode94"
+      ],
+      "prev": [
+        "SolNode103"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode119",
+      "name": "Caloris",
+      "planet": "Mercury",
+      "type": "Rescue",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 6,
+      "maxLevel": 8,
+      "mastery": 3,
+      "next": [
+        "SolNode12"
+      ],
+      "prev": [
+        "SolNode226"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode12",
+      "name": "Elion",
+      "planet": "Mercury",
+      "type": "Capture",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 7,
+      "maxLevel": 9,
+      "mastery": 3,
+      "next": [
+        "SolNode225"
+      ],
+      "prev": [
+        "SolNode119"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode130",
+      "name": "Lares",
+      "planet": "Mercury",
+      "type": "Defense",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Infested",
+      "minLevel": 6,
+      "maxLevel": 11,
+      "mastery": 3,
+      "next": [],
+      "prev": [
+        "SolNode28"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode103",
+      "name": "M Prime",
+      "planet": "Mercury",
+      "type": "Exterminate",
+      "tileset": "Grineer Asteroid",
+      "enemy": null,
+      "minLevel": 7,
+      "maxLevel": 9,
+      "mastery": 3,
+      "next": [
+        "SolNode223",
+        "SolNode28"
+      ],
+      "prev": [
+        "VenusToMercuryJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode224",
+      "name": "Odin",
+      "planet": "Mercury",
+      "type": "Interception",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 6,
+      "maxLevel": 11,
+      "mastery": 3,
+      "next": [],
+      "prev": [
+        "SolNode225"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode226",
+      "name": "Pantheon",
+      "planet": "Mercury",
+      "type": "Exterminate",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 6,
+      "maxLevel": 8,
+      "mastery": 3,
+      "next": [
+        "SolNode119"
+      ],
+      "prev": [
+        "VenusToMercuryJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode225",
+      "name": "Suisei",
+      "planet": "Mercury",
+      "type": "Spy",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 8,
+      "maxLevel": 10,
+      "mastery": 3,
+      "next": [
+        "SolNode224",
+        "SolNode108"
+      ],
+      "prev": [
+        "SolNode12"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode28",
+      "name": "Terminus",
+      "planet": "Mercury",
+      "type": "Sabotage",
+      "tileset": "Grineer Galleon",
+      "enemy": null,
+      "minLevel": 8,
+      "maxLevel": 10,
+      "mastery": 0,
+      "next": [
+        "SolNode130"
+      ],
+      "prev": [
+        "SolNode103"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode108",
+      "name": "Tolstoj",
+      "planet": "Mercury",
+      "type": "Assassination",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 8,
+      "maxLevel": 10,
+      "mastery": 25,
+      "next": [],
+      "prev": [
+        "SolNode225"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "MercuryHUB",
+      "name": "Larunda Relay",
+      "planet": "Mercury",
+      "type": "Relay",
+      "tileset": "Relay",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "VenusToMercuryJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolarisUnitedHub1",
+      "name": "Fortuna",
+      "planet": "Venus",
+      "type": "Hub",
+      "tileset": "Fortuna",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [
+        "SolNode129"
+      ],
+      "prev": [
+        "SolNode128"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode129",
+      "name": "Orb Vallis",
+      "planet": "Venus",
+      "type": "Free Roam",
+      "tileset": "Orb Vallis",
+      "enemy": "Corpus",
+      "minLevel": 10,
+      "maxLevel": 30,
+      "mastery": 24,
+      "next": [
+        "SolNode104"
+      ],
+      "prev": [
+        "SolarisUnitedHub1"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "NokkoColony",
+      "name": "Deepmines",
+      "planet": "Venus",
+      "type": "Free Roam",
+      "tileset": "Deepmines",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "SolNode2",
+      "name": "Aphrodite",
+      "planet": "Venus",
+      "type": "Mobile Defense",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 6,
+      "maxLevel": 8,
+      "mastery": 18,
+      "next": [
+        "SolNode104",
+        "SolNode23"
+      ],
+      "prev": [
+        "SolNode101"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode23",
+      "name": "Cytherean",
+      "planet": "Venus",
+      "type": "Interception",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 3,
+      "maxLevel": 8,
+      "mastery": 18,
+      "next": [
+        "ClanNode0",
+        "SolNode123"
+      ],
+      "prev": [
+        "SolNode2"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode128",
+      "name": "E Gate",
+      "planet": "Venus",
+      "type": "Exterminate",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 3,
+      "maxLevel": 5,
+      "mastery": 18,
+      "next": [
+        "SolNode22",
+        "SolarisUnitedHub1",
+        "SolNode101"
+      ],
+      "prev": [
+        "EarthToVenusJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode61",
+      "name": "Ishtar",
+      "planet": "Venus",
+      "type": "Sabotage",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 6,
+      "maxLevel": 8,
+      "mastery": 24,
+      "next": [
+        "ClanNode1",
+        "SolNode902"
+      ],
+      "prev": [
+        "SolNode109"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode101",
+      "name": "Kiliken",
+      "planet": "Venus",
+      "type": "Excavation",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 3,
+      "maxLevel": 8,
+      "mastery": 18,
+      "next": [
+        "SolNode2"
+      ],
+      "prev": [
+        "SolNode128"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode109",
+      "name": "Linea",
+      "planet": "Venus",
+      "type": "Rescue",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 5,
+      "maxLevel": 7,
+      "mastery": 18,
+      "next": [
+        "SolNode61"
+      ],
+      "prev": [
+        "SolNode22"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode1",
+      "name": "Malva",
+      "planet": "Venus",
+      "type": "Survival",
+      "tileset": "Corpus Ship",
+      "enemy": "Infested",
+      "minLevel": 8,
+      "maxLevel": 18,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode61"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode902",
+      "name": "Montes",
+      "planet": "Venus",
+      "type": "Exterminate",
+      "tileset": "Corpus Ship (Archwing)",
+      "enemy": "Corpus",
+      "minLevel": 3,
+      "maxLevel": 8,
+      "mastery": 18,
+      "next": [],
+      "prev": [
+        "SolNode61"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode0",
+      "name": "Romula",
+      "planet": "Venus",
+      "type": "Defense",
+      "tileset": "Corpus Outpost",
+      "enemy": "Infested",
+      "minLevel": 8,
+      "maxLevel": 18,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode23"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode22",
+      "name": "Tessera",
+      "planet": "Venus",
+      "type": "Defense",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 3,
+      "maxLevel": 8,
+      "mastery": 18,
+      "next": [
+        "SolNode109",
+        "SolNode107"
+      ],
+      "prev": [
+        "SolNode128"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode66",
+      "name": "Unda",
+      "planet": "Venus",
+      "type": "Spy",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 4,
+      "maxLevel": 6,
+      "mastery": 18,
+      "next": [
+        "SolNode104"
+      ],
+      "prev": [
+        "SolNode107"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode107",
+      "name": "Venera",
+      "planet": "Venus",
+      "type": "Capture",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 5,
+      "maxLevel": 7,
+      "mastery": 18,
+      "next": [
+        "SolNode2"
+      ],
+      "prev": [
+        "SolNode22",
+        "SolNode66"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode123",
+      "name": "V Prime",
+      "planet": "Venus",
+      "type": "Survival",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 3,
+      "maxLevel": 8,
+      "mastery": 18,
+      "next": [],
+      "prev": [
+        "SolNode23"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode104",
+      "name": "Fossa",
+      "planet": "Venus",
+      "type": "Assassination",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 6,
+      "maxLevel": 8,
+      "mastery": 41,
+      "next": [
+        "VenusToMercuryJunction"
+      ],
+      "prev": [
+        "SolNode66",
+        "SolNode129",
+        "SolNode2"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "VenusToMercuryJunction",
+      "name": "Mercury Junction",
+      "planet": "Venus",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode103",
+        "SolNode226",
+        "MercuryHUB"
+      ],
+      "prev": [
+        "SolNode104"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode239",
+      "name": "Vesper Relay",
+      "planet": "Venus",
+      "type": "Follie's Hunt",
+      "tileset": "Relay",
+      "enemy": "Tenno",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 50,
+      "next": [],
+      "prev": [
+        "EarthToVenusJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CetusHub4",
+      "name": "Cetus",
+      "planet": "Earth",
+      "type": "Hub",
+      "tileset": "Cetus",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [
+        "SolNode228",
+        "SolNode451"
+      ],
+      "prev": [
+        "SolNode63"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode228",
+      "name": "Plains of Eidolon",
+      "planet": "Earth",
+      "type": "Free Roam",
+      "tileset": "Plains of Eidolon",
+      "enemy": "Grineer",
+      "minLevel": 10,
+      "maxLevel": 30,
+      "mastery": 24,
+      "next": [
+        "SolNode39"
+      ],
+      "prev": [
+        "CetusHub4"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode79",
+      "name": "Cambria",
+      "planet": "Earth",
+      "type": "Spy",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 2,
+      "maxLevel": 4,
+      "mastery": 24,
+      "next": [
+        "EarthToVenusJunction"
+      ],
+      "prev": [
+        "SolNode85"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode75",
+      "name": "Cervantes",
+      "planet": "Earth",
+      "type": "Sabotage",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 4,
+      "maxLevel": 6,
+      "mastery": 24,
+      "next": [
+        "SolNode903",
+        "SolNode300"
+      ],
+      "prev": [
+        "SolNode39"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode27",
+      "name": "E Prime",
+      "planet": "Earth",
+      "type": "Exterminate",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 24,
+      "next": [
+        "SolNode89"
+      ],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "SolNode903",
+      "name": "Erpo",
+      "planet": "Earth",
+      "type": "Mobile Defense",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 1,
+      "maxLevel": 6,
+      "mastery": 24,
+      "next": [
+        "SolNode24"
+      ],
+      "prev": [
+        "SolNode75"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode59",
+      "name": "Eurasia",
+      "planet": "Earth",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 3,
+      "maxLevel": 5,
+      "mastery": 24,
+      "next": [
+        "EarthToMarsJunction"
+      ],
+      "prev": [
+        "SolNode26"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode39",
+      "name": "Everest",
+      "planet": "Earth",
+      "type": "Excavation",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 1,
+      "maxLevel": 6,
+      "mastery": 24,
+      "next": [
+        "SolNode75",
+        "ClanNode2"
+      ],
+      "prev": [
+        "SolNode228"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode85",
+      "name": "Gaia",
+      "planet": "Earth",
+      "type": "Interception",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 1,
+      "maxLevel": 6,
+      "mastery": 20,
+      "next": [
+        "SolNode79",
+        "SolNode15"
+      ],
+      "prev": [
+        "SolNode63"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode26",
+      "name": "Lith",
+      "planet": "Earth",
+      "type": "Defense",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 1,
+      "maxLevel": 6,
+      "mastery": 24,
+      "next": [
+        "SolNode79"
+      ],
+      "prev": [
+        "SolNode63"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode63",
+      "name": "Mantle",
+      "planet": "Earth",
+      "type": "Capture",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 2,
+      "maxLevel": 4,
+      "mastery": 24,
+      "next": [
+        "CetusHub4",
+        "SolNode85"
+      ],
+      "prev": [
+        "SolNode89"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode89",
+      "name": "Mariana",
+      "planet": "Earth",
+      "type": "Exterminate",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 24,
+      "next": [
+        "SolNode63"
+      ],
+      "prev": [
+        "SolNode27"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode15",
+      "name": "Pacific",
+      "planet": "Earth",
+      "type": "Rescue",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 3,
+      "maxLevel": 6,
+      "mastery": 24,
+      "next": [],
+      "prev": [
+        "SolNode85"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode2",
+      "name": "Coba",
+      "planet": "Earth",
+      "type": "Defense",
+      "tileset": "Grineer Forest",
+      "enemy": "Infested",
+      "minLevel": 6,
+      "maxLevel": 16,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode39"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode24",
+      "name": "Oro",
+      "planet": "Earth",
+      "type": "Assassination",
+      "tileset": "Grineer Forest",
+      "enemy": "Grineer",
+      "minLevel": 20,
+      "maxLevel": 25,
+      "mastery": 24,
+      "next": [
+        "ClanNode3"
+      ],
+      "prev": [
+        "SolNode903"
+      ],
+      "requirements": "Must be Mastery Rank 5 or higher to access"
+    },
+    {
+      "id": "ClanNode3",
+      "name": "Tikal",
+      "planet": "Earth",
+      "type": "Excavation",
+      "tileset": "Grineer Forest",
+      "enemy": "Infested",
+      "minLevel": 6,
+      "maxLevel": 16,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode24"
+      ],
+      "requirements": "Must have Saya's Vigil completed to access"
+    },
+    {
+      "id": "SolNode451",
+      "name": "Saya's Visions",
+      "planet": "Earth",
+      "type": "Shrine Defense",
+      "tileset": "Cetus",
+      "enemy": "Infested",
+      "minLevel": 5,
+      "maxLevel": 15,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "CetusHub4"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "EarthToVenusJunction",
+      "name": "Venus Junction",
+      "planet": "Earth",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode128"
+      ],
+      "prev": [
+        "SolNode79"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "EarthToMarsJunction",
+      "name": "Mars Junction",
+      "planet": "Earth",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 1,
+      "mastery": 1000,
+      "next": [],
+      "prev": [
+        "SolNode59"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ToggleBootLevel",
+      "name": "Drifter's Camp",
+      "planet": "Earth",
+      "type": "Hub",
+      "tileset": "Grineer Forest",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "ToggleBootLevel",
+      "name": "The Orbiter",
+      "planet": "Earth",
+      "type": "Hub",
+      "tileset": "Orbiter",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "EarthHUB",
+      "name": "Strata Relay",
+      "planet": "Earth",
+      "type": "Relay",
+      "tileset": "Relay",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EarthToMarsJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "IronwakeHUB3",
+      "name": "Iron Wake",
+      "planet": "Earth",
+      "type": "Hub",
+      "tileset": "Grineer Forest",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "TradeHUB1",
+      "name": "Maroo's Bazaar",
+      "planet": "Mars",
+      "type": "Relay",
+      "tileset": "Relay",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode11"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode106",
+      "name": "Alator",
+      "planet": "Mars",
+      "type": "Interception",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 8,
+      "maxLevel": 13,
+      "mastery": 51,
+      "next": [
+        "SolNode14"
+      ],
+      "prev": [
+        "SolNode45"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode45",
+      "name": "Ara",
+      "planet": "Mars",
+      "type": "Capture",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 10,
+      "maxLevel": 12,
+      "mastery": 51,
+      "next": [
+        "SolNode106",
+        "SolNode904"
+      ],
+      "prev": [
+        "SolNode36",
+        "SolNode46"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode113",
+      "name": "Ares",
+      "planet": "Mars",
+      "type": "Sabotage",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 9,
+      "maxLevel": 11,
+      "mastery": 51,
+      "next": [
+        "SolNode11",
+        "SolNode16"
+      ],
+      "prev": [
+        "EarthToMarsJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode41",
+      "name": "Arval",
+      "planet": "Mars",
+      "type": "Spy",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 9,
+      "maxLevel": 11,
+      "mastery": 51,
+      "next": [
+        "SolNode46",
+        "SolNode58"
+      ],
+      "prev": [
+        "SolNode16"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode16",
+      "name": "Augustus",
+      "planet": "Mars",
+      "type": "Excavation",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 9,
+      "maxLevel": 14,
+      "mastery": 51,
+      "next": [
+        "SolNode41",
+        "SolNode99"
+      ],
+      "prev": [
+        "SolNode113"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode65",
+      "name": "Gradivus",
+      "planet": "Mars",
+      "type": "Sabotage",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 9,
+      "maxLevel": 11,
+      "mastery": 45,
+      "next": [
+        "MarsToPhobosJunction"
+      ],
+      "prev": [
+        "SolNode58",
+        "SolNode11"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode58",
+      "name": "Hellas",
+      "planet": "Mars",
+      "type": "Exterminate",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 8,
+      "maxLevel": 10,
+      "mastery": 51,
+      "next": [
+        "SolNode65",
+        "SolNode30"
+      ],
+      "prev": [
+        "SolNode41"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode8",
+      "name": "Kadesh",
+      "planet": "Mars",
+      "type": "Defense",
+      "tileset": "Grineer Settlement",
+      "enemy": "Infested",
+      "minLevel": 10,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode14"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode36",
+      "name": "Martialis",
+      "planet": "Mars",
+      "type": "Rescue",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 10,
+      "maxLevel": 12,
+      "mastery": 51,
+      "next": [
+        "MarsToCeresJunction",
+        "SolNode68",
+        "SolNode45"
+      ],
+      "prev": [
+        "SolNode99"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode30",
+      "name": "Olympus",
+      "planet": "Mars",
+      "type": "Disruption",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 15,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [],
+      "prev": [
+        "SolNode16"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode46",
+      "name": "Spear",
+      "planet": "Mars",
+      "type": "Defense",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 8,
+      "maxLevel": 13,
+      "mastery": 51,
+      "next": [
+        "SolNode45",
+        "SolNode450"
+      ],
+      "prev": [
+        "SolNode41"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode904",
+      "name": "Syrtis",
+      "planet": "Mars",
+      "type": "Exterminate",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 8,
+      "maxLevel": 13,
+      "mastery": 51,
+      "next": [],
+      "prev": [
+        "SolNode45"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode11",
+      "name": "Tharsis",
+      "planet": "Mars",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 8,
+      "maxLevel": 10,
+      "mastery": 51,
+      "next": [
+        "SolNode65",
+        "TradeHUB1"
+      ],
+      "prev": [
+        "SolNode113"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode450",
+      "name": "Tyana Pass",
+      "planet": "Mars",
+      "type": "Mirror Defense",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer and Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 18,
+      "next": [],
+      "prev": [
+        "SolNode46"
+      ],
+      "requirements": "Must have Heart of Deimos completed to access"
+    },
+    {
+      "id": "SolNode14",
+      "name": "Ultor",
+      "planet": "Mars",
+      "type": "Exterminate",
+      "tileset": "Corpus Ice Planet",
+      "enemy": null,
+      "minLevel": 11,
+      "maxLevel": 13,
+      "mastery": 51,
+      "next": [
+        "ClanNode9"
+      ],
+      "prev": [
+        "SolNode106"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode68",
+      "name": "Vallis",
+      "planet": "Mars",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 11,
+      "maxLevel": 13,
+      "mastery": 51,
+      "next": [],
+      "prev": [
+        "SolNode36"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode9",
+      "name": "Wahiba",
+      "planet": "Mars",
+      "type": "Survival",
+      "tileset": "Corpus Ship",
+      "enemy": "Infested",
+      "minLevel": 10,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode14"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode99",
+      "name": "War",
+      "planet": "Mars",
+      "type": "Assassination",
+      "tileset": "Grineer Settlement",
+      "enemy": "Grineer",
+      "minLevel": 11,
+      "maxLevel": 13,
+      "mastery": 51,
+      "next": [
+        "SolNode36",
+        "SolNode706"
+      ],
+      "prev": [
+        "SolNode16"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "MarsToCeresJunction",
+      "name": "Ceres Junction",
+      "planet": "Mars",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 1,
+      "mastery": 1000,
+      "next": [
+        "SolNode131"
+      ],
+      "prev": [
+        "SolNode36"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "MarsToPhobosJunction",
+      "name": "Phobos Junction",
+      "planet": "Mars",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SettlementNode1"
+      ],
+      "prev": [
+        "SolNode65"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode1",
+      "name": "Roche",
+      "planet": "Phobos",
+      "type": "Exterminate",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 10,
+      "maxLevel": 12,
+      "mastery": 157,
+      "next": [
+        "SettlementNode15",
+        "SettlementNode14"
+      ],
+      "prev": [
+        "MarsToPhobosJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode15",
+      "name": "Sharpless",
+      "planet": "Phobos",
+      "type": "Mobile Defense",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 11,
+      "maxLevel": 13,
+      "mastery": 157,
+      "next": [
+        "SettlementNode11",
+        "SettlementNode10"
+      ],
+      "prev": [
+        "SettlementNode1"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode11",
+      "name": "Gulliver",
+      "planet": "Phobos",
+      "type": "Defense",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 10,
+      "maxLevel": 15,
+      "mastery": 157,
+      "next": [],
+      "prev": [
+        "SettlementNode15"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode10",
+      "name": "Kepler",
+      "planet": "Phobos",
+      "type": "Rush",
+      "tileset": "Corpus Ship (Archwing)",
+      "enemy": "Corpus",
+      "minLevel": 12,
+      "maxLevel": 14,
+      "mastery": 157,
+      "next": [
+        "SettlementNode20",
+        "ClanNode10",
+        "ClanNode11"
+      ],
+      "prev": [
+        "SettlementNode15"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode10",
+      "name": "Memphis",
+      "planet": "Phobos",
+      "type": "Defection",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Infested",
+      "minLevel": 15,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SettlementNode10"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode12",
+      "name": "Monolith",
+      "planet": "Phobos",
+      "type": "Rescue",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 13,
+      "maxLevel": 15,
+      "mastery": 157,
+      "next": [
+        "SettlementNode20"
+      ],
+      "prev": [
+        "SettlementNode2"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode14",
+      "name": "Shklovsky",
+      "planet": "Phobos",
+      "type": "Spy",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 11,
+      "maxLevel": 13,
+      "mastery": 157,
+      "next": [
+        "SettlementNode2"
+      ],
+      "prev": [
+        "SettlementNode1"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode2",
+      "name": "Skyresh",
+      "planet": "Phobos",
+      "type": "Capture",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 12,
+      "maxLevel": 14,
+      "mastery": 157,
+      "next": [
+        "SettlementNode12",
+        "SettlementNode3"
+      ],
+      "prev": [
+        "SettlementNode14"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode3",
+      "name": "Stickney",
+      "planet": "Phobos",
+      "type": "Survival",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 10,
+      "maxLevel": 15,
+      "mastery": 157,
+      "next": [
+        "SolNode400"
+      ],
+      "prev": [
+        "SettlementNode2"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode11",
+      "name": "Zeugma",
+      "planet": "Phobos",
+      "type": "Survival",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Infested",
+      "minLevel": 15,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SettlementNode10"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SettlementNode20",
+      "name": "Iliad",
+      "planet": "Phobos",
+      "type": "Assassination",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 13,
+      "maxLevel": 15,
+      "mastery": 100,
+      "next": [],
+      "prev": [
+        "SettlementNode12",
+        "SettlementNode10"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "DeimosHub",
+      "name": "Necralisk",
+      "planet": "Deimos",
+      "type": "Hub",
+      "tileset": "Necralisk",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [
+        "EntratiLabHub"
+      ],
+      "prev": [
+        "SolNode229"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode706",
+      "name": "Horend",
+      "planet": "Deimos",
+      "type": "Capture",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 12,
+      "maxLevel": 14,
+      "mastery": 0,
+      "next": [
+        "SolNode708"
+      ],
+      "prev": [
+        "SolNode99"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode708",
+      "name": "Phlegyas",
+      "planet": "Deimos",
+      "type": "Exterminate",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 13,
+      "maxLevel": 15,
+      "mastery": 0,
+      "next": [
+        "SolNode229",
+        "SolNode710"
+      ],
+      "prev": [
+        "SolNode706"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode229",
+      "name": "Cambion Drift",
+      "planet": "Deimos",
+      "type": "Free Roam",
+      "tileset": "Cambion Drift",
+      "enemy": "Infested",
+      "minLevel": 20,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [
+        "DeimosHub"
+      ],
+      "prev": [
+        "SolNode708"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode710",
+      "name": "Formido",
+      "planet": "Deimos",
+      "type": "Sabotage",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 14,
+      "maxLevel": 16,
+      "mastery": 0,
+      "next": [
+        "SolNode709",
+        "SolNode707"
+      ],
+      "prev": [
+        "SolNode708"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode707",
+      "name": "Hyf",
+      "planet": "Deimos",
+      "type": "Defense",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 15,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [
+        "SolNode712"
+      ],
+      "prev": [
+        "SolNode710"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode709",
+      "name": "Dirus",
+      "planet": "Deimos",
+      "type": "Mobile Defense",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 15,
+      "maxLevel": 17,
+      "mastery": 0,
+      "next": [
+        "SolNode712"
+      ],
+      "prev": [
+        "SolNode710"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode712",
+      "name": "Magnacidium",
+      "planet": "Deimos",
+      "type": "Assassination",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 20,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [
+        "SolNode711"
+      ],
+      "prev": [
+        "SolNode709",
+        "SolNode707"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode711",
+      "name": "Terrorem",
+      "planet": "Deimos",
+      "type": "Survival",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 25,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [
+        "SolNode713"
+      ],
+      "prev": [
+        "SolNode712"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode713",
+      "name": "Exequias",
+      "planet": "Deimos",
+      "type": "Assassination",
+      "tileset": "Orokin Derelict",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode711"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "EntratiLabHub",
+      "name": "Sanctum Anatomica",
+      "planet": "Deimos",
+      "type": "Hub",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [
+        "SolNode715",
+        "SolNode716",
+        "SolNode717",
+        "SolNode718",
+        "SolNode719",
+        "SolNode720",
+        "SolNode721"
+      ],
+      "prev": [
+        "DeimosHub"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode715",
+      "name": "Effervo",
+      "planet": "Deimos",
+      "type": "Assassination",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "The Murmur",
+      "minLevel": 55,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EntratiLabHub"
+      ],
+      "requirements": "Must have Whispers in the Walls completed to access"
+    },
+    {
+      "id": "SolNode716",
+      "name": "Nex",
+      "planet": "Deimos",
+      "type": "Exterminate",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "The Murmur",
+      "minLevel": 55,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EntratiLabHub"
+      ],
+      "requirements": "Must have Whispers in the Walls completed to access"
+    },
+    {
+      "id": "SolNode717",
+      "name": "Persto",
+      "planet": "Deimos",
+      "type": "Survival",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "The Murmur",
+      "minLevel": 55,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EntratiLabHub"
+      ],
+      "requirements": "Must have Whispers in the Walls completed to access"
+    },
+    {
+      "id": "SolNode718",
+      "name": "Cambire",
+      "planet": "Deimos",
+      "type": "Alchemy",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "The Murmur",
+      "minLevel": 55,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EntratiLabHub"
+      ],
+      "requirements": "Must have Whispers in the Walls completed to access"
+    },
+    {
+      "id": "SolNode719",
+      "name": "Munio",
+      "planet": "Deimos",
+      "type": "Mirror Defense",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "The Murmur",
+      "minLevel": 55,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EntratiLabHub"
+      ],
+      "requirements": "Must have Whispers in the Walls completed to access"
+    },
+    {
+      "id": "SolNode720",
+      "name": "Testudo",
+      "planet": "Deimos",
+      "type": "Netracells",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "The Murmur",
+      "minLevel": 220,
+      "maxLevel": 240,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EntratiLabHub"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode721",
+      "name": "Armatus",
+      "planet": "Deimos",
+      "type": "Disruption",
+      "tileset": "Albrecht's Laboratories",
+      "enemy": "The Murmur",
+      "minLevel": 55,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "EntratiLabHub"
+      ],
+      "requirements": "Must have The Deadlock Protocol and Whispers in the Walls completed to access"
+    },
+    {
+      "id": "CeresToJupiterJunction",
+      "name": "Jupiter Junction",
+      "planet": "Deimos",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode100"
+      ],
+      "prev": [
+        "SolNode710"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/SyndicateCacheHuntBaseKeyItem",
+      "name": "Abyssal Zone",
+      "planet": "Ceres",
+      "type": "Exterminate",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 40,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "SolNode132",
+      "name": "Bode",
+      "planet": "Ceres",
+      "type": "Spy",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 12,
+      "maxLevel": 14,
+      "mastery": 163,
+      "next": [
+        "SolNode149",
+        "SolNode137"
+      ],
+      "prev": [
+        "SolNode131"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode149",
+      "name": "Casta",
+      "planet": "Ceres",
+      "type": "Defense",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 12,
+      "maxLevel": 17,
+      "mastery": 163,
+      "next": [
+        "SolNode139",
+        "ClanNode22"
+      ],
+      "prev": [
+        "SolNode132"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode147",
+      "name": "Cinxia",
+      "planet": "Ceres",
+      "type": "Interception",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 12,
+      "maxLevel": 17,
+      "mastery": 163,
+      "next": [
+        "SolNode140",
+        "SolNode137"
+      ],
+      "prev": [
+        "SolNode131"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode146",
+      "name": "Draco",
+      "planet": "Ceres",
+      "type": "Survival",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 12,
+      "maxLevel": 17,
+      "mastery": 163,
+      "next": [],
+      "prev": [
+        "SolNode141"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode23",
+      "name": "Gabii",
+      "planet": "Ceres",
+      "type": "Survival",
+      "tileset": "Grineer Galleon",
+      "enemy": "Infested",
+      "minLevel": 15,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode139"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode141",
+      "name": "Ker",
+      "planet": "Ceres",
+      "type": "Sabotage",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 14,
+      "maxLevel": 16,
+      "mastery": 163,
+      "next": [
+        "SolNode146",
+        "SolNode138"
+      ],
+      "prev": [
+        "SolNode140"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode140",
+      "name": "Kiste",
+      "planet": "Ceres",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 13,
+      "maxLevel": 15,
+      "mastery": 163,
+      "next": [
+        "SolNode141",
+        "SolNode135"
+      ],
+      "prev": [
+        "SolNode147"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode139",
+      "name": "Lex",
+      "planet": "Ceres",
+      "type": "Capture",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 14,
+      "maxLevel": 16,
+      "mastery": 163,
+      "next": [
+        "ClanNode23",
+        "SolNode138"
+      ],
+      "prev": [
+        "SolNode149"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode138",
+      "name": "Ludi",
+      "planet": "Ceres",
+      "type": "Hijack",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 15,
+      "maxLevel": 17,
+      "mastery": 163,
+      "next": [],
+      "prev": [
+        "SolNode144",
+        "SolNode141",
+        "SolNode139"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode137",
+      "name": "Nuovo",
+      "planet": "Ceres",
+      "type": "Rescue",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 13,
+      "maxLevel": 15,
+      "mastery": 163,
+      "next": [
+        "SolNode144"
+      ],
+      "prev": [
+        "SolNode132",
+        "SolNode147"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode131",
+      "name": "Pallas",
+      "planet": "Ceres",
+      "type": "Exterminate",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 12,
+      "maxLevel": 14,
+      "mastery": 163,
+      "next": [
+        "SolNode132",
+        "SolNode147"
+      ],
+      "prev": [
+        "MarsToCeresJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode22",
+      "name": "Seimeni",
+      "planet": "Ceres",
+      "type": "Defense",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Infested",
+      "minLevel": 15,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode149"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode135",
+      "name": "Thon",
+      "planet": "Ceres",
+      "type": "Sabotage",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 15,
+      "maxLevel": 17,
+      "mastery": 163,
+      "next": [],
+      "prev": [
+        "SolNode140"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode144",
+      "name": "Exta",
+      "planet": "Ceres",
+      "type": "Assassination",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 14,
+      "maxLevel": 16,
+      "mastery": 163,
+      "next": [
+        "SolNode138"
+      ],
+      "prev": [
+        "SolNode137"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode88",
+      "name": "Adrastea",
+      "planet": "Jupiter",
+      "type": "Sabotage",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 18,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [
+        "SolNode125"
+      ],
+      "prev": [
+        "SolNode100"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode97",
+      "name": "Amalthea",
+      "planet": "Jupiter",
+      "type": "Spy",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 17,
+      "maxLevel": 19,
+      "mastery": 51,
+      "next": [
+        "ClanNode4",
+        "SolNode10"
+      ],
+      "prev": [
+        "SolNode73"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode73",
+      "name": "Ananke",
+      "planet": "Jupiter",
+      "type": "Capture",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 16,
+      "maxLevel": 18,
+      "mastery": 51,
+      "next": [
+        "SolNode97",
+        "SolNode25"
+      ],
+      "prev": [
+        "SolNode126"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode25",
+      "name": "Callisto",
+      "planet": "Jupiter",
+      "type": "Interception",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 15,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [
+        "ClanNode5"
+      ],
+      "prev": [
+        "SolNode73"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode74",
+      "name": "Carme",
+      "planet": "Jupiter",
+      "type": "Mobile Defense",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 16,
+      "maxLevel": 18,
+      "mastery": 51,
+      "next": [
+        "SolNode121"
+      ],
+      "prev": [
+        "SolNode126"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode121",
+      "name": "Carpo",
+      "planet": "Jupiter",
+      "type": "Exterminate",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 17,
+      "maxLevel": 19,
+      "mastery": 51,
+      "next": [
+        "JupiterToEuropaJunction",
+        "SolNode10"
+      ],
+      "prev": [
+        "SolNode74"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode100",
+      "name": "Elara",
+      "planet": "Jupiter",
+      "type": "Survival",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 15,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [
+        "SolNode88"
+      ],
+      "prev": [
+        "SolNode126"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode905",
+      "name": "Galilea",
+      "planet": "Jupiter",
+      "type": "Sabotage",
+      "tileset": "Corpus Ship (Archwing)",
+      "enemy": "Corpus",
+      "minLevel": 15,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [],
+      "prev": [
+        "SolNode10"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode87",
+      "name": "Ganymede",
+      "planet": "Jupiter",
+      "type": "Disruption",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 35,
+      "mastery": 51,
+      "next": [
+        "SolNode740"
+      ],
+      "prev": [
+        "SolNode53"
+      ],
+      "requirements": "Must have Natah (Quest) completed to access"
+    },
+    {
+      "id": "SolNode125",
+      "name": "Io",
+      "planet": "Jupiter",
+      "type": "Defense",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 15,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [
+        "SolNode53"
+      ],
+      "prev": [
+        "SolNode88"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode126",
+      "name": "Metis",
+      "planet": "Jupiter",
+      "type": "Rescue",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 15,
+      "maxLevel": 17,
+      "mastery": 51,
+      "next": [
+        "SolNode73",
+        "SolNode74"
+      ],
+      "prev": [
+        "SolNode100"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode10",
+      "name": "Thebe",
+      "planet": "Jupiter",
+      "type": "Sabotage",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 18,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [
+        "SolNode905",
+        "SolNode53"
+      ],
+      "prev": [
+        "SolNode97",
+        "SolNode121"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode5",
+      "name": "Cameria",
+      "planet": "Jupiter",
+      "type": "Survival",
+      "tileset": "Corpus Gas City",
+      "enemy": "Infested",
+      "minLevel": 20,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode25"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode4",
+      "name": "Sinai",
+      "planet": "Jupiter",
+      "type": "Defense",
+      "tileset": "Corpus Gas City",
+      "enemy": "Infested",
+      "minLevel": 20,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode97"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode53",
+      "name": "Themisto",
+      "planet": "Jupiter",
+      "type": "Assassination",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 18,
+      "maxLevel": 20,
+      "mastery": 51,
+      "next": [
+        "JupiterToSaturnJunction"
+      ],
+      "prev": [
+        "SolNode125",
+        "SolNode10"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode740",
+      "name": "The Ropalolyst",
+      "planet": "Jupiter",
+      "type": "Assassination",
+      "tileset": "Corpus Gas City",
+      "enemy": "Corpus",
+      "minLevel": 40,
+      "maxLevel": 40,
+      "mastery": 55,
+      "next": [],
+      "prev": [
+        "SolNode87"
+      ],
+      "requirements": "Must complete Chimera Prologue to access"
+    },
+    {
+      "id": "JupiterToEuropaJunction",
+      "name": "Europa Junction",
+      "planet": "Jupiter",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode209"
+      ],
+      "prev": [
+        "SolNode121"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "JupiterToSaturnJunction",
+      "name": "Saturn Junction",
+      "planet": "Jupiter",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode70",
+        "SolNode67",
+        "SaturnHUB"
+      ],
+      "prev": [
+        "SolNode53"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode203",
+      "name": "Abaddon",
+      "planet": "Europa",
+      "type": "Capture",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 21,
+      "maxLevel": 23,
+      "mastery": 138,
+      "next": [
+        "ClanNode6"
+      ],
+      "prev": [
+        "SolNode220"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode204",
+      "name": "Armaros",
+      "planet": "Europa",
+      "type": "Exterminate",
+      "tileset": "Infested Ship",
+      "enemy": null,
+      "minLevel": 18,
+      "maxLevel": 20,
+      "mastery": 138,
+      "next": [],
+      "prev": [
+        "SolNode210"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode205",
+      "name": "Baal",
+      "planet": "Europa",
+      "type": "Exterminate",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 21,
+      "maxLevel": 23,
+      "mastery": 138,
+      "next": [
+        "ClanNode7",
+        "SolNode403"
+      ],
+      "prev": [
+        "SolNode214"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode220",
+      "name": "Kokabiel",
+      "planet": "Europa",
+      "type": "Sabotage",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 20,
+      "maxLevel": 22,
+      "mastery": 138,
+      "next": [
+        "SolNode203",
+        "SolNode210"
+      ],
+      "prev": [
+        "SolNode216"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode209",
+      "name": "Morax",
+      "planet": "Europa",
+      "type": "Mobile Defense",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 18,
+      "maxLevel": 20,
+      "mastery": 138,
+      "next": [
+        "SolNode217",
+        "SolNode211",
+        "SolNode216"
+      ],
+      "prev": [
+        "JupiterToEuropaJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode217",
+      "name": "Orias",
+      "planet": "Europa",
+      "type": "Rescue",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 20,
+      "maxLevel": 22,
+      "mastery": 138,
+      "next": [
+        "SolNode215"
+      ],
+      "prev": [
+        "SolNode209"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode211",
+      "name": "Ose",
+      "planet": "Europa",
+      "type": "Interception",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 18,
+      "maxLevel": 23,
+      "mastery": 138,
+      "next": [
+        "SolNode214"
+      ],
+      "prev": [
+        "SolNode209"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode212",
+      "name": "Paimon",
+      "planet": "Europa",
+      "type": "Defense",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 18,
+      "maxLevel": 23,
+      "mastery": 138,
+      "next": [],
+      "prev": [
+        "SolNode214"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode214",
+      "name": "Sorath",
+      "planet": "Europa",
+      "type": "Hijack",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 19,
+      "maxLevel": 21,
+      "mastery": 138,
+      "next": [
+        "SolNode205",
+        "SolNode212"
+      ],
+      "prev": [
+        "SolNode211"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode215",
+      "name": "Valac",
+      "planet": "Europa",
+      "type": "Spy",
+      "tileset": "Corpus Ship",
+      "enemy": null,
+      "minLevel": 18,
+      "maxLevel": 20,
+      "mastery": 138,
+      "next": [],
+      "prev": [
+        "SolNode217"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode216",
+      "name": "Valefor",
+      "planet": "Europa",
+      "type": "Excavation",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 18,
+      "maxLevel": 23,
+      "mastery": 138,
+      "next": [
+        "SolNode220"
+      ],
+      "prev": [
+        "SolNode209"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode7",
+      "name": "Cholistan",
+      "planet": "Europa",
+      "type": "Excavation",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Infested",
+      "minLevel": 23,
+      "maxLevel": 33,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode205"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode6",
+      "name": "Larzac",
+      "planet": "Europa",
+      "type": "Defense",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Infested",
+      "minLevel": 23,
+      "maxLevel": 33,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode203"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode210",
+      "name": "Naamah",
+      "planet": "Europa",
+      "type": "Assassination",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 21,
+      "maxLevel": 23,
+      "mastery": 138,
+      "next": [
+        "SolNode204"
+      ],
+      "prev": [
+        "SolNode220"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "GrendelKeyBMissionName",
+      "name": "Archaeo-freighter",
+      "planet": "Europa",
+      "type": "Survival",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Grendel Neuroptics Locator to access"
+    },
+    {
+      "id": "GrendelKeyAMissionName",
+      "name": "Icefields of Riddah",
+      "planet": "Europa",
+      "type": "Defense",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Grendel Chassis Locator to access"
+    },
+    {
+      "id": "GrendelKeyCMissionName",
+      "name": "Mines of Karishh",
+      "planet": "Europa",
+      "type": "Excavation",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Grendel Systems Locator to access"
+    },
+    {
+      "id": "SolNode31",
+      "name": "Anthe",
+      "planet": "Saturn",
+      "type": "Rescue",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 22,
+      "maxLevel": 24,
+      "mastery": 55,
+      "next": [
+        "SolNode18"
+      ],
+      "prev": [
+        "SolNode67"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode82",
+      "name": "Calypso",
+      "planet": "Saturn",
+      "type": "Sabotage",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 26,
+      "mastery": 55,
+      "next": [
+        "SolNode93"
+      ],
+      "prev": [
+        "ClanNode13"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode12",
+      "name": "Caracol",
+      "planet": "Saturn",
+      "type": "Defection",
+      "tileset": "Grineer Galleon",
+      "enemy": "Infested",
+      "minLevel": 26,
+      "maxLevel": 36,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode906"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode70",
+      "name": "Cassini",
+      "planet": "Saturn",
+      "type": "Capture",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 21,
+      "maxLevel": 23,
+      "mastery": 55,
+      "next": [
+        "SolNode50"
+      ],
+      "prev": [
+        "JupiterToSaturnJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode67",
+      "name": "Dione",
+      "planet": "Saturn",
+      "type": "Spy",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 21,
+      "maxLevel": 23,
+      "mastery": 55,
+      "next": [
+        "SolNode31",
+        "SolNode20"
+      ],
+      "prev": [
+        "JupiterToSaturnJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode19",
+      "name": "Enceladus",
+      "planet": "Saturn",
+      "type": "Sabotage",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 23,
+      "maxLevel": 25,
+      "mastery": 49,
+      "next": [
+        "SolNode42",
+        "SolNode96"
+      ],
+      "prev": [
+        "SolNode50"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode42",
+      "name": "Helene",
+      "planet": "Saturn",
+      "type": "Defense",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 21,
+      "maxLevel": 26,
+      "mastery": 55,
+      "next": [
+        "SolNode32"
+      ],
+      "prev": [
+        "SolNode19"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode93",
+      "name": "Keeler",
+      "planet": "Saturn",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 23,
+      "maxLevel": 25,
+      "mastery": 55,
+      "next": [
+        "SolNode82"
+      ],
+      "prev": [
+        "SolNode20"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode50",
+      "name": "Numa",
+      "planet": "Saturn",
+      "type": "Rescue",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 22,
+      "maxLevel": 24,
+      "mastery": 55,
+      "next": [
+        "SolNode19",
+        "SolNode906"
+      ],
+      "prev": [
+        "SolNode70"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode906",
+      "name": "Pandora",
+      "planet": "Saturn",
+      "type": "Pursuit",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 21,
+      "maxLevel": 23,
+      "mastery": 55,
+      "next": [
+        "ClanNode12"
+      ],
+      "prev": [
+        "SolNode50"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode13",
+      "name": "Piscinas",
+      "planet": "Saturn",
+      "type": "Survival",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Infested",
+      "minLevel": 26,
+      "maxLevel": 36,
+      "mastery": 0,
+      "next": [
+        "SolNode82"
+      ],
+      "prev": [
+        "SolNode18"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode18",
+      "name": "Rhea",
+      "planet": "Saturn",
+      "type": "Interception",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 21,
+      "maxLevel": 26,
+      "mastery": 55,
+      "next": [
+        "ClanNode13"
+      ],
+      "prev": [
+        "SolNode31"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode20",
+      "name": "Telesto",
+      "planet": "Saturn",
+      "type": "Exterminate",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 22,
+      "maxLevel": 24,
+      "mastery": 55,
+      "next": [
+        "SolNode32"
+      ],
+      "prev": [
+        "SolNode67"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode96",
+      "name": "Titan",
+      "planet": "Saturn",
+      "type": "Survival",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 21,
+      "maxLevel": 26,
+      "mastery": 55,
+      "next": [],
+      "prev": [
+        "SolNode19"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode32",
+      "name": "Tethys",
+      "planet": "Saturn",
+      "type": "Assassination",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 26,
+      "mastery": 55,
+      "next": [
+        "SaturnToUranusJunction"
+      ],
+      "prev": [
+        "SolNode20",
+        "SolNode42",
+        "SolNode93"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SaturnToUranusJunction",
+      "name": "Uranus Junction",
+      "planet": "Saturn",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode34"
+      ],
+      "prev": [
+        "SolNode32"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SaturnHUB",
+      "name": "Kronia Relay",
+      "planet": "Saturn",
+      "type": "Relay",
+      "tileset": "Relay",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must be Mastery Rank 4 or higher to access"
+    },
+    {
+      "id": "SolNode33",
+      "name": "Ariel",
+      "planet": "Uranus",
+      "type": "Capture",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 25,
+      "maxLevel": 27,
+      "mastery": 69,
+      "next": [
+        "SolNode83"
+      ],
+      "prev": [
+        "SolNode34"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode17",
+      "name": "Assur",
+      "planet": "Uranus",
+      "type": "Survival",
+      "tileset": "Grineer Galleon",
+      "enemy": "Infested",
+      "minLevel": 25,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode114"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode907",
+      "name": "Caelus",
+      "planet": "Uranus",
+      "type": "Interception",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 29,
+      "mastery": 69,
+      "next": [],
+      "prev": [
+        "SolNode83"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode60",
+      "name": "Caliban",
+      "planet": "Uranus",
+      "type": "Rescue",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 25,
+      "maxLevel": 27,
+      "mastery": 69,
+      "next": [
+        "SolNode122",
+        "SolNode114"
+      ],
+      "prev": [
+        "SolNode34"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode83",
+      "name": "Cressida",
+      "planet": "Uranus",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 27,
+      "maxLevel": 29,
+      "mastery": 69,
+      "next": [
+        "SolNode907",
+        "SolNode105",
+        "ClanNode16"
+      ],
+      "prev": [
+        "SolNode33"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode98",
+      "name": "Desdemona",
+      "planet": "Uranus",
+      "type": "Sabotage",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 26,
+      "maxLevel": 28,
+      "mastery": 69,
+      "next": [
+        "SolNode9",
+        "SolNode723"
+      ],
+      "prev": [
+        "SolNode34"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode723",
+      "name": "Brutus",
+      "planet": "Uranus",
+      "type": "Ascension",
+      "tileset": "Stalker's Lair",
+      "enemy": "Corpus",
+      "minLevel": 45,
+      "maxLevel": 50,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode98"
+      ],
+      "requirements": "Must have Jade Shadows completed to access"
+    },
+    {
+      "id": "SolNode69",
+      "name": "Ophelia",
+      "planet": "Uranus",
+      "type": "Survival",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 29,
+      "mastery": 69,
+      "next": [
+        "SolNode114"
+      ],
+      "prev": [
+        "SolNode64"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode114",
+      "name": "Puck",
+      "planet": "Uranus",
+      "type": "Exterminate",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 27,
+      "maxLevel": 29,
+      "mastery": 44,
+      "next": [
+        "ClanNode17",
+        "SolNode105"
+      ],
+      "prev": [
+        "SolNode69",
+        "SolNode60"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode9",
+      "name": "Rosalind",
+      "planet": "Uranus",
+      "type": "Spy",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 27,
+      "maxLevel": 29,
+      "mastery": 69,
+      "next": [
+        "SolNode105"
+      ],
+      "prev": [
+        "SolNode98"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode122",
+      "name": "Stephano",
+      "planet": "Uranus",
+      "type": "Defense",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 29,
+      "mastery": 69,
+      "next": [
+        "SolNode64"
+      ],
+      "prev": [
+        "SolNode60"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode34",
+      "name": "Sycorax",
+      "planet": "Uranus",
+      "type": "Exterminate",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 26,
+      "mastery": 69,
+      "next": [
+        "SolNode33",
+        "SolNode60",
+        "SolNode98"
+      ],
+      "prev": [
+        "SaturnToUranusJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode64",
+      "name": "Umbriel",
+      "planet": "Uranus",
+      "type": "Interception",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 29,
+      "mastery": 69,
+      "next": [
+        "SolNode69"
+      ],
+      "prev": [
+        "SolNode122"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode16",
+      "name": "Ur",
+      "planet": "Uranus",
+      "type": "Disruption",
+      "tileset": "Grineer Galleon",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode83"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode105",
+      "name": "Titania",
+      "planet": "Uranus",
+      "type": "Assassination",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 27,
+      "maxLevel": 29,
+      "mastery": 69,
+      "next": [
+        "UranusToNeptuneJunction"
+      ],
+      "prev": [
+        "SolNode83",
+        "SolNode114",
+        "SolNode9"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "UranusToNeptuneJunction",
+      "name": "Neptune Junction",
+      "planet": "Uranus",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode1"
+      ],
+      "prev": [
+        "SolNode105"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode6",
+      "name": "Despina",
+      "planet": "Neptune",
+      "type": "Excavation",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 27,
+      "maxLevel": 32,
+      "mastery": 52,
+      "next": [
+        "SolNode57"
+      ],
+      "prev": [
+        "SolNode1"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode1",
+      "name": "Galatea",
+      "planet": "Neptune",
+      "type": "Capture",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 27,
+      "maxLevel": 29,
+      "mastery": 52,
+      "next": [
+        "SolNode6",
+        "SolNode78"
+      ],
+      "prev": [
+        "UranusToNeptuneJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode21",
+      "name": "Kelashin",
+      "planet": "Neptune",
+      "type": "Survival",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode17"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode118",
+      "name": "Laomedeia",
+      "planet": "Neptune",
+      "type": "Disruption",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 52,
+      "next": [
+        "SolNode127"
+      ],
+      "prev": [
+        "SolNode57"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode49",
+      "name": "Larissa",
+      "planet": "Neptune",
+      "type": "Mobile Defense",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 29,
+      "maxLevel": 31,
+      "mastery": 52,
+      "next": [
+        "SolNode406"
+      ],
+      "prev": [
+        "SolNode78"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode84",
+      "name": "Nereid",
+      "planet": "Neptune",
+      "type": "Spy",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 32,
+      "mastery": 52,
+      "next": [
+        "SolNode127",
+        "EventNode763"
+      ],
+      "prev": [
+        "SolNode62"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode62",
+      "name": "Neso",
+      "planet": "Neptune",
+      "type": "Exterminate",
+      "tileset": "Corpus Ice Planet",
+      "enemy": "Corpus",
+      "minLevel": 29,
+      "maxLevel": 31,
+      "mastery": 52,
+      "next": [
+        "SolNode84",
+        "SolNode908"
+      ],
+      "prev": [
+        "SolNode78"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode17",
+      "name": "Proteus",
+      "planet": "Neptune",
+      "type": "Defense",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 27,
+      "maxLevel": 32,
+      "mastery": 52,
+      "next": [
+        "ClanNode21"
+      ],
+      "prev": [
+        "SolNode57"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode908",
+      "name": "Salacia",
+      "planet": "Neptune",
+      "type": "Mobile Defense",
+      "tileset": "Corpus Ship (Archwing)",
+      "enemy": "Corpus",
+      "minLevel": 27,
+      "maxLevel": 32,
+      "mastery": 52,
+      "next": [
+        "ClanNode20"
+      ],
+      "prev": [
+        "SolNode62"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode57",
+      "name": "Sao",
+      "planet": "Neptune",
+      "type": "Sabotage",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 29,
+      "maxLevel": 31,
+      "mastery": 52,
+      "next": [
+        "SolNode118",
+        "SolNode17",
+        "NeptuneToPlutoJunction"
+      ],
+      "prev": [
+        "SolNode6"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode78",
+      "name": "Triton",
+      "planet": "Neptune",
+      "type": "Rescue",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 28,
+      "maxLevel": 30,
+      "mastery": 52,
+      "next": [
+        "SolNode62",
+        "SolNode49"
+      ],
+      "prev": [
+        "SolNode1"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode20",
+      "name": "Yursa",
+      "planet": "Neptune",
+      "type": "Defection",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode908"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode127",
+      "name": "Psamathe",
+      "planet": "Neptune",
+      "type": "Assassination",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 32,
+      "mastery": 52,
+      "next": [
+        "NeptuneToPlutoJunction"
+      ],
+      "prev": [
+        "SolNode118",
+        "SolNode84"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "EventNode763",
+      "name": "The Index: Endurance",
+      "planet": "Neptune",
+      "type": "Arena",
+      "tileset": "The Index",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode84"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "NeptuneToPlutoJunction",
+      "name": "Pluto Junction",
+      "planet": "Neptune",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 3,
+      "mastery": 1000,
+      "next": [
+        "SolNode76",
+        "SolNode38",
+        "PlutoHUB"
+      ],
+      "prev": [
+        "SolNode127"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode4",
+      "name": "Acheron",
+      "planet": "Pluto",
+      "type": "Exterminate",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 51,
+      "next": [
+        "PlutoToErisJunction"
+      ],
+      "prev": [
+        "SolNode102"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode43",
+      "name": "Cerberus",
+      "planet": "Pluto",
+      "type": "Interception",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 51,
+      "next": [
+        "SolNode81"
+      ],
+      "prev": [
+        "SolNode56"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode56",
+      "name": "Cypress",
+      "planet": "Pluto",
+      "type": "Sabotage",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 51,
+      "next": [
+        "SolNode43"
+      ],
+      "prev": [
+        "SolNode21"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode76",
+      "name": "Hydra",
+      "planet": "Pluto",
+      "type": "Capture",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 34,
+      "mastery": 51,
+      "next": [
+        "SolNode21"
+      ],
+      "prev": [
+        "NeptuneToPlutoJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode38",
+      "name": "Minthe",
+      "planet": "Pluto",
+      "type": "Mobile Defense",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 34,
+      "mastery": 51,
+      "next": [
+        "SolNode102"
+      ],
+      "prev": [
+        "NeptuneToPlutoJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode21",
+      "name": "Narcissus",
+      "planet": "Pluto",
+      "type": "Exterminate",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 32,
+      "maxLevel": 36,
+      "mastery": 51,
+      "next": [
+        "SolNode56",
+        "SolNode72"
+      ],
+      "prev": [
+        "SolNode76"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode102",
+      "name": "Oceanum",
+      "planet": "Pluto",
+      "type": "Spy",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 32,
+      "maxLevel": 36,
+      "mastery": 51,
+      "next": [
+        "SolNode4",
+        "SolNode48",
+        "SolNode72"
+      ],
+      "prev": [
+        "SolNode38"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode72",
+      "name": "Outer Terminus",
+      "planet": "Pluto",
+      "type": "Defense",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 51,
+      "next": [
+        "ClanNode24"
+      ],
+      "prev": [
+        "SolNode21",
+        "SolNode102"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode81",
+      "name": "Palus",
+      "planet": "Pluto",
+      "type": "Survival",
+      "tileset": "Corpus Ship",
+      "enemy": "Corpus",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 51,
+      "next": [
+        "SolNode51"
+      ],
+      "prev": [
+        "SolNode43"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode48",
+      "name": "Regna",
+      "planet": "Pluto",
+      "type": "Rescue",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 51,
+      "next": [
+        "ClanNode25",
+        "ErisToSednaJunction"
+      ],
+      "prev": [
+        "SolNode102"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode25",
+      "name": "Hieracon",
+      "planet": "Pluto",
+      "type": "Excavation",
+      "tileset": "Corpus Outpost",
+      "enemy": "Infested",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode48"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode24",
+      "name": "Sechura",
+      "planet": "Pluto",
+      "type": "Defense",
+      "tileset": "Corpus Outpost",
+      "enemy": "Infested",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode72"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode51",
+      "name": "Hades",
+      "planet": "Pluto",
+      "type": "Assassination",
+      "tileset": "Corpus Outpost",
+      "enemy": "Corpus",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 51,
+      "next": [],
+      "prev": [
+        "SolNode81"
+      ],
+      "requirements": "Must have 5 Animo Nav Beacons to access"
+    },
+    {
+      "id": "PlutoToErisJunction",
+      "name": "Eris Junction",
+      "planet": "Pluto",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 1,
+      "mastery": 1000,
+      "next": [
+        "SolNode175"
+      ],
+      "prev": [
+        "SolNode4"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "PlutoHUB",
+      "name": "Orcus Relay",
+      "planet": "Pluto",
+      "type": "Relay",
+      "tileset": "Relay",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "NeptuneToPlutoJunction"
+      ],
+      "requirements": "Must be Mastery Rank 8 or higher to access"
+    },
+    {
+      "id": "SolNode189",
+      "name": "Naga",
+      "planet": "Sedna",
+      "type": "Rescue",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 30,
+      "maxLevel": 34,
+      "mastery": 177,
+      "next": [
+        "SolNode181",
+        "SolNode184"
+      ],
+      "prev": [
+        "ErisToSednaJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode185",
+      "name": "Berehynia",
+      "planet": "Sedna",
+      "type": "Interception",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 50,
+      "next": [
+        "ClanNode15"
+      ],
+      "prev": [
+        "SolNode184"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode195",
+      "name": "Hydron",
+      "planet": "Sedna",
+      "type": "Defense",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 177,
+      "next": [
+        "ClanNode14",
+        "SolNode177"
+      ],
+      "prev": [
+        "SolNode184"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode187",
+      "name": "Selkie",
+      "planet": "Sedna",
+      "type": "Survival",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 177,
+      "next": [
+        "SolNode196",
+        "SolNode191"
+      ],
+      "prev": [
+        "SolNode181"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode181",
+      "name": "Adaro",
+      "planet": "Sedna",
+      "type": "Exterminate",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 32,
+      "maxLevel": 36,
+      "mastery": 177,
+      "next": [
+        "SolNode187"
+      ],
+      "prev": [
+        "SolNode189"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode184",
+      "name": "Rusalka",
+      "planet": "Sedna",
+      "type": "Sabotage",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 32,
+      "maxLevel": 36,
+      "mastery": 177,
+      "next": [
+        "SolNode185",
+        "SolNode195"
+      ],
+      "prev": [
+        "SolNode189"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode188",
+      "name": "Kelpie",
+      "planet": "Sedna",
+      "type": "Spy",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 35,
+      "maxLevel": 40,
+      "mastery": 177,
+      "next": [
+        "SolNode410"
+      ],
+      "prev": [
+        "SolNode196"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode191",
+      "name": "Marid",
+      "planet": "Sedna",
+      "type": "Hijack",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 177,
+      "next": [
+        "SolNode190"
+      ],
+      "prev": [
+        "SolNode187"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode196",
+      "name": "Charybdis",
+      "planet": "Sedna",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 177,
+      "next": [
+        "SolNode188"
+      ],
+      "prev": [
+        "SolNode187"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode14",
+      "name": "Amarna",
+      "planet": "Sedna",
+      "type": "Survival",
+      "tileset": "Grineer Galleon",
+      "enemy": "Infested",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode195"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode15",
+      "name": "Sangeru",
+      "planet": "Sedna",
+      "type": "Defense",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Infested",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode185"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode177",
+      "name": "Kappa",
+      "planet": "Sedna",
+      "type": "Disruption",
+      "tileset": "Grineer Galleon",
+      "enemy": "Grineer",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 177,
+      "next": [],
+      "prev": [
+        "SolNode195"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode190",
+      "name": "Nakki",
+      "planet": "Sedna",
+      "type": "Arena",
+      "tileset": "Grineer Shipyard",
+      "enemy": "Grineer",
+      "minLevel": 40,
+      "maxLevel": 40,
+      "mastery": 177,
+      "next": [
+        "SolNode193",
+        "SolNode199"
+      ],
+      "prev": [
+        "SolNode191"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode199",
+      "name": "Yam",
+      "planet": "Sedna",
+      "type": "Arena",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 60,
+      "maxLevel": 60,
+      "mastery": 177,
+      "next": [
+        "SolNode183"
+      ],
+      "prev": [
+        "SolNode190"
+      ],
+      "requirements": "Must have 10 Judgement Points to access"
+    },
+    {
+      "id": "SolNode183",
+      "name": "Vodyanoi",
+      "planet": "Sedna",
+      "type": "Arena",
+      "tileset": "Grineer Sealab",
+      "enemy": "Grineer",
+      "minLevel": 85,
+      "maxLevel": 85,
+      "mastery": 177,
+      "next": [],
+      "prev": [
+        "SolNode199"
+      ],
+      "requirements": "Must have 15 Judgement Points to access"
+    },
+    {
+      "id": "SolNode193",
+      "name": "Merrow",
+      "planet": "Sedna",
+      "type": "Assassination",
+      "tileset": "Grineer Asteroid",
+      "enemy": "Grineer",
+      "minLevel": 35,
+      "maxLevel": 40,
+      "mastery": 100,
+      "next": [],
+      "prev": [
+        "SolNode190"
+      ],
+      "requirements": "Must have 25 Judgement Points to access"
+    },
+    {
+      "id": "SolNode153",
+      "name": "Brugia",
+      "planet": "Eris",
+      "type": "Rescue",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 32,
+      "maxLevel": 36,
+      "mastery": 279,
+      "next": [
+        "SolNode164",
+        "SolNode171"
+      ],
+      "prev": [
+        "SolNode175"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode162",
+      "name": "Isos",
+      "planet": "Eris",
+      "type": "Capture",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 32,
+      "maxLevel": 36,
+      "mastery": 279,
+      "next": [
+        "SolNode167",
+        "SolNode173"
+      ],
+      "prev": [
+        "SolNode175"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode164",
+      "name": "Kala-azar",
+      "planet": "Eris",
+      "type": "Defense",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 279,
+      "next": [
+        "SolNode172"
+      ],
+      "prev": [
+        "SolNode153"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode175",
+      "name": "Naeglar",
+      "planet": "Eris",
+      "type": "Sabotage",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 34,
+      "mastery": 279,
+      "next": [
+        "SolNode153",
+        "SolNode162"
+      ],
+      "prev": [
+        "PlutoToErisJunction"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode166",
+      "name": "Nimus",
+      "planet": "Eris",
+      "type": "Survival",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 279,
+      "next": [
+        "ClanNode18"
+      ],
+      "prev": [
+        "SolNode173"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode167",
+      "name": "Oestrus",
+      "planet": "Eris",
+      "type": "Infested Salvage",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 279,
+      "next": [],
+      "prev": [
+        "SolNode162"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode171",
+      "name": "Saxis",
+      "planet": "Eris",
+      "type": "Exterminate",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 279,
+      "next": [],
+      "prev": [
+        "SolNode153"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode173",
+      "name": "Solium",
+      "planet": "Eris",
+      "type": "Mobile Defense",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 34,
+      "maxLevel": 38,
+      "mastery": 279,
+      "next": [
+        "SolNode166"
+      ],
+      "prev": [
+        "SolNode162"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode172",
+      "name": "Xini",
+      "planet": "Eris",
+      "type": "Interception",
+      "tileset": "Corpus Ship",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 40,
+      "mastery": 279,
+      "next": [
+        "ClanNode19"
+      ],
+      "prev": [
+        "SolNode164"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode18",
+      "name": "Akkad",
+      "planet": "Eris",
+      "type": "Defense",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode166"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "ClanNode19",
+      "name": "Zabala",
+      "planet": "Eris",
+      "type": "Survival",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 35,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode172"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode701",
+      "name": "Jordas Golem Assassinate",
+      "planet": "Eris",
+      "type": "Assassination",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 32,
+      "maxLevel": 34,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must complete The Jordas Precept to access"
+    },
+    {
+      "id": "SolNode705",
+      "name": "Mutalist Alad V Assassinate",
+      "planet": "Eris",
+      "type": "Assassination",
+      "tileset": "Infested Ship",
+      "enemy": "Infested",
+      "minLevel": 30,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Mutalist Alad V Assassinate Key to access"
+    },
+    {
+      "id": "ErisToSednaJunction",
+      "name": "Sedna Junction",
+      "planet": "Eris",
+      "type": "Solar Rail Junction",
+      "tileset": "Solar Rail",
+      "enemy": "Tenno",
+      "minLevel": 1,
+      "maxLevel": 1,
+      "mastery": 1000,
+      "next": [
+        "SolNode189"
+      ],
+      "prev": [
+        "SolNode167"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode308",
+      "name": "Apollo",
+      "planet": "Lua",
+      "type": "Disruption",
+      "tileset": "Orokin Moon",
+      "enemy": "Corpus",
+      "minLevel": 35,
+      "maxLevel": 40,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode306",
+        "SolNode305"
+      ],
+      "requirements": "Must have The War Within completed to access"
+    },
+    {
+      "id": "SolNode310",
+      "name": "Circulus",
+      "planet": "Lua",
+      "type": "Survival",
+      "tileset": "Orokin Moon",
+      "enemy": "Corrupted",
+      "minLevel": 80,
+      "maxLevel": 100,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode309"
+      ],
+      "requirements": "Must complete The War Within to access"
+    },
+    {
+      "id": "SolNode304",
+      "name": "Copernicus",
+      "planet": "Lua",
+      "type": "Capture",
+      "tileset": "Orokin Moon",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode301"
+      ],
+      "prev": [
+        "SolNode300"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode301",
+      "name": "Grimaldi",
+      "planet": "Lua",
+      "type": "Mobile Defense",
+      "tileset": "Orokin Moon",
+      "enemy": "Grineer",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode305",
+        "SolNode309"
+      ],
+      "prev": [
+        "SolNode304"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode306",
+      "name": "Pavlov",
+      "planet": "Lua",
+      "type": "Spy",
+      "tileset": "Orokin Moon",
+      "enemy": null,
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode308"
+      ],
+      "prev": [
+        "SolNode302"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode300",
+      "name": "Plato",
+      "planet": "Lua",
+      "type": "Exterminate",
+      "tileset": "Orokin Moon",
+      "enemy": null,
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode304",
+        "SolNode307"
+      ],
+      "prev": [
+        "SolNode75"
+      ],
+      "requirements": "Must have The Second Dream completed to access"
+    },
+    {
+      "id": "SolNode305",
+      "name": "Stöfler",
+      "planet": "Lua",
+      "type": "Defense",
+      "tileset": "Orokin Moon",
+      "enemy": "Grineer",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode308"
+      ],
+      "prev": [
+        "SolNode301"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode302",
+      "name": "Tycho",
+      "planet": "Lua",
+      "type": "Survival",
+      "tileset": "Orokin Moon",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode306"
+      ],
+      "prev": [
+        "SolNode307"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode309",
+      "name": "Yuvarium",
+      "planet": "Lua",
+      "type": "Survival",
+      "tileset": "Orokin Moon",
+      "enemy": "Corrupted",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode310"
+      ],
+      "prev": [
+        "SolNode301"
+      ],
+      "requirements": "Must complete The War Within to access"
+    },
+    {
+      "id": "SolNode307",
+      "name": "Zeipel",
+      "planet": "Lua",
+      "type": "Rescue",
+      "tileset": "Orokin Moon",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode302"
+      ],
+      "prev": [
+        "SolNode300"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode746",
+      "name": "Dakata",
+      "planet": "Kuva Fortress",
+      "type": "Exterminate",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 28,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "SolNode741"
+      ],
+      "prev": [],
+      "requirements": "Must have The War Within completed to access"
+    },
+    {
+      "id": "SolNode748",
+      "name": "Garus",
+      "planet": "Kuva Fortress",
+      "type": "Rescue",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 31,
+      "maxLevel": 33,
+      "mastery": 0,
+      "next": [
+        "SolNode745"
+      ],
+      "prev": [
+        "SolNode743"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode741",
+      "name": "Koro",
+      "planet": "Kuva Fortress",
+      "type": "Assault",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 29,
+      "maxLevel": 31,
+      "mastery": 0,
+      "next": [
+        "SolNode743",
+        "SolNode742"
+      ],
+      "prev": [
+        "SolNode746"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode742",
+      "name": "Nabuk",
+      "planet": "Kuva Fortress",
+      "type": "Defense",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 30,
+      "maxLevel": 32,
+      "mastery": 0,
+      "next": [
+        "SolNode747"
+      ],
+      "prev": [
+        "SolNode741"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode747",
+      "name": "Pago",
+      "planet": "Kuva Fortress",
+      "type": "Spy",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 31,
+      "maxLevel": 33,
+      "mastery": 0,
+      "next": [
+        "SolNode744"
+      ],
+      "prev": [
+        "SolNode742"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode743",
+      "name": "Rotuma",
+      "planet": "Kuva Fortress",
+      "type": "Mobile Defense",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 30,
+      "maxLevel": 32,
+      "mastery": 0,
+      "next": [
+        "SolNode748"
+      ],
+      "prev": [
+        "SolNode741"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode745",
+      "name": "Tamu",
+      "planet": "Kuva Fortress",
+      "type": "Disruption",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 35,
+      "maxLevel": 40,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode748"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode744",
+      "name": "Taveuni",
+      "planet": "Kuva Fortress",
+      "type": "Survival",
+      "tileset": "Grineer Asteroid Fortress",
+      "enemy": "Grineer",
+      "minLevel": 32,
+      "maxLevel": 37,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode747"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode400",
+      "name": "Teshub",
+      "planet": "Void",
+      "type": "Exterminate",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 10,
+      "maxLevel": 15,
+      "mastery": 0,
+      "next": [
+        "SolNode401"
+      ],
+      "prev": [
+        "SettlementNode3"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode401",
+      "name": "Hepit",
+      "planet": "Void",
+      "type": "Capture",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 10,
+      "maxLevel": 15,
+      "mastery": 0,
+      "next": [
+        "SolNode402"
+      ],
+      "prev": [
+        "SolNode400"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode402",
+      "name": "Taranis",
+      "planet": "Void",
+      "type": "Defense",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 10,
+      "maxLevel": 15,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode401"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode403",
+      "name": "Tiwaz",
+      "planet": "Void",
+      "type": "Mobile Defense",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 20,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [
+        "SolNode404"
+      ],
+      "prev": [
+        "SolNode205"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode404",
+      "name": "Stribog",
+      "planet": "Void",
+      "type": "Sabotage",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 20,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [
+        "SolNode405"
+      ],
+      "prev": [
+        "SolNode403"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode405",
+      "name": "Ani",
+      "planet": "Void",
+      "type": "Survival",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 20,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode404"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode406",
+      "name": "Ukko",
+      "planet": "Void",
+      "type": "Capture",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 30,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [
+        "SolNode407"
+      ],
+      "prev": [
+        "SolNode49"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode407",
+      "name": "Oxomoco",
+      "planet": "Void",
+      "type": "Exterminate",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 30,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [
+        "SolNode408"
+      ],
+      "prev": [
+        "SolNode406"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode408",
+      "name": "Belenus",
+      "planet": "Void",
+      "type": "Defense",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 30,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode407"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode410",
+      "name": "Aten",
+      "planet": "Void",
+      "type": "Mobile Defense",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 40,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [
+        "SolNode411"
+      ],
+      "prev": [
+        "SolNode188"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode411",
+      "name": "Marduk",
+      "planet": "Void",
+      "type": "Sabotage",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 40,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [
+        "SolNode412"
+      ],
+      "prev": [
+        "SolNode410"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode412",
+      "name": "Mithra",
+      "planet": "Void",
+      "type": "Interception",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 40,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [
+        "SolNode409"
+      ],
+      "prev": [
+        "SolNode411"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode409",
+      "name": "Mot",
+      "planet": "Void",
+      "type": "Survival",
+      "tileset": "Orokin Tower",
+      "enemy": "Corrupted",
+      "minLevel": 40,
+      "maxLevel": 45,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "SolNode412"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "SolNode232",
+      "name": "Tuvul Commons",
+      "planet": "Zariman",
+      "type": "Void Cascade",
+      "tileset": "Zariman (Tileset)",
+      "enemy": "Grineer or Corpus",
+      "minLevel": 50,
+      "maxLevel": 55,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "ZarimanHub"
+      ],
+      "requirements": "Must have Angels of the Zariman completed to access"
+    },
+    {
+      "id": "SolNode230",
+      "name": "Everview Arc",
+      "planet": "Zariman",
+      "type": "Void Flood",
+      "tileset": "Zariman (Tileset)",
+      "enemy": "Grineer or Corpus",
+      "minLevel": 50,
+      "maxLevel": 55,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "ZarimanHub"
+      ],
+      "requirements": "Must have Angels of the Zariman completed to access"
+    },
+    {
+      "id": "SolNode231",
+      "name": "Halako Perimeter",
+      "planet": "Zariman",
+      "type": "Exterminate",
+      "tileset": "Zariman (Tileset)",
+      "enemy": "Grineer or Corpus",
+      "minLevel": 50,
+      "maxLevel": 55,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "ZarimanHub"
+      ],
+      "requirements": "Must have Angels of the Zariman completed to access"
+    },
+    {
+      "id": "SolNode235",
+      "name": "The Greenway",
+      "planet": "Zariman",
+      "type": "Mobile Defense",
+      "tileset": "Zariman (Tileset)",
+      "enemy": "Grineer or Corpus",
+      "minLevel": 50,
+      "maxLevel": 55,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "ZarimanHub"
+      ],
+      "requirements": "Must have Angels of the Zariman completed to access"
+    },
+    {
+      "id": "SolNode233",
+      "name": "Oro Works",
+      "planet": "Zariman",
+      "type": "Void Armageddon",
+      "tileset": "Zariman (Tileset)",
+      "enemy": "Grineer or Corpus",
+      "minLevel": 50,
+      "maxLevel": 55,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "ZarimanHub"
+      ],
+      "requirements": "Must have Angels of the Zariman completed to access"
+    },
+    {
+      "id": "ZarimanHub",
+      "name": "Chrysalith",
+      "planet": "Zariman",
+      "type": "Hub",
+      "tileset": "Chrysalith",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [
+        "SolNode230",
+        "SolNode231",
+        "SolNode232",
+        "SolNode233",
+        "SolNode235"
+      ],
+      "prev": [],
+      "requirements": "Must have Angels of the Zariman completed to access"
+    },
+    {
+      "id": "SolNode234",
+      "name": "Dormizone",
+      "planet": "Zariman",
+      "type": "Hub",
+      "tileset": "Dormizone",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "SolNode236",
+      "name": "The Duviri Experience",
+      "planet": "Duviri",
+      "type": "Free Roam",
+      "tileset": "Duviri",
+      "enemy": "Duviri",
+      "minLevel": 20,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Duviri Paradox completed to access"
+    },
+    {
+      "id": "SolNode237",
+      "name": "The Lone Story (Duviri)",
+      "planet": "Duviri",
+      "type": "Free Roam",
+      "tileset": "Duviri",
+      "enemy": "Duviri",
+      "minLevel": 20,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Duviri Paradox completed to access"
+    },
+    {
+      "id": "SolNode238",
+      "name": "The Circuit",
+      "planet": "Duviri",
+      "type": "Free Roam",
+      "tileset": "Duviri",
+      "enemy": "Duviri",
+      "minLevel": 20,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Duviri Paradox completed to access"
+    },
+    {
+      "id": "SolNode236",
+      "name": "Isleweaver",
+      "planet": "Duviri",
+      "type": "Free Roam",
+      "tileset": "Duviri",
+      "enemy": "The Murmur",
+      "minLevel": 60,
+      "maxLevel": 62,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex completed to access"
+    },
+    {
+      "id": "SolNode850",
+      "name": "Köbinn West",
+      "planet": "Höllvania",
+      "type": "Legacyte Harvest",
+      "tileset": "Höllvania",
+      "enemy": "Techrot",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode851",
+      "name": "Mischta Ramparts",
+      "planet": "Höllvania",
+      "type": "Hell-Scrub",
+      "tileset": "Höllvania",
+      "enemy": "Scaldra",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode852",
+      "name": "Old Konderuk",
+      "planet": "Höllvania",
+      "type": "Hell-Scrub",
+      "tileset": "Höllvania",
+      "enemy": "Techrot",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode853",
+      "name": "Mausoleum East",
+      "planet": "Höllvania",
+      "type": "Exterminate",
+      "tileset": "Höllvania",
+      "enemy": "Scaldra",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode854",
+      "name": "Rhu Manor",
+      "planet": "Höllvania",
+      "type": "Exterminate",
+      "tileset": "Höllvania",
+      "enemy": "Techrot",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode855",
+      "name": "Lower Vehrvod",
+      "planet": "Höllvania",
+      "type": "Faceoff",
+      "tileset": "Höllvania",
+      "enemy": "Scaldra",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode856",
+      "name": "Victory Plaza",
+      "planet": "Höllvania",
+      "type": "Assassination",
+      "tileset": "Höllvania",
+      "enemy": "Scaldra",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode857",
+      "name": "Vehrvod District",
+      "planet": "Höllvania",
+      "type": "Faceoff",
+      "tileset": "Höllvania",
+      "enemy": "Scaldra",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access\\nMust have Lower Vehrvod completed"
+    },
+    {
+      "id": "SolNode858",
+      "name": "Solstice Square",
+      "planet": "Höllvania",
+      "type": "Stage Defense",
+      "tileset": "Höllvania",
+      "enemy": "Scaldra",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "1999Hub",
+      "name": "Höllvania Central Mall",
+      "planet": "Höllvania",
+      "type": "Hub",
+      "tileset": "Höllvania",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Hex (Quest) completed to access"
+    },
+    {
+      "id": "SolNode253",
+      "name": "The Descendia",
+      "planet": "Dark Refractory",
+      "type": "The Descendia",
+      "tileset": "Descendia",
+      "enemy": "Orokin",
+      "minLevel": 65,
+      "maxLevel": 85,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Old Peace completed to access"
+    },
+    {
+      "id": "SolNode250",
+      "name": "Recall: Hunhullus",
+      "planet": "Dark Refractory",
+      "type": "The Perita Rebellion",
+      "tileset": "Perita",
+      "enemy": "Anarchs",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Old Peace completed to access"
+    },
+    {
+      "id": "SolNode251",
+      "name": "Recall: Dactolyst",
+      "planet": "Dark Refractory",
+      "type": "The Perita Rebellion",
+      "tileset": "Perita",
+      "enemy": "Anarchs",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Old Peace completed to access"
+    },
+    {
+      "id": "SolNode252",
+      "name": "Recall: Prime Vanguard",
+      "planet": "Dark Refractory",
+      "type": "The Perita Rebellion",
+      "tileset": "Perita",
+      "enemy": "Anarchs",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have The Old Peace completed to access"
+    },
+    {
+      "id": "SolNode257",
+      "name": "The Guilty",
+      "planet": "Dark Refractory",
+      "type": "The Guilty",
+      "tileset": "Perita",
+      "enemy": "Anarchs",
+      "minLevel": 165,
+      "maxLevel": 170,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode559",
+      "name": "Technocyte Coda Concert",
+      "planet": "Earth Proxima",
+      "type": "Assassination",
+      "tileset": "Technocyte Coda Stadium",
+      "enemy": "Techrot",
+      "minLevel": 100,
+      "maxLevel": 100,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must complete The Hex quest to access and active Technocyte Coda."
+    },
+    {
+      "id": "CrewBattleNode556",
+      "name": "Free Flight",
+      "planet": "Earth Proxima",
+      "type": "Free Flight",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 1,
+      "maxLevel": 1,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode502",
+      "name": "Sover Strait",
+      "planet": "Earth Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 15,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode509"
+      ],
+      "prev": [],
+      "requirements": "Must have Rising Tide completed to access"
+    },
+    {
+      "id": "CrewBattleNode509",
+      "name": "Iota Temple",
+      "planet": "Earth Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 20,
+      "maxLevel": 28,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode518"
+      ],
+      "prev": [
+        "CrewBattleNode502"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode518",
+      "name": "Ogal Cluster",
+      "planet": "Earth Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 21,
+      "maxLevel": 26,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode519"
+      ],
+      "prev": [
+        "CrewBattleNode509"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode519",
+      "name": "Korm's Belt",
+      "planet": "Earth Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 24,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode522"
+      ],
+      "prev": [
+        "CrewBattleNode518"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode522",
+      "name": "Bendar Cluster",
+      "planet": "Earth Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 29,
+      "maxLevel": 36,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode533"
+      ],
+      "prev": [
+        "CrewBattleNode519"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode511",
+      "name": "Beacon Shield Ring",
+      "planet": "Venus Proxima",
+      "type": "Volatile",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 17,
+      "maxLevel": 20,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode512"
+      ],
+      "prev": [
+        "CrewBattleNode503"
+      ],
+      "requirements": "Must have Rising Tide completed to access"
+    },
+    {
+      "id": "CrewBattleNode513",
+      "name": "Vesper Strait",
+      "planet": "Venus Proxima",
+      "type": "Orphix",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 21,
+      "maxLevel": 24,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode515"
+      ],
+      "prev": [
+        "CrewBattleNode512"
+      ],
+      "requirements": "Must have The War Within completed to access"
+    },
+    {
+      "id": "CrewBattleNode515",
+      "name": "Luckless Expanse",
+      "planet": "Venus Proxima",
+      "type": "Survival",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 22,
+      "maxLevel": 25,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode514"
+      ],
+      "prev": [
+        "CrewBattleNode513"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode514",
+      "name": "Falling Glory",
+      "planet": "Venus Proxima",
+      "type": "Defense",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 23,
+      "maxLevel": 26,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode533"
+      ],
+      "prev": [
+        "CrewBattleNode515"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode503",
+      "name": "Bifrost Echo",
+      "planet": "Venus Proxima",
+      "type": "Exterminate",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 15,
+      "maxLevel": 18,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode511"
+      ],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode512",
+      "name": "Orvin-Haarc",
+      "planet": "Venus Proxima",
+      "type": "Spy",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 19,
+      "maxLevel": 22,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode513"
+      ],
+      "prev": [
+        "CrewBattleNode511"
+      ],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode557",
+      "name": "Kuva Lich Confrontation",
+      "planet": "Saturn Proxima",
+      "type": "Assassination",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 63,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Intrinsics Rank 3 or higher and an active Kuva Lich to access"
+    },
+    {
+      "id": "CrewBattleNode501",
+      "name": "Mordo Cluster",
+      "planet": "Saturn Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 55,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode534"
+      ],
+      "prev": [
+        "CrewBattleNode533"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode534",
+      "name": "Lupal Pass",
+      "planet": "Saturn Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 48,
+      "maxLevel": 56,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode535"
+      ],
+      "prev": [
+        "CrewBattleNode501"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode533",
+      "name": "Nodo Gap",
+      "planet": "Saturn Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 54,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode501"
+      ],
+      "prev": [
+        "CrewBattleNode522",
+        "CrewBattleNode514"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode535",
+      "name": "Vand Cluster",
+      "planet": "Saturn Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode530"
+      ],
+      "prev": [
+        "CrewBattleNode534"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode530",
+      "name": "Kasio's Rest",
+      "planet": "Saturn Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 70,
+      "maxLevel": 75,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode504"
+      ],
+      "prev": [
+        "CrewBattleNode535"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode558",
+      "name": "Sister of Parvos Confrontation",
+      "planet": "Neptune Proxima",
+      "type": "Assassination",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 63,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Intrinsics Rank 3 or higher and an active Sister of Parvos to access"
+    },
+    {
+      "id": "CrewBattleNode504",
+      "name": "Arva Vector",
+      "planet": "Neptune Proxima",
+      "type": "Defense",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 25,
+      "maxLevel": 28,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode516"
+      ],
+      "prev": [
+        "CrewBattleNode530"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode516",
+      "name": "Nu-gua Mines",
+      "planet": "Neptune Proxima",
+      "type": "Exterminate",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 27,
+      "maxLevel": 30,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode521"
+      ],
+      "prev": [
+        "CrewBattleNode504"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode523",
+      "name": "Mammon's Prospect",
+      "planet": "Neptune Proxima",
+      "type": "Orphix",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 31,
+      "maxLevel": 34,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode525"
+      ],
+      "prev": [
+        "CrewBattleNode521"
+      ],
+      "requirements": "Must have The War Within completed and Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode525",
+      "name": "Brom Cluster",
+      "planet": "Neptune Proxima",
+      "type": "Spy",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 32,
+      "maxLevel": 35,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode524"
+      ],
+      "prev": [
+        "CrewBattleNode523"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode521",
+      "name": "Enkidu Ice Drifts",
+      "planet": "Neptune Proxima",
+      "type": "Survival",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 29,
+      "maxLevel": 32,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode523"
+      ],
+      "prev": [
+        "CrewBattleNode516"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode524",
+      "name": "Sovereign Grasp",
+      "planet": "Neptune Proxima",
+      "type": "Volatile",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 33,
+      "maxLevel": 36,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode526"
+      ],
+      "prev": [
+        "CrewBattleNode525"
+      ],
+      "requirements": "Must have Intrinsics Rank 3 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode526",
+      "name": "Khufu Envoy",
+      "planet": "Pluto Proxima",
+      "type": "Orphix",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 35,
+      "maxLevel": 38,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode527"
+      ],
+      "prev": [
+        "CrewBattleNode524"
+      ],
+      "requirements": "Must have The War Within completed and Intrinsics Rank 5 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode527",
+      "name": "Seven Sirens",
+      "planet": "Pluto Proxima",
+      "type": "Exterminate",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 37,
+      "maxLevel": 40,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode528"
+      ],
+      "prev": [
+        "CrewBattleNode526"
+      ],
+      "requirements": "Must have Intrinsics Rank 5 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode528",
+      "name": "Obol Crossing",
+      "planet": "Pluto Proxima",
+      "type": "Defense",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 39,
+      "maxLevel": 42,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode531"
+      ],
+      "prev": [
+        "CrewBattleNode527"
+      ],
+      "requirements": "Must have Intrinsics Rank 5 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode531",
+      "name": "Fenton's Field",
+      "planet": "Pluto Proxima",
+      "type": "Survival",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 40,
+      "maxLevel": 43,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode529"
+      ],
+      "prev": [
+        "CrewBattleNode528"
+      ],
+      "requirements": "Must have Intrinsics Rank 5 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode529",
+      "name": "Profit Margin",
+      "planet": "Pluto Proxima",
+      "type": "Volatile",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 41,
+      "maxLevel": 44,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode536"
+      ],
+      "prev": [
+        "CrewBattleNode531"
+      ],
+      "requirements": "Must have Intrinsics Rank 5 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode536",
+      "name": "Peregrine Axis",
+      "planet": "Pluto Proxima",
+      "type": "Spy",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 43,
+      "maxLevel": 46,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode550"
+      ],
+      "prev": [
+        "CrewBattleNode529"
+      ],
+      "requirements": "Must have Intrinsics Rank 5 or higher to access"
+    },
+    {
+      "id": "CrewBattleNode550",
+      "name": "Nsu Grid",
+      "planet": "Veil Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 80,
+      "maxLevel": 90,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode553"
+      ],
+      "prev": [
+        "CrewBattleNode536"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode555",
+      "name": "R-9 Cloud",
+      "planet": "Veil Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 80,
+      "maxLevel": 90,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode538"
+      ],
+      "prev": [
+        "CrewBattleNode554"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode554",
+      "name": "H-2 Cloud",
+      "planet": "Veil Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 80,
+      "maxLevel": 90,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode555"
+      ],
+      "prev": [
+        "CrewBattleNode553"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode553",
+      "name": "Flexa",
+      "planet": "Veil Proxima",
+      "type": "Skirmish",
+      "tileset": "Free Space",
+      "enemy": "Grineer",
+      "minLevel": 80,
+      "maxLevel": 90,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode554"
+      ],
+      "prev": [
+        "CrewBattleNode550"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode538",
+      "name": "Calabash",
+      "planet": "Veil Proxima",
+      "type": "Exterminate",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 45,
+      "maxLevel": 49,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode539"
+      ],
+      "prev": [
+        "CrewBattleNode555"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode539",
+      "name": "Numina",
+      "planet": "Veil Proxima",
+      "type": "Volatile",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 48,
+      "maxLevel": 52,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode540"
+      ],
+      "prev": [
+        "CrewBattleNode538"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode540",
+      "name": "Arc Silver",
+      "planet": "Veil Proxima",
+      "type": "Defense",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 51,
+      "maxLevel": 55,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode541"
+      ],
+      "prev": [
+        "CrewBattleNode539"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode541",
+      "name": "Erato",
+      "planet": "Veil Proxima",
+      "type": "Orphix",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 54,
+      "maxLevel": 58,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode542"
+      ],
+      "prev": [
+        "CrewBattleNode540"
+      ],
+      "requirements": "Must have The War Within completed and Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode542",
+      "name": "Lu-yan",
+      "planet": "Veil Proxima",
+      "type": "Survival",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 55,
+      "maxLevel": 59,
+      "mastery": 0,
+      "next": [
+        "CrewBattleNode543"
+      ],
+      "prev": [
+        "CrewBattleNode541"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "CrewBattleNode543",
+      "name": "Sabmir Cloud",
+      "planet": "Veil Proxima",
+      "type": "Spy",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 57,
+      "maxLevel": 60,
+      "mastery": 0,
+      "next": [],
+      "prev": [
+        "CrewBattleNode542"
+      ],
+      "requirements": "Must have Intrinsics Rank 7 or higher to access and Chimera Prologue completed"
+    },
+    {
+      "id": "JadeShadows2HUB",
+      "name": "Pontis Tower",
+      "planet": "Uranus Proxima",
+      "type": "Hub",
+      "tileset": "Orokin Tower",
+      "enemy": "Tenno",
+      "minLevel": 0,
+      "maxLevel": 0,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": null
+    },
+    {
+      "id": "CrewBattleNode561",
+      "name": "Scoria's Angel",
+      "planet": "Uranus Proxima",
+      "type": "Skirmish + Assassinate",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Jade Shadows completed"
+    },
+    {
+      "id": "CrewBattleNode560",
+      "name": "The Kuva Wytch",
+      "planet": "Uranus Proxima",
+      "type": "Skirmish + Assassinate",
+      "tileset": "Free Space",
+      "enemy": "Corpus",
+      "minLevel": 65,
+      "maxLevel": 70,
+      "mastery": 0,
+      "next": [],
+      "prev": [],
+      "requirements": "Must have Jade Shadows completed"
+    }
+  ]
+}

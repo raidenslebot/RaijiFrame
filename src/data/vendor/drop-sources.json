@@ -1,0 +1,606 @@
+{
+  "source": "https://drops.warframestat.us/data/all.slim.json",
+  "note": "Scene and ephemera sources, plus the Duviri riven rows the guide quotes. Regenerate with scripts/fetch-drop-sources.ts",
+  "sources": [
+    {
+      "item": "3X Riven Sliver",
+      "place": "Duviri/Endless: Tier 1 (Hard)",
+      "rarity": "Rare",
+      "chance": 4.43
+    },
+    {
+      "item": "3X Riven Sliver",
+      "place": "Duviri/Endless: Tier 3 (Hard)",
+      "rarity": "Rare",
+      "chance": 4.43
+    },
+    {
+      "item": "3X Riven Sliver",
+      "place": "Duviri/Endless: Tier 4 (Hard)",
+      "rarity": "Rare",
+      "chance": 4.43
+    },
+    {
+      "item": "Amaryn's Retreat Scene",
+      "place": "New Loka, Flawless",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Arbiter's Tribunal Scene",
+      "place": "Arbiters of Hexis, Maxim",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Aspirus Apex Ephemera",
+      "place": "Operational Supply, Champion",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Aspirus Emergent Ephemera",
+      "place": "Operational Supply, Defender",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Aspirus Ephemera",
+      "place": "Operational Supply, Collaborator",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Blazing Step Ephemera Blueprint",
+      "place": "Blite Captain",
+      "rarity": "Rare",
+      "chance": 0.39
+    },
+    {
+      "item": "Blazing Step Ephemera Blueprint",
+      "place": "Glacik Commander",
+      "rarity": "Rare",
+      "chance": 0.39
+    },
+    {
+      "item": "Blazing Step Ephemera Blueprint",
+      "place": "Lektro Commander",
+      "rarity": "Rare",
+      "chance": 0.39
+    },
+    {
+      "item": "Blazing Step Ephemera Blueprint",
+      "place": "Pyr Captain",
+      "rarity": "Rare",
+      "chance": 0.39
+    },
+    {
+      "item": "Cetus Scene",
+      "place": "Ostron (Old Man Suumbaat), Kin",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Chamber Of The Lotus Scene",
+      "place": "Cephalon Suda, Genius",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Color Key Scene",
+      "place": "Cephalon Simaris, Color Key Scene\n",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Corpus Depository Scene",
+      "place": "Sanctuary Onslaught, Rotation A",
+      "rarity": "Rare",
+      "chance": 7.14
+    },
+    {
+      "item": "Corpus Gas City Conduit Scene",
+      "place": "The Perrin Sequence, Partner",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Corpus Ice Planet Wreckage Scene",
+      "place": "Cephalon Suda, Genius",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Corpus Ship Bridge Scene",
+      "place": "Granum Void, Rotation B",
+      "rarity": "Uncommon",
+      "chance": 16.67
+    },
+    {
+      "item": "Corpus Ship Hangar Scene",
+      "place": "Extended Granum Void, Rotation B",
+      "rarity": "Uncommon",
+      "chance": 16.67
+    },
+    {
+      "item": "Corpus Ship Orbital Cannon Scene",
+      "place": "Nightmare Granum Void, Rotation B",
+      "rarity": "Uncommon",
+      "chance": 16.67
+    },
+    {
+      "item": "Cressa's Garrison Scene",
+      "place": "Steel Meridian, General",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Deimos Cambion Drift Scene",
+      "place": "Entrati (Son), Family",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Deimos Chamber Scene",
+      "place": "NecraLoid (Loid), Clearance Odima",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Ergo's Boardroom Scene",
+      "place": "The Perrin Sequence, Partner",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Fog Of War Ephemera",
+      "place": "Kahl's Garrison (Chipper), Home",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Fortuna Scene",
+      "place": "Solaris United (Smokefinger), Old Mate",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Freezing Step Ephemera Blueprint",
+      "place": "Exploiter Orb",
+      "rarity": "Common",
+      "chance": 5
+    },
+    {
+      "item": "Grineer Forest Factory Scene",
+      "place": "Forgotten Grineer Storage Container (Level 0 - 100)",
+      "rarity": "Common",
+      "chance": 33.33
+    },
+    {
+      "item": "Grineer Forest Industry Scene",
+      "place": "Forgotten Grineer Storage Container (Level 0 - 100)",
+      "rarity": "Common",
+      "chance": 33.33
+    },
+    {
+      "item": "Grineer Forest Water Pump Scene",
+      "place": "Forgotten Grineer Storage Container (Level 0 - 100)",
+      "rarity": "Common",
+      "chance": 33.33
+    },
+    {
+      "item": "Grineer Sealab Centrifuge Scene",
+      "place": "Sanctuary Onslaught, Rotation A",
+      "rarity": "Rare",
+      "chance": 7.14
+    },
+    {
+      "item": "Grineer Settlement Artillery Scene",
+      "place": "Sanctuary Onslaught, Rotation B",
+      "rarity": "Rare",
+      "chance": 7.14
+    },
+    {
+      "item": "Grineer Settlement Reactor Scene",
+      "place": "Steel Meridian, General",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Grineer Shipyards Manufactory Scene",
+      "place": "New Loka, Flawless",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Harrow's Temple Scene",
+      "place": "Red Veil, Exalted",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Hunhow's Chamber Scene",
+      "place": "Red Veil, Exalted",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Hunhow's Datascape Scene",
+      "place": "Cephalon Suda, Genius",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Infested Ship Bridge Scene",
+      "place": "Red Veil, Exalted",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Kitgun Riven Mod",
+      "place": "Duviri/Endless: Repeated Rewards (Hard)",
+      "rarity": "Legendary",
+      "chance": 0.95
+    },
+    {
+      "item": "Kitgun Riven Mod",
+      "place": "Duviri/Endless: Tier 6 (Hard)",
+      "rarity": "Rare",
+      "chance": 1.2
+    },
+    {
+      "item": "Kitgun Riven Mod",
+      "place": "Duviri/Endless: Tier 7 (Hard)",
+      "rarity": "Rare",
+      "chance": 1.2
+    },
+    {
+      "item": "Kuva Fortress Crevice Scene",
+      "place": "Elite Sanctuary Onslaught, Rotation A",
+      "rarity": "Rare",
+      "chance": 2.51
+    },
+    {
+      "item": "Kuva Throne Scene",
+      "place": "Steel Meridian, General",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Lua Balcony Scene",
+      "place": "Elite Sanctuary Onslaught, Rotation A",
+      "rarity": "Rare",
+      "chance": 2.51
+    },
+    {
+      "item": "Lua Containment Scene",
+      "place": "Arbiters of Hexis, Maxim",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Lua Nursery Scene",
+      "place": "Arbiters of Hexis, Maxim",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Lunaro Arena Scene",
+      "place": "Conclave, Typhoon",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Melee Riven Mod",
+      "place": "Duviri/Endless: Repeated Rewards (Hard)",
+      "rarity": "Legendary",
+      "chance": 0.95
+    },
+    {
+      "item": "Melee Riven Mod",
+      "place": "Duviri/Endless: Tier 6 (Hard)",
+      "rarity": "Uncommon",
+      "chance": 11.9
+    },
+    {
+      "item": "Melee Riven Mod",
+      "place": "Duviri/Endless: Tier 7 (Hard)",
+      "rarity": "Uncommon",
+      "chance": 11.9
+    },
+    {
+      "item": "Mycona Colony Scene",
+      "place": "The Perrin Sequence, Partner",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Onkko's Command Post Scene",
+      "place": "The Quills, Architect",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Orb Vallis Scene",
+      "place": "Solaris United (Smokefinger), Old Mate",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Orokin Derelict Plaza Scene",
+      "place": "Cephalon Simaris, Orokin Derelict Plaza Scene\n",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Pistol Riven Mod",
+      "place": "Duviri/Endless: Repeated Rewards (Hard)",
+      "rarity": "Legendary",
+      "chance": 0.95
+    },
+    {
+      "item": "Pistol Riven Mod",
+      "place": "Duviri/Endless: Tier 6 (Hard)",
+      "rarity": "Rare",
+      "chance": 8.5
+    },
+    {
+      "item": "Pistol Riven Mod",
+      "place": "Duviri/Endless: Tier 7 (Hard)",
+      "rarity": "Rare",
+      "chance": 8.5
+    },
+    {
+      "item": "Plains of Eidolon Scene",
+      "place": "Ostron (Old Man Suumbaat), Kin",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Praghasa Throne Room Scene",
+      "place": "Vox Solaris, Shadow",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Raptwing Ephemera",
+      "place": "The Holdfasts (Cavalero), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Rifle Riven Mod",
+      "place": "Duviri/Endless: Repeated Rewards (Hard)",
+      "rarity": "Legendary",
+      "chance": 0.95
+    },
+    {
+      "item": "Rifle Riven Mod",
+      "place": "Duviri/Endless: Tier 6 (Hard)",
+      "rarity": "Rare",
+      "chance": 8.5
+    },
+    {
+      "item": "Rifle Riven Mod",
+      "place": "Duviri/Endless: Tier 7 (Hard)",
+      "rarity": "Rare",
+      "chance": 8.5
+    },
+    {
+      "item": "Sanctuary Conduit Scene",
+      "place": "Cephalon Simaris, Sanctuary Conduit Scene\n",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Seraphayre Ephemera",
+      "place": "The Holdfasts (Cavalero), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Shard Bane Ephemera",
+      "place": "Kahl's Garrison (Chipper), Home",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Shard Hex Ephemera",
+      "place": "Kahl's Garrison (Chipper), Home",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Shocking Step Ephemera Blueprint",
+      "place": "Exploiter Orb",
+      "rarity": "Common",
+      "chance": 5
+    },
+    {
+      "item": "Shotgun Riven Mod",
+      "place": "Duviri/Endless: Repeated Rewards (Hard)",
+      "rarity": "Legendary",
+      "chance": 0.95
+    },
+    {
+      "item": "Shotgun Riven Mod",
+      "place": "Duviri/Endless: Tier 6 (Hard)",
+      "rarity": "Rare",
+      "chance": 2.7
+    },
+    {
+      "item": "Shotgun Riven Mod",
+      "place": "Duviri/Endless: Tier 7 (Hard)",
+      "rarity": "Rare",
+      "chance": 2.7
+    },
+    {
+      "item": "Silver Grove Shrine Scene",
+      "place": "New Loka, Flawless",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Smoking Body Ephemera Blueprint",
+      "place": "Protector Stalker",
+      "rarity": "Common",
+      "chance": 5
+    },
+    {
+      "item": "Smoking Body Ephemera Blueprint",
+      "place": "Shadow Stalker",
+      "rarity": "Common",
+      "chance": 5
+    },
+    {
+      "item": "Suda's Datascape Scene",
+      "place": "Cephalon Suda, Genius",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Teshin's Refuge Scene",
+      "place": "Conclave, Typhoon",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Veil's Binding Scene",
+      "place": "Red Veil, Exalted",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Veilbreak Factory Scene",
+      "place": "Kahl's Garrison (Chipper), Home",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Veilbreak Forest Scene",
+      "place": "Kahl's Garrison (Chipper), Home",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Veilbreak Murex Scene",
+      "place": "Kahl's Garrison (Chipper), Home",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Ventkids Clubhouse Scene",
+      "place": "Ventkids, Logical",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Agri-Zone Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Albrecht Park Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Amphitheatre Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Angel Roost Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Brig Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Cargo Bay Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Chrysalith Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Docking Bay Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Dormizone Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Habitation Zone Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Hall Of Legems Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Lunaro Court Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Reliquary Drive Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Schoolyard Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zariman Serenity Levels Scene",
+      "place": "The Holdfasts (Hombask), Angel",
+      "rarity": "Common",
+      "chance": 100
+    },
+    {
+      "item": "Zaw Riven Mod",
+      "place": "Duviri/Endless: Repeated Rewards (Hard)",
+      "rarity": "Legendary",
+      "chance": 0.95
+    },
+    {
+      "item": "Zaw Riven Mod",
+      "place": "Duviri/Endless: Tier 6 (Hard)",
+      "rarity": "Rare",
+      "chance": 1.2
+    },
+    {
+      "item": "Zaw Riven Mod",
+      "place": "Duviri/Endless: Tier 7 (Hard)",
+      "rarity": "Rare",
+      "chance": 1.2
+    }
+  ]
+}

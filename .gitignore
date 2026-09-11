@@ -1,0 +1,31 @@
+node_modules/
+dist/
+release/
+*.opk
+.vite/
+.DS_Store
+*.local
+/secrets.json
+/.cache/
+*.tsbuildinfo
+
+# Playwright MCP scratch (screenshots, snapshots)
+.playwright-mcp/
+
+# THE PLAYER'S OWN SCREEN. `__lab-bg.webp` is a 1680x1050 capture of their real
+# Upgrades screen - their credits, their ducats, their actual mod collection -
+# and composite.html carries figures read off it. composite.html's own comment
+# says the capture "must never reach a build".
+#
+# These two lines were REMOVED and both files were committed. There is no
+# remote, so nothing escaped, and the blob has been taken back out of the single
+# baseline commit rather than left in history where only a rewrite could reach
+# it. They are dev instruments and they live on disk, untracked, on purpose.
+__lab-bg.webp
+composite.html
+
+# Screenshots taken while looking at the overlay. The artboard and its
+# backdrop are already ignored above; these are the pictures of them.
+*.png
+!public/icons/*.png
+dumps.jsonl

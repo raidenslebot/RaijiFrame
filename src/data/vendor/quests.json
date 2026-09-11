@@ -1,0 +1,799 @@
+{
+  "version": "2026-08-31",
+  "source": "https://wiki.warframe.com/w/Quest (master progression chain), raw wikitext of one wiki.warframe.com page per quest via index.php?title=<Quest>&action=raw (QuestInfobox requirement / internalname / previousquest / nextquest fields), https://content.warframe.com/PublicExport/index_en.txt.lzma -> https://content.warframe.com/PublicExport/Manifest/ExportKeys_en.json",
+  "sourceNote": "Hand-constructed: no machine-readable quest-prerequisite dataset exists. DE's ExportKeys carries no prerequisites and WFCD's Quests.json carries none. Every id is a DE-canonical uniqueName copied verbatim from ExportKeys_en.json (PublicExport, fetched 2026-08-31) and cross-checked against each wiki page's QuestInfobox internalname field where present; ids join directly against account QuestKeys[].ItemType. SOURCING RULE for requires: only quests explicitly named in the QuestInfobox 'requirement' field of the page's RAW WIKITEXT are listed. Non-quest gates from that same field (junctions, Mastery Rank, segments, NPC conversations, owning a Railjack or Amp) go in requiresNote. Where the infobox 'previousquest' names a narrative predecessor that is NOT in the requirement field (Vox Solaris, Once Awake, Heart of Deimos, The Archwing, Stolen Dreams, The Deadlock Protocol, Natah, Chains of Harrow), that predecessor is recorded in 'note' and deliberately NOT in requires: those quests are gated only by a junction, so a false edge would hide a quest the player can actually start. Wiki pages were read as raw wikitext through a browser session. Rendered-page summarisation was NOT used for prerequisites: on this wiki it produced inconsistent results, inventing gates (a Europa Junction on The New Strange, a Jupiter-to-Europa Junction on The Limbo Theorem, a Mastery Rank on Natah, a Venus Junction on Vox Solaris) that the raw infoboxes do not contain. Those four are corrected here. 'The Maker' has id null: the wiki types it a Main Quest but it is a pure cutscene with no internalname and no key in ExportKeys, so it can never appear in account data. It is referenced by name in The New War's requires. 'Prelude to War' has no row: its own page types it 'Narrative arc' rather than a quest and it has no key. The New War's infobox requirement 'Completed Prelude to War' is expanded into its three chapters, Chimera Prologue -> Erra -> The Maker. 'The Hex Finale' is a real separate key in ExportKeys but the wiki page of that name redirects into a section of The Hex, so it has no infobox; its gate comes from that section's prose. ExportKeys holds 46 entries, two of which are not quests and are excluded: /Lotus/Types/Keys/DojoKey and /Lotus/Types/Keys/InfestedAladVQuest/AssassinateInfestedAladVKey ('Mutalist Alad V Assassinate', a mission key). All 44 remaining quest keychains are represented here, plus The Maker. The announced but unreleased 'Unnamed Warframe: Tau Quest' (Warframe: Tau, Winter 2026) is excluded: it has no key and its own wiki page marks its prerequisite as speculation. 'order' is a best-judgment completionist sequence derived from junction gates, Mastery gates and the master progression chain on /w/Quest. It is not an authoritative DE ordering, and it is validated only to the extent that every quest is ordered after all of its requires. Current as of Update 43 (Jade Shadows: Constellations).",
+  "questCount": 45,
+  "quests": [
+    {
+      "id": "/Lotus/Types/Keys/NewPlayerQuest/NewPlayerQuestKeyChain",
+      "name": "Awakening",
+      "order": 1,
+      "planet": "Earth",
+      "requires": [],
+      "requiresNote": "First Login",
+      "unlocks": [
+        "Starter Warframe (Excalibur/Mag/Volt)",
+        "Starter weapons",
+        "Vor's Prize"
+      ],
+      "mainline": true,
+      "note": "Tutorial.",
+      "provenance": "DE spells the name 'AWAKENING' in ExportKeys."
+    },
+    {
+      "id": "/Lotus/Types/Keys/VorsPrize/VorsPrizeQuestKeyChain",
+      "name": "Vor's Prize",
+      "order": 2,
+      "planet": "Earth",
+      "requires": [
+        "/Lotus/Types/Keys/NewPlayerQuest/NewPlayerQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Full Star Chart access",
+        "Orbiter Communications/Foundry/Navigation Segments",
+        "Market and matchmaking",
+        "The Teacher",
+        "Saya's Vigil"
+      ],
+      "mainline": true,
+      "note": "Mandatory. Nothing else opens until it is done."
+    },
+    {
+      "id": "/Lotus/Types/Keys/ModQuest/ModQuestKeyChain",
+      "name": "The Teacher",
+      "order": 3,
+      "planet": "Earth",
+      "requires": [
+        "/Lotus/Types/Keys/VorsPrize/VorsPrizeQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Cetus and the Plains of Eidolon",
+        "Mod Segment",
+        "Nightwave",
+        "Teshin in Relays",
+        "Vox Solaris"
+      ],
+      "mainline": true,
+      "note": "Added in Update 40 (2025-10-15) and retroactively inserted into early progression. It now sits between Vor's Prize and Vox Solaris, and the Venus Junction lists it as a task."
+    },
+    {
+      "id": "/Lotus/Types/Keys/GlassQuest/GlassQuestKeyChain",
+      "name": "Saya's Vigil",
+      "order": 4,
+      "planet": "Earth",
+      "requires": [
+        "/Lotus/Types/Keys/VorsPrize/VorsPrizeQuestKeyChain"
+      ],
+      "requiresNote": "At least 1 bounty completed",
+      "unlocks": [
+        "Gara blueprint",
+        "Ostron standing, fishing, mining, conservation, Zaw crafting",
+        "Shrine Defense (with Once Awake)"
+      ],
+      "mainline": false,
+      "note": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/GetClemQuest/GetClemQuestKeyChain",
+      "name": "A Man of Few Words",
+      "order": 5,
+      "planet": "Relay",
+      "requires": [],
+      "requiresNote": "Talk with Darvo in any Relay",
+      "unlocks": [
+        "Weekly 'Help Clem' alert",
+        "Exilus Adapter",
+        "Clem Clone blueprint"
+      ],
+      "mainline": false,
+      "note": null,
+      "provenance": "The infobox names no quest or junction gate at all, only the Darvo conversation."
+    },
+    {
+      "id": "/Lotus/Types/Keys/KubrowQuest/KubrowQuestKeyChain",
+      "name": "Howl of the Kubrow",
+      "order": 6,
+      "planet": "Venus",
+      "requires": [],
+      "requiresNote": "Venus to Mercury Junction",
+      "unlocks": [
+        "Incubator Segment",
+        "Kubrow companions",
+        "Balanced Posture mod"
+      ],
+      "mainline": false,
+      "note": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/SolarisQuest/SolarisQuestKeyChain",
+      "name": "Vox Solaris",
+      "order": 7,
+      "planet": "Venus",
+      "requires": [],
+      "requiresNote": "Talk with Eudico in Fortuna",
+      "unlocks": [
+        "Fortuna and the Orb Vallis",
+        "Solaris United and Ventkids syndicates",
+        "K-Drive Launcher",
+        "Garuda blueprint",
+        "Kitguns, MOAs, fishing, mining, conservation",
+        "The Waverider"
+      ],
+      "mainline": true,
+      "note": "Reaching Fortuna needs Venus unlocked. The Vox Solaris syndicate, as opposed to this quest, additionally needs The War Within.",
+      "provenance": "The infobox requirement is only the Eudico conversation, so requires is empty; the infobox previousquest is The Teacher."
+    },
+    {
+      "id": "/Lotus/Types/Keys/YareliQuest/YareliQuestKeyChain",
+      "name": "The Waverider",
+      "order": 8,
+      "planet": "Venus",
+      "requires": [
+        "/Lotus/Types/Keys/SolarisQuest/SolarisQuestKeyChain"
+      ],
+      "requiresNote": "Mastery Rank 3",
+      "unlocks": [
+        "Yareli blueprint",
+        "K-Drive feats content"
+      ],
+      "mainline": false,
+      "note": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/InfestedIntroQuest/InfestedIntroQuestKeyChain",
+      "name": "Once Awake",
+      "order": 9,
+      "planet": "Mercury",
+      "requires": [],
+      "requiresNote": "Mercury Junction",
+      "unlocks": [
+        "Heart of Deimos",
+        "Shrine Defense (with Saya's Vigil)",
+        "Molten Impact mod",
+        "Heat Sword blueprint"
+      ],
+      "mainline": true,
+      "note": "Gated only by the Mercury Junction.",
+      "provenance": "The infobox previousquest is Vox Solaris."
+    },
+    {
+      "id": "/Lotus/Types/Keys/InfestedMicroplanetQuest/InfestedMicroplanetQuestKeyChain",
+      "name": "Heart of Deimos",
+      "order": 10,
+      "planet": "Deimos",
+      "requires": [],
+      "requiresNote": "Earth to Mars Junction",
+      "unlocks": [
+        "Cambion Drift and the Necralisk",
+        "Entrati syndicate",
+        "Necramechs (Voidrig)",
+        "Helminth Segment",
+        "Xaku blueprint",
+        "Mirror Defense on Mars"
+      ],
+      "mainline": true,
+      "note": "Gated only by the Earth to Mars Junction.",
+      "provenance": "The infobox previousquest is Once Awake."
+    },
+    {
+      "id": "/Lotus/Types/Keys/ArchwingQuest/ArchwingQuestKeyChain",
+      "name": "The Archwing",
+      "order": 11,
+      "planet": "Venus",
+      "requires": [],
+      "requiresNote": "Mars Junction",
+      "unlocks": [
+        "Archwing (Odonata) and Archwing Launcher",
+        "Archwing nodes",
+        "Empyrean proxima regions",
+        "Plexus",
+        "Stolen Dreams"
+      ],
+      "mainline": true,
+      "note": "Gated only by the Mars Junction.",
+      "provenance": "The infobox previousquest is Heart of Deimos."
+    },
+    {
+      "id": "/Lotus/Types/Keys/SpyQuestKeyChain/SpyQuestKeyChain",
+      "name": "Stolen Dreams",
+      "order": 12,
+      "planet": "Mars",
+      "requires": [],
+      "requiresNote": "Phobos Junction",
+      "unlocks": [
+        "Maroo's Weekly Ayatan Treasure Hunt",
+        "Ether Daggers blueprint",
+        "Orokin Catalyst blueprint",
+        "The New Strange"
+      ],
+      "mainline": false,
+      "note": "Formerly a main quest, now typed a side quest.",
+      "provenance": "The infobox previousquest is The Archwing."
+    },
+    {
+      "id": "/Lotus/Types/Keys/DragonQuest/DragonQuestKeyChain",
+      "name": "The New Strange",
+      "order": 13,
+      "planet": "Ceres",
+      "requires": [
+        "/Lotus/Types/Keys/SpyQuestKeyChain/SpyQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Chroma blueprint",
+        "Sanctuary Onslaught",
+        "Daily Synthesis tasks"
+      ],
+      "mainline": false,
+      "note": "Stolen Dreams is the only stated requirement.",
+      "provenance": "The infobox names Stolen Dreams as the only requirement. Page prose also mentions Cephalon Simaris in a Relay, but that is not stated as a gate."
+    },
+    {
+      "id": "/Lotus/Types/Keys/LimboQuest/LimboQuestKeyChain",
+      "name": "The Limbo Theorem",
+      "order": 14,
+      "planet": "Various",
+      "requires": [],
+      "requiresNote": "Obtain an Archwing",
+      "unlocks": [
+        "Limbo blueprint components"
+      ],
+      "mainline": false,
+      "note": "Requires an Archwing. No junction gate.",
+      "provenance": "The infobox requirement is only 'Obtain an Archwing' -- no junction is listed."
+    },
+    {
+      "id": "/Lotus/Types/Keys/ProteaQuest/ProteaQuestKeyChain",
+      "name": "The Deadlock Protocol",
+      "order": 15,
+      "planet": "Various",
+      "requires": [],
+      "requiresNote": "Mastery Rank 4; Saturn Junction",
+      "unlocks": [
+        "Protea blueprint",
+        "Xoris",
+        "Granum Void",
+        "Call of the Tempestarii"
+      ],
+      "mainline": false,
+      "note": null,
+      "provenance": "The infobox previousquest is Vox Solaris, but no quest appears in the requirement field."
+    },
+    {
+      "id": "/Lotus/Types/Keys/DuviriQuest/DuviriQuestKeyChain",
+      "name": "The Duviri Paradox",
+      "order": 16,
+      "planet": "Duviri",
+      "requires": [],
+      "requiresNote": "Uranus Junction",
+      "unlocks": [
+        "Duviri and the Dormizone",
+        "The Circuit, The Duviri Experience, The Lone Story",
+        "Drifter and Drifter Intrinsics",
+        "Kullervo",
+        "Sun & Moon blueprint",
+        "The Hex"
+      ],
+      "mainline": true,
+      "note": "Solo only. Startable this early, but it is written to be played after The New War.",
+      "provenance": "The infobox lists no previousquest."
+    },
+    {
+      "id": "/Lotus/Types/Keys/SentientQuest/SentientQuestKeyChain",
+      "name": "Natah",
+      "order": 17,
+      "planet": "Earth",
+      "requires": [],
+      "requiresNote": "Uranus Junction",
+      "unlocks": [
+        "Exilus Warframe Adapter",
+        "The Second Dream"
+      ],
+      "mainline": true,
+      "note": "Gated only by the Uranus Junction. A Mastery Rank gate that some sources cite is not confirmed.",
+      "provenance": "The infobox requirement is only the Uranus Junction; the infobox previousquest is The Archwing. The Mastery Rank gate is not in the infobox."
+    },
+    {
+      "id": "/Lotus/Types/Keys/OrokinMoonQuest/OrokinMoonQuestKeyChain",
+      "name": "The Second Dream",
+      "order": 18,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/SentientQuest/SentientQuestKeyChain"
+      ],
+      "requiresNote": "Neptune Junction",
+      "unlocks": [
+        "Operator and Transference",
+        "Focus schools",
+        "Lua",
+        "Broken War",
+        "Octavia's Anthem",
+        "The Silver Grove",
+        "Rising Tide"
+      ],
+      "mainline": true,
+      "note": "The single biggest story gate in the game."
+    },
+    {
+      "id": "/Lotus/Types/Keys/BardQuest/BardQuestKeyChain",
+      "name": "Octavia's Anthem",
+      "order": 19,
+      "planet": "Relay",
+      "requires": [
+        "/Lotus/Types/Keys/OrokinMoonQuest/OrokinMoonQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Octavia blueprint",
+        "Incident Archive 2318-H"
+      ],
+      "mainline": false,
+      "note": "Started by speaking to Cephalon Suda in a Relay.",
+      "provenance": "The infobox lists only The Second Dream."
+    },
+    {
+      "id": "/Lotus/Types/Keys/FairyQuest/FairyQuestKeyChain",
+      "name": "The Silver Grove",
+      "order": 20,
+      "planet": "Earth",
+      "requires": [
+        "/Lotus/Types/Keys/OrokinMoonQuest/OrokinMoonQuestKeyChain"
+      ],
+      "requiresNote": "Mastery Rank 7",
+      "unlocks": [
+        "Titania blueprint and parts",
+        "Silver Grove shrine missions",
+        "Apothics"
+      ],
+      "mainline": false,
+      "note": "Started by speaking to Amaryn (New Loka) in a Relay; no New Loka standing is required."
+    },
+    {
+      "id": "/Lotus/Types/Keys/WarWithinQuest/WarWithinQuestKeyChain",
+      "name": "The War Within",
+      "order": 21,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/OrokinMoonQuest/OrokinMoonQuestKeyChain"
+      ],
+      "requiresNote": "Pluto Junction",
+      "unlocks": [
+        "Kuva Fortress",
+        "Sorties, Kuva Siphon/Flood, Kuva Liches",
+        "Full Operator Void powers",
+        "The Quills, Vox Solaris and Necraloid syndicates",
+        "Riven Mods",
+        "Eidolon hunts",
+        "Personal Quarters Segment",
+        "The Glast Gambit"
+      ],
+      "mainline": true,
+      "note": "A former Mastery Rank 5 gate was removed in Update 35.",
+      "provenance": "It is no longer in the infobox."
+    },
+    {
+      "id": "/Lotus/Types/Keys/IndexQuest/IndexQuestKeyChain",
+      "name": "The Glast Gambit",
+      "order": 22,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/WarWithinQuest/WarWithinQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Nidus blueprint"
+      ],
+      "mainline": false,
+      "note": "Started by speaking to Ergo Glast in the Perrin Sequence room of any Relay; no standing needed."
+    },
+    {
+      "id": "/Lotus/Types/Keys/RailJackBuildQuest/RailjackBuildQuestKeyChain",
+      "name": "Rising Tide",
+      "order": 23,
+      "planet": "Orbiter",
+      "requires": [
+        "/Lotus/Types/Keys/WarWithinQuest/WarWithinQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Railjack",
+        "Empyrean missions"
+      ],
+      "mainline": true,
+      "note": "Needs Dry Dock access to build the Railjack. Buying a built Railjack for Platinum auto-completes it."
+    },
+    {
+      "id": "/Lotus/Types/Keys/WraithQuest/WraithQuestKeyChain",
+      "name": "Call of the Tempestarii",
+      "order": 24,
+      "planet": "Railjack",
+      "requires": [
+        "/Lotus/Types/Keys/ProteaQuest/ProteaQuestKeyChain"
+      ],
+      "requiresNote": "Own a Railjack and retrieved Reliquary Key; Mastery Rank 4",
+      "unlocks": [
+        "Sevagoth blueprint and components",
+        "Tempestarii Railjack skin",
+        "Sisters of Parvos (with The War Within)"
+      ],
+      "mainline": false,
+      "note": "Needs a Railjack. Owning one is enough, so Rising Tide is not required by name -- a purchased Railjack also satisfies it.",
+      "provenance": "The infobox says 'own a Railjack', not Rising Tide by name, so Rising Tide is deliberately not a requires edge."
+    },
+    {
+      "id": "/Lotus/Types/Keys/GolemQuest/GolemQuestKeyChainItem",
+      "name": "The Jordas Precept",
+      "order": 25,
+      "planet": "Eris",
+      "requires": [],
+      "requiresNote": "Pluto to Eris Junction",
+      "unlocks": [
+        "Atlas blueprint",
+        "Jordas Golem Assassination node"
+      ],
+      "mainline": false,
+      "note": "The final mission is Archwing.",
+      "provenance": "The infobox lists only the junction."
+    },
+    {
+      "id": "/Lotus/Types/Keys/InfestedAladVQuest/InfestedAladVQuestKeyChain",
+      "name": "Patient Zero",
+      "order": 26,
+      "planet": "Eris",
+      "requires": [
+        "/Lotus/Types/Keys/InfestedIntroQuest/InfestedIntroQuestKeyChain"
+      ],
+      "requiresNote": "Unlocked Eris",
+      "unlocks": [
+        "Mutalist Alad V Assassinate key blueprint",
+        "Mesa component farming"
+      ],
+      "mainline": false,
+      "note": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/MirageQuest/MirageQuestKeyChain",
+      "name": "Hidden Messages",
+      "order": 27,
+      "planet": "Various",
+      "requires": [],
+      "requiresNote": "Sedna Junction",
+      "unlocks": [
+        "Mirage blueprint components"
+      ],
+      "mainline": false,
+      "note": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/MummyQuest/MummyQuestKeyChain",
+      "name": "Sands of Inaros",
+      "order": 28,
+      "planet": "Mars",
+      "requires": [],
+      "requiresNote": "Mastery Rank 5",
+      "unlocks": [
+        "Inaros blueprint and components",
+        "Sacred Urn decoration"
+      ],
+      "mainline": false,
+      "note": "Mastery Rank 5, and in practice the quest blueprint must be bought from Baro Ki'Teer and crafted before the quest appears.",
+      "provenance": "Mastery Rank 5 is the only infobox gate."
+    },
+    {
+      "id": "/Lotus/Types/Keys/RevenantQuest/RevenantQuestKeyChain",
+      "name": "Mask of the Revenant",
+      "order": 29,
+      "planet": "Earth",
+      "requires": [],
+      "requiresNote": "Observer rank with The Quills",
+      "unlocks": [
+        "Revenant blueprint"
+      ],
+      "mainline": false,
+      "note": "The Quills only become available after The War Within, so it is effectively gated behind it. Started by buying the Mask of the Lost One from Nakak in Cetus.",
+      "provenance": "No quest is named in the infobox."
+    },
+    {
+      "id": "/Lotus/Types/Keys/PriestFrameQuest/PriestQuestKeyChain",
+      "name": "Chains of Harrow",
+      "order": 30,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/WarWithinQuest/WarWithinQuestKeyChain"
+      ],
+      "requiresNote": "Visit Onkko in Cetus",
+      "unlocks": [
+        "Harrow blueprint",
+        "Iron Wake and Palladino's shop",
+        "Apostasy Prologue",
+        "Man in the Wall encounters"
+      ],
+      "mainline": true,
+      "note": null,
+      "provenance": "The infobox previousquest is Rising Tide, but only The War Within appears in the requirement field."
+    },
+    {
+      "id": "/Lotus/Types/Keys/ApostasyQuest/ApostasyKeyChain",
+      "name": "Apostasy Prologue",
+      "order": 31,
+      "planet": "Orbiter",
+      "requires": [
+        "/Lotus/Types/Keys/PriestFrameQuest/PriestQuestKeyChain"
+      ],
+      "requiresNote": "Personal Quarters Segment installed",
+      "unlocks": [
+        "The Sacrifice"
+      ],
+      "mainline": true,
+      "note": "Started by touching the violet orb in the Personal Quarters, not from the Codex."
+    },
+    {
+      "id": "/Lotus/Types/Keys/SacrificeQuest/SacrificeQuestKeyChain",
+      "name": "The Sacrifice",
+      "order": 32,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/ApostasyQuest/ApostasyKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Excalibur Umbra",
+        "Skiajati",
+        "Umbral and Sacrificial mods",
+        "Prelude to War"
+      ],
+      "mainline": true,
+      "note": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/ChimeraQuest/ChimeraKeyChain",
+      "name": "Chimera Prologue",
+      "order": 33,
+      "planet": "Orbiter",
+      "requires": [
+        "/Lotus/Types/Keys/SacrificeQuest/SacrificeQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Paracesis blueprint",
+        "Ropalolyst assassination on Jupiter (Wisp)",
+        "Erra"
+      ],
+      "mainline": true,
+      "note": "First of the three Prelude to War chapters."
+    },
+    {
+      "id": "/Lotus/Types/Keys/NewWarIntroQuest/NewWarIntroKeyChain",
+      "name": "Erra",
+      "order": 34,
+      "planet": "Orbiter",
+      "requires": [
+        "/Lotus/Types/Keys/ChimeraQuest/ChimeraKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Shedu blueprint",
+        "The Maker"
+      ],
+      "mainline": true,
+      "note": "Second Prelude to War chapter."
+    },
+    {
+      "id": null,
+      "name": "The Maker",
+      "order": 35,
+      "planet": "Orbiter",
+      "requires": [
+        "/Lotus/Types/Keys/NewWarIntroQuest/NewWarIntroKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "The New War"
+      ],
+      "mainline": true,
+      "note": "Third and final Prelude to War chapter.",
+      "provenance": "The wiki types it as a Main Quest but the page has no internalname and ExportKeys has no key for it, so id is null and it can never appear in account QuestKeys. It is referenced by name in The New War's requires."
+    },
+    {
+      "id": "/Lotus/Types/Keys/NewWarQuest/NewWarQuestKeyChain",
+      "name": "The New War",
+      "order": 36,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/ChimeraQuest/ChimeraKeyChain",
+        "/Lotus/Types/Keys/NewWarIntroQuest/NewWarIntroKeyChain",
+        "The Maker"
+      ],
+      "requiresNote": "Own a Railjack; own an Amp",
+      "unlocks": [
+        "Drifter",
+        "Narmer bounties",
+        "Deepmines bounties",
+        "Lotus customisation on Lua",
+        "Angels of the Zariman",
+        "Veilbreaker",
+        "Jade Shadows",
+        "Whispers in the Walls",
+        "Nataruk, Sirocco, Rumblejack"
+      ],
+      "mainline": true,
+      "note": "Needs Prelude to War completed, plus a Railjack and an Amp.",
+      "provenance": "The infobox requirement is 'Completed Prelude to War' plus a Railjack and an Amp. Prelude to War has no quest key, so it is expanded here into its three chapters."
+    },
+    {
+      "id": "/Lotus/Types/Keys/ZarimanQuest/ZarimanQuestKeyChain",
+      "name": "Angels of the Zariman",
+      "order": 37,
+      "planet": "Zariman Ten Zero",
+      "requires": [
+        "/Lotus/Types/Keys/NewWarQuest/NewWarQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Zariman Ten Zero nodes and the Chrysalith",
+        "The Holdfasts syndicate",
+        "Void Cascade, Void Flood, Void Armageddon",
+        "Gyre",
+        "Dormizone",
+        "Arcanes"
+      ],
+      "mainline": true,
+      "note": "Non-replayable."
+    },
+    {
+      "id": "/Lotus/Types/Keys/KahlQuest/KahlQuestKeyChain",
+      "name": "Veilbreaker",
+      "order": 38,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/NewWarQuest/NewWarQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Archon Hunts",
+        "Kahl's Garrison syndicate",
+        "Break Narmer weekly missions",
+        "Archon Shards and the Helminth Archon Shard Segment"
+      ],
+      "mainline": false,
+      "note": null,
+      "provenance": "Typed Side Quest by the wiki despite being listed under The New War's nextquest."
+    },
+    {
+      "id": "/Lotus/Types/Keys/JadeShadows/JadeShadowQuestKeyChain",
+      "name": "Jade Shadows",
+      "order": 39,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/NewWarQuest/NewWarQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Jade blueprint",
+        "Ascension on Uranus",
+        "Protector Stalker",
+        "Jade Shadows: Constellations"
+      ],
+      "mainline": true,
+      "note": null
+    },
+    {
+      "id": "/Lotus/Types/Keys/JadeShadowsPart2Constellations/JadeShadowsPart2QuestKeyChain",
+      "name": "Jade Shadows: Constellations",
+      "order": 40,
+      "planet": "Various",
+      "requires": [
+        "/Lotus/Types/Keys/JadeShadows/JadeShadowQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Uranus Proxima Empyrean missions",
+        "Pontis Tower hub with Hunhow as vendor",
+        "Sirius & Orion cosmetics"
+      ],
+      "mainline": true,
+      "note": "Newest released quest in this dataset: Update 43. Non-replayable."
+    },
+    {
+      "id": "/Lotus/Types/Keys/EntratiLab/EntratiQuestKeyChain",
+      "name": "Whispers in the Walls",
+      "order": 41,
+      "planet": "Deimos",
+      "requires": [
+        "/Lotus/Types/Keys/InfestedMicroplanetQuest/InfestedMicroplanetQuestKeyChain",
+        "/Lotus/Types/Keys/NewWarQuest/NewWarQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Sanctum Anatomica",
+        "Cavia syndicate",
+        "Qorvex, Grimoire",
+        "Netracells, Alchemy, Deep Archimedea",
+        "Melee Upgrade Segment",
+        "extra Deimos nodes",
+        "The Lotus Eaters"
+      ],
+      "mainline": true,
+      "note": null,
+      "provenance": "One of the few quests whose infobox names two required quests."
+    },
+    {
+      "id": "/Lotus/Types/Keys/1999PrologueQuest/1999PrologueQuestKeyChain",
+      "name": "The Lotus Eaters",
+      "order": 42,
+      "planet": "Deimos",
+      "requires": [
+        "/Lotus/Types/Keys/EntratiLab/EntratiQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "The Hex",
+        "The Old Peace",
+        "Arthur's KinePage decoration"
+      ],
+      "mainline": true,
+      "note": "Short solo-only prologue to The Hex, Update 36.1. Non-replayable."
+    },
+    {
+      "id": "/Lotus/Types/Keys/1999Quest/1999QuestKeyChain",
+      "name": "The Hex",
+      "order": 43,
+      "planet": "Hollvania",
+      "requires": [
+        "/Lotus/Types/Keys/DuviriQuest/DuviriQuestKeyChain",
+        "/Lotus/Types/Keys/1999PrologueQuest/1999PrologueQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "Hollvania missions and bounties",
+        "The Hex syndicate",
+        "Cyte-09 blueprint",
+        "Atomicycle",
+        "Isleweaver",
+        "The Backroom as a Base of Operations",
+        "The Hex Finale"
+      ],
+      "mainline": true,
+      "note": "Update 38. Needs both The Duviri Paradox and The Lotus Eaters.",
+      "provenance": "The infobox names both."
+    },
+    {
+      "id": "/Lotus/Types/Keys/1999Quest/1999QuestGoodEndKeyChain",
+      "name": "The Hex Finale",
+      "order": 44,
+      "planet": "Hollvania",
+      "requires": [
+        "/Lotus/Types/Keys/1999Quest/1999QuestKeyChain"
+      ],
+      "requiresNote": "Rank 3 (2-for-1) with The Hex syndicate, and 'Liked' Chemistry Rank with all six Hex members on KIM",
+      "unlocks": [
+        "Alternative ending in which the Hex survive"
+      ],
+      "mainline": true,
+      "note": null,
+      "provenance": "A real, separate quest key in ExportKeys, but the wiki covers it only as the Finale section of The Hex (the page The Hex Finale is a redirect), so it has no infobox of its own; the gate above is taken from that section’s prose."
+    },
+    {
+      "id": "/Lotus/Types/Keys/TauPrequel/TauPrequelQuestKeyChain",
+      "name": "The Old Peace",
+      "order": 45,
+      "planet": "Deimos",
+      "requires": [
+        "/Lotus/Types/Keys/1999PrologueQuest/1999PrologueQuestKeyChain"
+      ],
+      "requiresNote": null,
+      "unlocks": [
+        "La Cathedrale via the Sanctum Anatomica",
+        "Dark Refractory",
+        "The Perita Rebellion and The Descendia",
+        "Uriel blueprint",
+        "Operator Atmosphor accessory"
+      ],
+      "mainline": true,
+      "note": "Update 41 (2025-12-10). Currently the last released quest in the story chain.",
+      "provenance": "The wiki lists its nextquest as the unnamed Warframe: Tau quest slated for Winter 2026."
+    }
+  ]
+}

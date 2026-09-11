@@ -1,0 +1,31 @@
+{
+  "len": 84285,
+  "hits": 12,
+  "first": [
+    {
+      "at": 4393,
+      "s": "Robotic"
+    },
+    {
+      "at": 4660,
+      "s": "Robotic"
+    },
+    {
+      "at": 4931,
+      "s": "Robotic"
+    },
+    {
+      "at": 5766,
+      "s": "Robotic"
+    },
+    {
+      "at": 41614,
+      "s": "Fossilized"
+    },
+    {
+      "at": 41632,
+      "s": "Fossilized"
+    }
+  ],
+  "sample": "ts.\n* Damage against [[shields]] and [[overshields]] appears in blue (<span style=\"color:#39B1CB;\">&#9724;</span>), regardless of other factors such as critical hits.\n* Attempts to damage an invulnerable enemy appear in grey (<span style=\"color:#BABABA;\">&#9724;</span>).\n\n\n==Overview Table==\n{{Transclude|Damage 2.0/Overview Table}}<!--\n==Basics==\nEvery weapon in Warframe deals damage, which determines how much of an enemy's hitpoints are reduced per hit. A weapon's damage value is split among different damage types, each having individual strengths and weaknesses against different types of enemy defenses, and their total sum is the final damage value.\n\n<div class=\"mw-collapsible mw-collapsed\">\n<div align=\"left\"><font size=\"3\">Example (Expand to read)</font></div>\n\n<div class=\"mw-collapsible-content\">\nAn unmodified {{Weapon|MK1-Braton}} deals a base damage of '''16''' Physical Damage per shot. This damage is the sum total of the three physical damage types the MK1 has, which is 10 [[Damage 2.0/Slash Damage|Slash]], 4 [[Damage 2.0/Puncture Damage|Puncture]], and 2 [[Damage 2.0/Impact Damage|Impact]].\n\nIf the MK1 attacks an [[Infested]] [[Charger]], the MK1's [[Damage 2.0/Slash Damage|Slash]] will deal +25% bonus damage against its [[Flesh]], thus will now deal 12.5 damage up from 10. Thus, the MK1 will now deal a total of '''18.5''' damage per shot: 12.5 Slash, 4 Puncture and 2 Impact, 2.5 more damage than normal.\n\nOn the other hand, if the MK1 attacks a [[Corpus]] [[MOA]]'s [[Robotic]] body, the MK1's [[Damage 2.0/Puncture Damage|Puncture]] damage will deal +28% bonus damage against it, thus it now deals 5 damage up from its normal 4. However, the MK1's [[Damage 2.0/Slash Damage|Slash]] damage is reduced by -25% due to being weak against Robotics, lowering its damage from 10 to 7.5. Thus, the total damage that the MK1 will deal against the Crewman's Shields is '''14.5''': 7.5 Slash, 5 Puncture and 2 Impact, 1.5 points less damage than normal.\n\nIf we want to make the MK1 more effective against that MOA's Robotics, we can consider improving its [[Damage 2.0/Puncture Damage|Puncture]] damage using a {{M|Piercing Hit}} mod. At maxed Rank, Piercing Hit adds 30% to Puncture, so our MK1's Puncture damage is upped to 5.2. Thus, against the same MOA our Puncture goes up by 6.5, bringing our total damage against said MOA to '''16''': 7.5 Slash, 6.5 Puncture and 2 Impact, which is the MK1's base damage value.\n\nTo be more effective, we can replace the {{M|Piercing Hit}} mod with a Rank 1 {{M|Stormbringer}} Mod, which adds 30%[[Damage 2.0/Electricity Damage|Electricity]] damage on top of the MK1's damage. This extra damage is derived from the MK1's base damage of 16, so Stormbringer adds 4.8 Electricity damage, bringing the MK1's total damage to 20.8. Since [[Damage 2.0/Electricity Damage|Electricity]] deals 50% bonus damage against [[Robotic]] units, it deals 7.2 damage against the MOA up from 4.8. Thus the new total damage using Stormbringer instead of Piercing Hit against the MOA is '''21.7''': 7.2 Electricity, 7.5 Slash, 5 Puncture and 2 Impact, 5.7 damage more than normal.\n</div>\n</div>--->\n\n==Damage Types==\nEvery weapon, ability or method of dealing damage is classified as one or more types of damage. Through mods or abilities, further types of damage can be added to attacks.\n\nWhen multiple damage types are present on an attack, all of them will deal their respective amounts independent of each other, but only one damage number calculated from the combined value of the damage types will show.\n\nWith each shown damage value, there is also a chance of a [[Status Effect]] occurring; the likelihood of which type of damage this Status Effect is based on depends on the percent distribution of the damage types on the weapon.\n\n===Physical Damage===\nMost weapons' base damage is made up of a combination of three physical damage types: [[Damage 2.0/Impact Damage|Impact]], [[Damage 2.0/Puncture Damage|Puncture]], and [[Damage 2.0/Slash Damage|Slas"
+}

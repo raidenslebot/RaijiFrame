@@ -1,0 +1,144 @@
+{
+  "manifest_version": 1,
+  "type": "WebApp",
+  "meta": {
+    "name": "RaijiFrame",
+    "author": "aqwmaster21212",
+    "version": "0.1.0",
+    "minimum-overwolf-version": "0.236.0",
+    "description": "Modular progression and completionism intelligence for Warframe. Knows your account, tells you what to do next.",
+    "dock_button_title": "Codex",
+    "icon": "icons/icon-active.png",
+    "icon_gray": "icons/icon-idle.png",
+    "window_icon": "icons/icon-active.png",
+    "splash_image": "icons/splash.png"
+  },
+  "permissions": [
+    "GameInfo",
+    "Hotkeys",
+    "FileSystem",
+    "Tray",
+    "Clipboard"
+  ],
+  "data": {
+    "start_window": "background",
+    "windows": {
+      "background": {
+        "file": "background.html",
+        "is_background_page": true,
+        "background_optimization": true
+      },
+      "desktop": {
+        "file": "desktop.html",
+        "desktop_only": true,
+        "native_window": true,
+        "transparent": true,
+        "resizable": true,
+        "override_on_update": true,
+        "block_top_window_navigation": true,
+        "size": {
+          "width": 1440,
+          "height": 900
+        },
+        "min_size": {
+          "width": 1100,
+          "height": 700
+        }
+      },
+      "ingame": {
+        "file": "ingame.html",
+        "in_game_only": true,
+        "transparent": true,
+        "resizable": true,
+        "override_on_update": true,
+        "block_top_window_navigation": true,
+        "restrict_to_game_bounds": true,
+        "style": "InputPassThrough",
+        "size": {
+          "width": 1440,
+          "height": 900
+        },
+        "min_size": {
+          "width": 1100,
+          "height": 700
+        }
+      },
+      "automod": {
+        "file": "automod.html",
+        "in_game_only": true,
+        "transparent": true,
+        "resizable": false,
+        "show_in_taskbar": false,
+        "grab_keyboard_focus": false,
+        "style": "InputPassThrough",
+        "override_on_update": true,
+        "block_top_window_navigation": true,
+        "restrict_to_game_bounds": true,
+        "size": {
+          "width": 1440,
+          "height": 900
+        },
+        "min_size": {
+          "width": 320,
+          "height": 240
+        }
+      }
+    },
+    "game_targeting": {
+      "type": "dedicated",
+      "game_ids": [
+        8954
+      ]
+    },
+    "game_events": [
+      8954
+    ],
+    "launch_events": [
+      {
+        "event": "GameLaunch",
+        "event_data": {
+          "game_ids": [
+            8954
+          ],
+          "wait_for_stable_framerate": 30
+        },
+        "start_minimized": true
+      }
+    ],
+    "hotkeys": {
+      "codex_toggle": {
+        "title": "Show/Hide RaijiFrame",
+        "action-type": "toggle",
+        "default": "Ctrl+K",
+        "game_ids": [
+          8954
+        ]
+      },
+      "automod_toggle": {
+        "title": "Show/Hide the modding overlay",
+        "action-type": "toggle",
+        "default": "Ctrl+Shift+M",
+        "game_ids": [
+          8954
+        ]
+      }
+    },
+    "externally_connectable": {
+      "matches": [
+        "https://api.warframestat.us",
+        "https://drops.warframestat.us",
+        "https://api.warframe.com",
+        "https://api.warframe.market",
+        "https://cdn.jsdelivr.net",
+        "https://raw.githubusercontent.com",
+        "https://cdn.warframestat.us",
+        "https://*.overwolf.com"
+      ]
+    },
+    "developer": {
+      "enable_auto_refresh": true,
+      "reload_delay": 1000,
+      "filter": "*.*"
+    }
+  }
+}

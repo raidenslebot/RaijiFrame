@@ -1,0 +1,844 @@
+/* ===========================================================================
+ * THE MOTION LAYER
+ *
+ * WHY THIS IS A LAYER AND NOT MORE KEYFRAMES IN theme.css
+ * ──────────────────────────────────────────────────────
+ * The app's motion was a handful of one-off entrances written where they were
+ * needed, which is how you end up with fourteen slightly different durations
+ * and no answer to "how does this app move". This file is the answer: one set
+ * of easings, one set of durations, and a vocabulary of effects that any panel
+ * can reach with a class name.
+ *
+ * THE CONSTRAINT THAT SHAPES ALL OF IT
+ * ────────────────────────────────────
+ * This overlay's document timeline STOPS while the window is not presented. A
+ * CSS animation then sits at `currentTime: 0` reporting `running`, forever. Any
+ * effect whose start state hides content will hide it permanently, and the
+ * player will simply see an empty panel. That has been got wrong four times in
+ * this codebase, which is why `scripts/check-frozen.ts` exists.
+ *
+ * So every effect here belongs to exactly one of three families, and the family
+ * decides what it is allowed to animate:
+ *
+ *   1. INPUT-DRIVEN  (mo-field, mo-lift, mo-sheen, mo-press, mo-magnet…)
+ *      Driven by pointer, hover, focus or press. These can only run while the
+ *      window is being presented - a pointer cannot move over a window nobody
+ *      is looking at - so the timeline is running by definition. UNRESTRICTED:
+ *      they may animate opacity, colour, anything.
+ *
+ *   2. SCROLL-DRIVEN  (mo-parallax, mo-drift, mo-rail…)
+ *      `animation-timeline: view()` and `scroll()` take their progress from
+ *      scroll POSITION, not from the clock. A frozen document timeline cannot
+ *      strand them, because there is no time in them to be stuck in. Guarded by
+ *      @supports, and the fallback is no animation at all rather than a
+ *      time-based one - a browser without scroll timelines must not silently
+ *      get the very effect this rule exists to forbid.
+ *
+ *      They still only animate transform on CONTENT. An element below the fold
+ *      that is never scrolled to sits at range start forever, which is the same
+ *      hazard as a frozen clock wearing a different hat. Opacity is used only
+ *      on decorative overlays that carry no information.
+ *
+ *   3. ENTRANCE  (mo-in-*, and the older anim-* in theme.css)
+ *      Time-based, and therefore TRANSFORM ONLY, with no exceptions. A frozen
+ *      timeline leaves the content a few pixels from home and completely
+ *      legible. Never opacity, never height, never clip, never scale to zero.
+ *
+ * Reduced motion switches all three off outright rather than shortening them.
+ * A 0.01ms animation is still an animation, and that is what the audit catches.
+ * ========================================================================= */
+
+/* ---------------------------------------------------------------- the tokens */
+
+:root {
+  /*
+   * Four curves, each for a job, rather than `ease` everywhere.
+   *
+   * `--mo-out` is the house curve: a hard start that decelerates a long way,
+   * which is what makes something read as ARRIVING rather than sliding. The
+   * game's own UI moves like this.
+   *
+   * `--mo-spring` overshoots by a few per cent. It is for things the player
+   * caused directly - a press, a commit - where a little bounce reads as
+   * physical. It is never used on something that appears on its own.
+   */
+  --mo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --mo-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --mo-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --mo-snap: cubic-bezier(0.2, 0, 0, 1);
+
+  /*
+   * Exits are faster than entrances, always. A thing leaving has already been
+   * read; a thing arriving has not.
+   */
+  --mo-quick: 140ms;
+  --mo-base: 240ms;
+  --mo-slow: 420ms;
+  --mo-enter: 520ms;
+  --mo-exit: 160ms;
+
+  /* How far a stagger steps. Multiplied by --i on the element. */
+  --mo-step: 42ms;
+}
+
+/*
+ * TYPED PROPERTIES.
+ *
+ * Without @property these are strings the engine cannot interpolate, so a
+ * pointer-driven light JUMPS between events instead of gliding, and a
+ * transition on one does nothing at all. `inherits: true` on the pointer field
+ * is deliberate and was a bug once: the values are written on the container,
+ * and the children that draw the effect could not see them.
+ */
+@property --mdx {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --mdy {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+@property --mxp {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+@property --myp {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+/*
+ * How strongly an element is reacting: 0 at rest, 1 under the pointer. One
+ * number, so an effect can scale every part of itself from a single source.
+ *
+ * INHERITS, AND THAT IS NOT A DETAIL.
+ *
+ * This was written `inherits: false` - which is the right default for a
+ * property only the element itself reads, and wrong here for a reason that is
+ * invisible in the source: the effects that USE it are drawn on ::before and
+ * ::after, and a pseudo-element is a child. With inheritance off it read the
+ * initial value of 0 and the sheen rendered at `opacity: 0` on every surface in
+ * the app. The lift moved, the gradient tracked the cursor correctly, the
+ * transition was declared correctly, and nothing was visible.
+ *
+ * Caught by measuring the computed opacity of the pseudo-element in a real
+ * browser, not by reading the file - which is the whole argument for watching a
+ * move rather than reviewing it.
+ */
+@property --mo-on {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+/* ===========================================================================
+ * FAMILY 1 - INPUT-DRIVEN
+ *
+ * Everything here is gated on :hover, :focus-visible or :active, so none of it
+ * can be running while the window is unpresented. That is why these are the
+ * only effects in the app allowed to touch opacity on content.
+ * ========================================================================= */
+
+/*
+ * The reaction level. Set once here, read by every effect below, so a surface
+ * gets its whole response from one transition rather than five.
+ */
+.mo-lift,
+.mo-sheen,
+.mo-magnet,
+.mo-tilt,
+.mo-underline,
+.mo-icon {
+  --mo-on: 0;
+  transition:
+    --mo-on var(--mo-base) var(--mo-out),
+    transform var(--mo-base) var(--mo-out),
+    box-shadow var(--mo-base) var(--mo-out),
+    border-color var(--mo-base) var(--mo-out),
+    color var(--mo-base) var(--mo-out);
+}
+.mo-lift:hover,
+.mo-lift:focus-visible,
+.mo-sheen:hover,
+.mo-sheen:focus-visible,
+.mo-magnet:hover,
+.mo-magnet:focus-visible,
+.mo-tilt:hover,
+.mo-tilt:focus-visible,
+.mo-underline:hover,
+.mo-underline:focus-visible,
+.mo-icon:hover,
+.mo-icon:focus-visible {
+  --mo-on: 1;
+}
+
+/* --- a surface that comes toward you ------------------------------------- */
+.mo-lift {
+  transform: translate3d(0, calc(var(--mo-on) * -2px), 0);
+}
+.mo-lift:active {
+  transform: translate3d(0, 0, 0) scale3d(0.985, 0.985, 1);
+  transition-duration: var(--mo-quick);
+}
+
+/*
+ * --- the light that follows the cursor -----------------------------------
+ * Rides the field written by `src/ui/pointer.ts`; the element needs `mo-field`
+ * for the tracker to write to it. Drawn on a pseudo-element so it composites
+ * on its own layer and never repaints the text above it.
+ */
+.mo-sheen {
+  position: relative;
+  isolation: isolate;
+}
+.mo-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--mo-on);
+  background: radial-gradient(
+    circle 12rem at var(--mxp) var(--myp),
+    oklch(from var(--color-orokin-300) l c h / 0.16),
+    transparent 62%
+  );
+  transition: opacity var(--mo-base) var(--mo-out);
+}
+
+/* --- a real z axis, driven by where the pointer actually is --------------- */
+.mo-tilt {
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateY(calc(var(--mdx) * var(--mo-on) * 3deg))
+    rotateX(calc(var(--mdy) * var(--mo-on) * -3deg));
+}
+
+/* --- a control that leans toward the cursor ------------------------------ */
+.mo-magnet {
+  transform: translate3d(calc(var(--mdx) * var(--mo-on) * 3px), calc(var(--mdy) * var(--mo-on) * 3px), 0);
+}
+
+/*
+ * --- a rule that draws itself from where you entered ----------------------
+ * `transform: scaleX()` rather than `width`, so it composites; the origin
+ * follows the pointer so the line grows from under the cursor rather than
+ * always from the left, which is the detail that makes it read as a response
+ * rather than an effect.
+ */
+.mo-underline {
+  position: relative;
+}
+.mo-underline::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--color-orokin-300);
+  transform: scaleX(var(--mo-on));
+  transform-origin: var(--mxp) 50%;
+  transition: transform var(--mo-base) var(--mo-out);
+}
+
+/* --- an icon that acknowledges the press --------------------------------- */
+.mo-icon {
+  transform: translate3d(calc(var(--mo-on) * 2px), 0, 0);
+}
+
+/*
+ * --- the focus ring, bloomed ----------------------------------------------
+ * The app already draws a focus outline. This adds the moment of arrival, so a
+ * keyboard user can see WHERE focus went rather than having to find it.
+ */
+@keyframes mo-focus-bloom {
+  from {
+    box-shadow: 0 0 0 0 oklch(from var(--color-orokin-300) l c h / 0.55);
+  }
+  to {
+    box-shadow: 0 0 0 7px oklch(from var(--color-orokin-300) l c h / 0);
+  }
+}
+.mo-focusable:focus-visible {
+  animation: mo-focus-bloom var(--mo-slow) var(--mo-out);
+}
+
+/* ===========================================================================
+ * FAMILY 2 - SCROLL-DRIVEN
+ *
+ * Progress comes from scroll position. There is no clock to freeze.
+ *
+ * The @supports guard is load-bearing: without scroll timelines these rules
+ * must do NOTHING, because the fallback the browser would otherwise pick is a
+ * time-based animation, which is precisely the thing that strands.
+ * ========================================================================= */
+
+@supports (animation-timeline: view()) {
+  /*
+   * Depth. A heading drifts slightly slower than the content it belongs to, so
+   * the panel reads as layered rather than flat. Transform only - if the panel
+   * never scrolls, the heading is a few pixels off and perfectly readable.
+   */
+  @keyframes mo-parallax {
+    from {
+      transform: translate3d(0, 14px, 0);
+    }
+    to {
+      transform: translate3d(0, -14px, 0);
+    }
+  }
+  /*
+   * LINEAR, DELIBERATELY, AND THIS IS THE EXCEPTION.
+   *
+   * Parallax is not an animation that plays; it is a mapping from scroll
+   * position to depth, held 1:1 for as long as the reader scrolls. Easing it
+   * would make the heading accelerate and decelerate against a scroll that did
+   * neither - the layer would lag the content it is supposed to sit behind,
+   * which reads as lag rather than as depth. Same reasoning as the one motion
+   * that is always allowed to be linear: the thing that just keeps going.
+   */
+  .mo-parallax {
+    animation: mo-parallax linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+
+  /*
+   * A section arriving as it comes into view. Transform only, and the range
+   * completes early (by 24% of entry) so content is at rest well before it is
+   * centred - a reveal that finishes at the last moment reads as lag.
+   */
+  @keyframes mo-arrive {
+    from {
+      transform: translate3d(0, 20px, 0) scale3d(0.985, 0.985, 1);
+    }
+    to {
+      transform: none;
+    }
+  }
+  /*
+   * EASED, WHERE THE PARALLAX BELOW IS NOT.
+   *
+   * A rendered-page audit reported both of these as linear and was right to.
+   * They are not the same kind of motion and must not share an easing.
+   *
+   * This one is a REVEAL: it has a destination and it should arrive at it, so
+   * it decelerates like everything else in the app that settles into place.
+   * Linear made a section slide in at constant speed and stop dead, which is
+   * the one thing nothing physical does.
+   */
+  .mo-arrive {
+    animation: mo-arrive var(--mo-out) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 24%;
+  }
+
+  /*
+   * A rail that draws itself down the edge of a section as it enters.
+   *
+   * THIS ONE ARGUED ITSELF INTO AN EXEMPTION AND LOST.
+   *
+   * It was written with an opacity fade and a note explaining that the rule did
+   * not apply: the rail is decorative, and a scroll timeline cannot freeze.
+   * Both halves are true and the conclusion was still wrong - an element below
+   * the fold that is never scrolled to sits at range start for as long as
+   * nobody scrolls, which is the same invisible element by a different route.
+   *  rejected it, and the check was right: the rule has been
+   * broken four times by people who had a good reason.
+   *
+   * Transform only, like everything else. A rail that has not been reached is a
+   * rail of zero height, which is a rail nobody has drawn yet - not a piece of
+   * missing content.
+   */
+  @keyframes mo-rail {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+  .mo-rail {
+    transform-origin: top;
+    /* A reveal, like mo-arrive: it has an end state and should settle into it. */
+    animation: mo-rail var(--mo-out) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+/* ===========================================================================
+ * FAMILY 3 - ENTRANCE, TRANSFORM ONLY
+ *
+ * Time-based, so the rule is absolute: nothing here may animate a property
+ * whose start state hides content. Every keyframe below animates transform and
+ * nothing else. A frozen timeline leaves things offset, never absent.
+ * ========================================================================= */
+
+@keyframes mo-in-up {
+  from {
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes mo-in-left {
+  from {
+    transform: translate3d(-16px, 0, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes mo-in-right {
+  from {
+    transform: translate3d(16px, 0, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+/* Never scales from 0: that is an element with no area, which is content
+   hidden by another name. 0.94 degrades to "slightly small". */
+@keyframes mo-in-scale {
+  from {
+    transform: scale3d(0.94, 0.94, 1);
+  }
+  to {
+    transform: none;
+  }
+}
+/* A card settling onto the surface, with the overshoot in the curve. */
+@keyframes mo-in-settle {
+  from {
+    transform: translate3d(0, 18px, 0) rotate3d(0, 0, 1, -0.6deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.mo-in-up {
+  animation: mo-in-up var(--mo-enter) var(--mo-out) backwards;
+}
+.mo-in-left {
+  animation: mo-in-left var(--mo-enter) var(--mo-out) backwards;
+}
+.mo-in-right {
+  animation: mo-in-right var(--mo-enter) var(--mo-out) backwards;
+}
+.mo-in-scale {
+  animation: mo-in-scale var(--mo-enter) var(--mo-out) backwards;
+}
+.mo-in-settle {
+  animation: mo-in-settle var(--mo-enter) var(--mo-spring) backwards;
+}
+
+/*
+ * STAGGER.
+ *
+ * `--i` on the element, capped so a long list cannot push its tail minutes into
+ * the future. The cap matters more than the step: an uncapped stagger over 800
+ * catalog rows is a list that finishes arriving after the player has left.
+ */
+.mo-stagger > * {
+  animation-delay: calc(min(var(--i, 0), 12) * var(--mo-step));
+}
+
+/* ===========================================================================
+ * REDUCED MOTION
+ *
+ * Off, not shortened. A 0.01ms animation still reports as an animation and is
+ * still a vestibular trigger at the moment it fires.
+ * ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .mo-lift,
+  .mo-sheen,
+  .mo-magnet,
+  .mo-tilt,
+  .mo-underline,
+  .mo-icon,
+  .mo-focusable:focus-visible,
+  .mo-parallax,
+  .mo-arrive,
+  .mo-rail,
+  .mo-in-up,
+  .mo-in-left,
+  .mo-in-right,
+  .mo-in-scale,
+  .mo-in-settle,
+  .mo-stagger > * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    animation-delay: 0ms !important;
+  }
+  /* The pointer light is a hover state, not a movement, so it is kept - but
+     without the transition it appears rather than glides. */
+  .mo-sheen::after,
+  .mo-underline::after {
+    transition: none !important;
+  }
+}
+
+/* ===========================================================================
+ * NESTING
+ *
+ * The disclosure in `src/ui/Disclosure.tsx`. Read that file's header for why
+ * the region opens instantly and only its children move.
+ *
+ * THE DEPTH IS A REAL VARIABLE, NOT A SET OF CLASSES
+ * ──────────────────────────────────────────────────
+ * `--disc-depth` is written by the component and drives the indent, the rail
+ * opacity and the summary weight from one number. Three levels of nesting done
+ * as `.level-1 .level-2 .level-3` is three rules that drift apart; done as
+ * arithmetic it stays consistent to any depth, and the depth can be animated
+ * because @property makes it interpolable.
+ * ========================================================================= */
+
+/*
+ * INHERITS, FOR THE SAME REASON `--mo-on` DOES.
+ * ————————————————————————————————————————————
+ * Written `inherits: false`, which is the right default for a value only the
+ * element itself reads - and wrong here, because the thing that needs the depth
+ * is the CHILDREN arriving inside the body, not the container. With inheritance
+ * off they read the initial 0 and every level of a five-deep chain animated
+ * identically, which is what made descending it feel flat.
+ *
+ * Safe to inherit because every `.rf-disc` sets its own `--disc-depth` inline,
+ * so a nested disclosure overrides its parent's value rather than accumulating
+ * it.
+ */
+@property --disc-depth {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+.rf-disc {
+  /*
+   * A CONTAINER, so the summary can lay itself out by ITS OWN width rather than
+   * the window's. These nest: a disclosure three levels down inside a narrow
+   * column is a different shape from the same component at full width, and a
+   * media query cannot tell those two apart because the window is identical.
+   *
+   * THE TRAP THIS CARRIES, WHICH COST SOMEBODY AN HOUR
+   * ——————————————————————————————————————————————————
+   * An element with container-type: inline-size has a max-content contribution
+   * of ZERO. Put one inside any shrink-to-fit parent - a centred flex item, a
+   * grid track sized to its content, a table cell - and it collapses to about
+   * fourteen pixels and renders one letter per line. That happened inside
+   * EmptyState, on the screen a player sees before anything else, and
+   * TypeScript, ESLint and every gate in this repo passed while it did.
+   *
+   * width: 100% fixes the common case, where the parent has a definite width
+   * and only the alignment was shrinking the child. It CANNOT fix a parent that
+   * is itself shrink-to-fit, because there is no width to be a hundred per cent
+   * of. If a disclosure ever renders as a vertical column of single letters,
+   * this is why, and the fix belongs at the parent: give it a definite width.
+   */
+  container-type: inline-size;
+  width: 100%;
+  position: relative;
+  padding-left: calc(var(--disc-depth) * 0.85rem);
+}
+
+/*
+ * The rail that makes nesting legible as nesting. It fades with depth, so the
+ * eye reads the hierarchy without counting indents.
+ */
+.rf-disc[data-open='true']::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--disc-depth) * 0.85rem - 1px);
+  top: 2.1rem;
+  bottom: 0.35rem;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    oklch(from var(--disc-ink) l c h / calc(0.5 / (1 + var(--disc-depth)))),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.rf-disc-summary {
+  /*
+   * DEPTH IS A TYPE STEP, NOT ONLY AN INDENT.
+   * ————————————————————————————
+   * The summary used to inherit its size, so a disclosure was whatever size the
+   * surrounding markup happened to be - in practice `--text-micro`, because
+   * that is what the panels set. Every level of a nested chain then rendered at
+   * one size, and nesting could only be read by counting indents.
+   *
+   * Measured across the app before this: 82% of every `var(--text-*)` in the
+   * source is one of the bottom three of eight steps, `--text-mega` had never
+   * been used at all, and `--text-body` - the BODY size - appeared sixteen
+   * times in the whole application. The scale spans 9x and the app lived in the
+   * bottom 1.28x of it. That is the mechanical reason a screen can be both
+   * cluttered and empty: at caption size nothing can be primary, so hierarchy
+   * gets faked with uppercase and letterspacing until half the screen is
+   * wearing a label treatment and none of it reads as a label.
+   *
+   * So the size comes from the depth. A top-level answer is set at the real
+   * body size and each level down steps 12% smaller, floored at `--text-nano`
+   * so a deep chain stays legible rather than shrinking to nothing. Descending
+   * into detail now LOOKS like descending into detail, which is the whole
+   * argument for nesting in the first place - and it costs one declaration
+   * because `--disc-depth` was already an interpolable @property.
+   *
+   * Panels that want a quieter row set `--disc-scale` themselves; the default
+   * is 1 and the arithmetic is unchanged.
+   */
+  --disc-scale: 1;
+  font-size: max(
+    var(--text-nano),
+    calc(var(--text-body) * var(--disc-scale) * (1 - var(--disc-depth) * 0.12))
+  );
+  display: flex;
+  /*
+   * WRAPS ALWAYS, NOT ONLY UNDER THE CONTAINER QUERY.
+   * ————————————————————————————————————————————
+   * The wrap lived only in the `max-width: 22rem` container query below, which
+   * assumed the container's own width is what constrains the row. It is not
+   * always: a disclosure inside a grid track or a flex item that is itself
+   * being squeezed reports a comfortable inline-size while the space it can
+   * actually paint into is far narrower. The query never fires, the row never
+   * wraps, and the answer - which was `shrink-0` - walks straight off the edge.
+   *
+   * Measured at a 900px viewport on the star chart: the answer overhung the
+   * viewport by 289px. It did not even cause a scrollbar, so nothing looked
+   * wrong; the text was simply outside and unreadable.
+   *
+   * Wrapping unconditionally costs nothing when there is room, because a row
+   * that fits does not wrap.
+   */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  background: oklch(1 0 0 / 0.022);
+  border: 0;
+  color: inherit;
+  transition:
+    background-color var(--mo-base) var(--mo-out),
+    transform var(--mo-base) var(--mo-out);
+}
+
+/*
+ * The pointer light, added rather than mixed.
+ *
+ * `plus-lighter` makes the light ADD to what is under it, the way a light
+ * actually behaves. A plain translucent white washes the surface toward grey
+ * instead, which is the flat, slightly dirty look that the rest of this app was
+ * deliberately built to avoid.
+ */
+.rf-disc-summary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--mo-on, 0);
+  mix-blend-mode: plus-lighter;
+  background: radial-gradient(
+    circle 9rem at var(--mxp, 50%) var(--myp, 50%),
+    oklch(from var(--disc-ink) l c h / 0.1),
+    transparent 65%
+  );
+  transition: opacity var(--mo-base) var(--mo-out);
+}
+.rf-disc-summary:hover,
+.rf-disc-summary:focus-visible {
+  --mo-on: 1;
+  background: oklch(1 0 0 / 0.05);
+}
+.rf-disc-summary:active {
+  transform: scale3d(0.995, 0.995, 1);
+  transition-duration: var(--mo-quick);
+}
+
+/*
+ * The chevron. A transform, so a frozen timeline can only ever leave it
+ * pointing the wrong way - never hide the row it belongs to.
+ */
+.rf-disc-chev {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 1px solid var(--disc-ink);
+  border-bottom: 1px solid var(--disc-ink);
+  transform: rotate(-45deg);
+  transition: transform var(--mo-base) var(--mo-out);
+}
+.rf-disc[data-open='true'] > .rf-disc-summary > .rf-disc-chev {
+  transform: rotate(45deg);
+}
+
+.rf-disc-title {
+  font-size: var(--text-small);
+  color: var(--text);
+  line-height: 1.3;
+}
+.rf-disc-answer {
+  font-size: var(--text-micro);
+  color: var(--text-muted);
+  /* It may shrink and it may wrap. It is the least important thing on the row
+     and was the only thing forbidden from giving way. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * A NARROW DISCLOSURE STACKS ITS ANSWER; A WIDE ONE PUTS IT ON THE SAME LINE.
+ * The container query is what lets one component be correct in both places
+ * without a variant to keep in sync.
+ */
+@container (max-width: 22rem) {
+  .rf-disc-summary {
+    flex-wrap: wrap;
+    row-gap: 0.15rem;
+  }
+  .rf-disc-answer {
+    margin-left: 1.1rem;
+  }
+}
+
+/*
+ * The body opens INSTANTLY. No height transition, no fade, no clip - see the
+ * component header. Everything that moves here is a child, and it moves by
+ * transform only.
+ */
+.rf-disc-body {
+  padding: 0.5rem 0.75rem 0.7rem;
+}
+/*
+ * THE CHILDREN CARRY THE MOTION, AND THEY HAVE TO CARRY ENOUGH OF IT.
+ *
+ * The body cannot animate its own height - see the component header - so the
+ * container gaining full height is one uninterpolable frame no matter what.
+ * That is the safety property and it is not negotiable.
+ *
+ * The first attempt then gave the children 12px over 240ms with no stagger, and
+ * a frame capture said exactly what that looks like: 84 per cent of the whole
+ * change lands in ONE frame, everything settles by 156ms, and the remaining
+ * 544ms is dead. It read as a snap, because it was one.
+ *
+ * So the children travel further, for longer, and arrive one after another. The
+ * eye follows five rows assembling instead of catching one layout jump, and the
+ * change is spread across the timeline rather than spent in a single frame.
+ *
+ * The stagger is nth-child rather than a --i custom property so it is free:
+ * every disclosure in the app gets it without the component having to number
+ * its own children. Ten steps, then it stops - a section with more than ten
+ * rows is a section whose tail nobody is watching arrive.
+ *
+ * Still transform only. A frozen timeline leaves a row 16px low and slightly
+ * narrow, fully legible, which is the failure this whole design is built to
+ * have.
+ */
+/*
+ * DEEPER ARRIVES FROM FURTHER, AND A LITTLE LATER.
+ * ————————————————————————————————————————————
+ * Every level of the drill chain used one entrance, so opening the fifth
+ * "how do you know" felt exactly like opening the first. The chain reads as
+ * descending, and the motion said nothing about that.
+ *
+ * The travel and the delay both scale with `--disc-depth`: a row two levels
+ * down starts a few pixels further out and a beat behind one at the top. It is
+ * a small difference per level and a legible one across five, which is the
+ * point - the reader feels how far in they are without counting rails.
+ *
+ * Capped at four levels of scaling. Past that the delay would be long enough to
+ * read as lag rather than as depth, and nothing in this app nests that far.
+ *
+ * Still transform only. A frozen timeline leaves a row offset and legible, and
+ * that is true at every depth.
+ */
+@keyframes mo-disc-child {
+  from {
+    transform: translate3d(calc(-6px - var(--disc-depth) * 3px), calc(16px + var(--disc-depth) * 5px), 0)
+      scale3d(0.985, 0.985, 1);
+  }
+  to {
+    transform: none;
+  }
+}
+.rf-disc-body > * {
+  animation: mo-disc-child calc(380ms + min(var(--disc-depth), 4) * 45ms) var(--mo-out) backwards;
+}
+.rf-disc-body > *:nth-child(1) { animation-delay: 0ms; }
+.rf-disc-body > *:nth-child(2) { animation-delay: 55ms; }
+.rf-disc-body > *:nth-child(3) { animation-delay: 110ms; }
+.rf-disc-body > *:nth-child(4) { animation-delay: 165ms; }
+.rf-disc-body > *:nth-child(5) { animation-delay: 220ms; }
+.rf-disc-body > *:nth-child(6) { animation-delay: 275ms; }
+.rf-disc-body > *:nth-child(7) { animation-delay: 330ms; }
+.rf-disc-body > *:nth-child(8) { animation-delay: 385ms; }
+.rf-disc-body > *:nth-child(9) { animation-delay: 440ms; }
+.rf-disc-body > *:nth-child(n + 10) { animation-delay: 495ms; }
+
+.rf-disc-more {
+  color: var(--text-ghost);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-disc-summary,
+  .rf-disc-summary::after,
+  .rf-disc-chev,
+  .rf-disc-body > * {
+    animation: none !important;
+    transition: none !important;
+  }
+  /* The chevron still has to point the right way: this is state, not motion. */
+  .rf-disc[data-open='true'] > .rf-disc-summary > .rf-disc-chev {
+    transform: rotate(45deg);
+  }
+}
+
+/* ===========================================================================
+ * HIT TARGETS THAT DO NOT DISTURB THE LAYOUT
+ *
+ * An audit of the rendered page found 37 controls under the 24px floor. Most
+ * were icon buttons whose box was exactly the glyph, and those were padded at
+ * the call site. These two cannot be:
+ *
+ *   - `.rf-link` is inline text INSIDE sentences. Giving it a min-height would
+ *     change line boxes wherever it appears, which is most of the app.
+ *   - a range input's height is its track, and growing that makes the control
+ *     look like a scrollbar.
+ *
+ * So the target is grown without the box moving: a transparent pseudo-element
+ * that overhangs the element vertically. The link still occupies exactly the
+ * space it did, and the pointer hits it three pixels earlier on each side.
+ * ========================================================================= */
+
+.rf-link::before {
+  content: '';
+  position: absolute;
+  /* Vertical only. Widening an inline link horizontally would make adjacent
+     links in a sentence overlap each other's targets. */
+  inset: -4px 0;
+  /* Behind the text, above nothing: it exists to be hit, never to be seen. */
+  z-index: 0;
+}
+
+/*
+ * A range input keeps its slim track and gains a real target around it. The
+ * thumb is what the pointer actually goes for, so this mostly buys the
+ * approach - the few pixels above and below the track where a hand aiming at a
+ * 16px control lands.
+ */
+input[type='range'] {
+  min-height: 26px;
+}

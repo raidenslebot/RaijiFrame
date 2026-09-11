@@ -1,0 +1,127 @@
+/* ===========================================================================
+ * THE FRAME - UI-SPEC §2.0, Wave 1 ("blocks every visual primitive").
+ *
+ * WHY THIS FILE IS THREE YEARS LATE AND ONE DAY EARLY
+ * ────────────────────────────────────────────────────
+ * `clip-path` destroys `border`, so every chamfered surface in this app has
+ * been a cut with NO stroke - the measured Warframe edge (1px bright, 6px gap,
+ * 1px dim at 56%) never shipped. The spec's answer, copy-in-ready, is below:
+ * nesting. One clipped box of edge colour, padding `--stroke`, holding one
+ * clipped box of fill. It could not land while the chamfer polygon was typed
+ * into twenty-four files; `ui/geometry.ts` gave it one place, and this is it.
+ *
+ * TOKEN TRANSLATION, STATED. The spec's §1 token file was never adopted, so
+ * `--edge` there derives from an `--accent` this theme does not have. The
+ * accent it means is the Orokin gold the app already names `--color-orokin-400`
+ * (it is what the lit rim uses), so `--edge` is that at 55% in oklab, exactly
+ * the spec's mix. The four edge tokens sit in theme.css beside the surfaces.
+ *
+ * NOTHING HERE ANIMATES, and that is on purpose: a frame that only reads
+ * correctly after a transition is the frozen-timeline failure this repo has
+ * met five times. The resting state is the whole state.
+ *
+ * WAVE 1'S CHECK IS A SCREENSHOT, NOT A TEST: `lab.html` holds 300x120 and
+ * 900x120 frames at `--stroke: 1px` and `4px`. Look for (a) a stroke that is
+ * continuous around the diagonals, (b) a diagonal no thicker than the straight
+ * edges at 4px, (c) the inner hairline following the chamfer. If (c) fails in
+ * the shipped Chromium, `.wf-frame--single` drops the inner line - one stroke
+ * still reads as the panel; the double hairline is polish, not structure.
+ * ======================================================================== */
+
+.wf-frame {
+  --notch: var(--cut-lg);
+  /*
+   * UNCERTAIN U32 (spec): the same polygon on a box inset by s puts the
+   * diagonal s*sqrt(2) away - about 41% thicker than the straight edges.
+   * Shrinking the inner notch by (2 - sqrt(2)) * s = 0.5858 * s makes the
+   * perpendicular width exactly s. At --stroke: 1px the difference is 0.4px,
+   * invisible; it only matters from 2px up. One calc, so it is always done.
+   */
+  --notch-in: calc(var(--notch) - 0.5858 * var(--stroke));
+  --clip-o: polygon(
+    var(--notch) 0,
+    100% 0,
+    100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%,
+    0 100%,
+    0 var(--notch)
+  );
+  --clip-i: polygon(
+    var(--notch-in) 0,
+    100% 0,
+    100% calc(100% - var(--notch-in)),
+    calc(100% - var(--notch-in)) 100%,
+    0 100%,
+    0 var(--notch-in)
+  );
+
+  position: relative;
+  isolation: isolate;
+  clip-path: var(--clip-o);
+  background: var(--frame-edge, var(--edge));
+  padding: var(--stroke);
+}
+.wf-frame > .wf-fill {
+  clip-path: var(--clip-i);
+  background: var(--frame-fill, var(--surface));
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  position: relative;
+}
+
+/*
+ * The measured Warframe edge is a DOUBLE hairline: 1px bright / 6px gap / 1px
+ * dim at 56% of the bright stroke. On a chamfered box the only way to get a
+ * ring that follows the diagonals is a single self-intersecting polygon under
+ * evenodd - outer loop, then inner loop, hole punched, no fill involved, so
+ * translucency never stacks. One element, no nesting, no mask.
+ */
+.wf-frame > .wf-fill > .wf-hairline {
+  --n1: calc(var(--notch-in) - 0.5858 * var(--edge-inset));
+  --n2: calc(var(--n1) - 0.5858 * var(--stroke));
+  --s: var(--stroke);
+  position: absolute;
+  inset: var(--edge-inset);
+  pointer-events: none;
+  background: var(--frame-edge, var(--edge));
+  opacity: var(--edge-inner-alpha); /* measured 93/167 = 0.56 */
+  clip-path: polygon(
+    evenodd,
+    var(--n1) 0,
+    100% 0,
+    100% calc(100% - var(--n1)),
+    calc(100% - var(--n1)) 100%,
+    0 100%,
+    0 var(--n1),
+    calc(var(--s) + var(--n2)) var(--s),
+    calc(100% - var(--s)) var(--s),
+    calc(100% - var(--s)) calc(100% - var(--s) - var(--n2)),
+    calc(100% - var(--s) - var(--n2)) calc(100% - var(--s)),
+    var(--s) calc(100% - var(--s)),
+    var(--s) calc(var(--s) + var(--n2))
+  );
+}
+/* FALLBACK if evenodd renders wrong in the shipped Overwolf Chromium. */
+.wf-frame--single > .wf-fill > .wf-hairline {
+  display: none;
+}
+
+/*
+ * On a RECTANGULAR panel - which per the spec's rule #1 is most of them - skip
+ * all of that. Two declarations, exact, zero risk. Reach for `.wf-frame` only
+ * when the shape is genuinely cut.
+ */
+.wf-rect {
+  border: var(--stroke) solid var(--edge);
+  position: relative;
+  background: var(--surface);
+}
+.wf-rect::after {
+  content: '';
+  position: absolute;
+  inset: var(--edge-inset);
+  pointer-events: none;
+  border: var(--stroke) solid var(--edge);
+  opacity: var(--edge-inner-alpha);
+}

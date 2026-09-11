@@ -1,0 +1,2584 @@
+{
+  "out": [
+    [
+      {
+        "t": "Damage Type",
+        "rs": 1,
+        "cs": 2,
+        "cls": "",
+        "style": "width:10px; background-color: var(--lotus-blue);",
+        "tag": "TH"
+      },
+      {
+        "t": "Tenno",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Grineer",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Kuva Grineer",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Corpus",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Corpus Amalgam",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Infested",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Infested Deimos",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Orokin",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Sentient",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Narmer",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "The Murmur",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Zariman",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Scaldra",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Techrot",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Anarchs",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      },
+      {
+        "t": "Status Effects",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "transform-origin: 0% 100%;transform: skew(-50deg);",
+        "tag": "TH"
+      }
+    ],
+    [
+      {
+        "t": "Physical",
+        "rs": 3,
+        "cs": 1,
+        "cls": "",
+        "style": "border-bottom: 4px solid #777777;",
+        "tag": "TD"
+      },
+      {
+        "t": "Impact",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Stagger\nIncrease Parazon Mercy threshold",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Puncture",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Enemy Damage Reduced\nAmplified Crit Chance",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Slash",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Bleed (DoT)\nIgnores Armor",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Primary Elemental",
+        "rs": 4,
+        "cs": 1,
+        "cls": "",
+        "style": "border-bottom: 4px solid #777777;",
+        "tag": "TD"
+      },
+      {
+        "t": "Cold",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Slow/Freeze\nAmplified Crit Damage",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Electricity",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Tesla Chain (DoT)\nStun",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Heat",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Burn (DoT)\nPanic\nReduce Armor",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Toxin",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Poison (DoT)\nIgnores Shields",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Secondary Elemental",
+        "rs": 6,
+        "cs": 1,
+        "cls": "",
+        "style": "border-bottom: 4px solid #777777;",
+        "tag": "TD"
+      },
+      {
+        "t": "Blast\n( Heat +  Cold )",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Multiple Explosions",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Corrosive\n( Electricity +  Toxin )",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Reduce Armor",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Gas\n( Heat +  Toxin )",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Gas Cloud (AOE DoT)",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Magnetic\n( Cold +  Electricity )",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Amplified Damage to Shields,\nOverguard, and Nullifier Bubbles\nNegates Shield Regeneration",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Radiation\n( Heat +  Electricity )",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Friendly Fire",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Viral\n( Cold +  Toxin )",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "-",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Amplified Damage to Health",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Special",
+        "rs": 3,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Void",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "+",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Bullet Attract",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "Tau",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "Status Vulnerability",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ],
+    [
+      {
+        "t": "True",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      },
+      {
+        "t": "",
+        "rs": 1,
+        "cs": 1,
+        "cls": "",
+        "style": "",
+        "tag": "TD"
+      }
+    ]
+  ],
+  "sample": [
+    {
+      "t": "Damage Typ",
+      "cls": "",
+      "bg": "rgb(27, 77, 109)"
+    },
+    {
+      "t": "Tenno",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Grineer",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Kuva Grine",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Corpus",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Corpus Ama",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Infested",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Infested D",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Orokin",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Sentient",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Narmer",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "The Murmur",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Zariman",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Scaldra",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Techrot",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Anarchs",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Status Eff",
+      "cls": "",
+      "bg": "rgb(13, 37, 52)"
+    },
+    {
+      "t": "Physical",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "Impact",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "+",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "+",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "+",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "+",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "Stagger\nIn",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "Puncture",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "t": "+",
+      "cls": "",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RaijiFrame lab</title>
+    <script type="module" src="/src/app/lab.tsx"></script>
+    <style>
+      /*
+       * A dev artboard, not a shipped page. UI-SPEC Wave 1's check is a
+       * screenshot of these frames: (a) the stroke is continuous around the
+       * diagonals, (b) the diagonal is no thicker than the straight edges at
+       * 4px, (c) the inner hairline follows the chamfer. Not registered as a
+       * Vite build entry on purpose - the dev server serves it, the build
+       * ignores it, and nothing in the Overwolf manifest can reach it.
+       */
+      body { margin: 0; padding: 40px; background: var(--surface-deep); color: var(--text); font: 13px/1.4 var(--font-sans); }
+      .board { display: grid; gap: 28px 40px; grid-template-columns: max-content max-content; align-items: start; }
+      .board > label { display: block; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; font-size: 11px; margin-bottom: 8px; }
+      .wf-frame { display: flex; }
+      .wf-fill { display: flex; align-items: center; justify-content: center; }
+      .wf-fill > span { position: relative; z-index: 1; color: var(--text-muted); }
+      .wf-rect { display: flex; align-items: center; justify-content: center; }
+    </style>
+  </head>
+  <body>
+    <div class="board">
+      <div>
+        <label>wf-frame 300 x 120, stroke 1px</label>
+        <div class="wf-frame" style="width: 300px; height: 120px">
+          <div class="wf-fill"><span>1px</span><div class="wf-hairline"></div></div>
+        </div>
+      </div>
+      <div>
+        <label>wf-frame 900 x 120, stroke 1px</label>
+        <div class="wf-frame" style="width: 900px; height: 120px">
+          <div class="wf-fill"><span>1px</span><div class="wf-hairline"></div></div>
+        </div>
+      </div>
+      <div>
+        <label>wf-frame 300 x 120, stroke 4px</label>
+        <div class="wf-frame" style="width: 300px; height: 120px; --stroke: 4px">
+          <div class="wf-fill"><span>4px</span><div class="wf-hairline"></div></div>
+        </div>
+      </div>
+      <div>
+        <label>wf-frame 900 x 120, stroke 4px</label>
+        <div class="wf-frame" style="width: 900px; height: 120px; --stroke: 4px">
+          <div class="wf-fill"><span>4px</span><div class="wf-hairline"></div></div>
+        </div>
+      </div>
+      <div>
+        <label>wf-frame--single 300 x 120, stroke 1px (the fallback)</label>
+        <div class="wf-frame wf-frame--single" style="width: 300px; height: 120px">
+          <div class="wf-fill"><span>single</span><div class="wf-hairline"></div></div>
+        </div>
+      </div>
+      <div>
+        <label>wf-rect 900 x 120 (rule #1: most panels are rectangles)</label>
+        <div class="wf-rect" style="width: 900px; height: 120px"><span>rect</span></div>
+      </div>
+    </div>
+  </body>
+</html>

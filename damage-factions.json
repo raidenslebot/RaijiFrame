@@ -1,0 +1,1505 @@
+{
+  "source": "https://wiki.warframe.com/w/Damage",
+  "captured": "wiki.warframe.com/w/Damage table[2]",
+  "rows": [
+    [
+      {
+        "txt": "Damage Type",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Tenno",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Grineer",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Kuva Grineer",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Corpus",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Corpus Amalgam",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Infested",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Infested Deimos",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Orokin",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Sentient",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Narmer",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "The Murmur",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Zariman",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Scaldra",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Techrot",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Anarchs",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Status Effects",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Physical",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Impact",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Stagger\nIncrease Parazon Mercy threshold",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Puncture",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Enemy Damage Reduced\nAmplified Crit Chance",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Slash",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Bleed (DoT)\nIgnores Armor",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Primary Elemental",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Cold",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Slow/Freeze\nAmplified Crit Damage",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Electricity",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Tesla Chain (DoT)\nStun",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Heat",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Burn (DoT)\nPanic\nReduce Armor",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Toxin",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Poison (DoT)\nIgnores Shields",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Secondary Elemental",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Blast\n( Heat +  Cold )",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Multiple Explosions",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Corrosive\n( Electricity +  Toxin )",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Reduce Armor",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Gas\n( Heat +  Toxin )",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Gas Cloud (AOE DoT)",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Magnetic\n( Cold +  Electricity )",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Amplified Damage to Shields,\nOverguard, and Nullifier Bubbles\nNegates Shield Regeneration",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Radiation\n( Heat +  Electricity )",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Friendly Fire",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Viral\n( Cold +  Toxin )",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "-",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Amplified Damage to Health",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Special",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Void",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "+",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Bullet Attract",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "Tau",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "Status Vulnerability",
+        "cls": "",
+        "title": ""
+      }
+    ],
+    [
+      {
+        "txt": "True",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      },
+      {
+        "txt": "",
+        "cls": "",
+        "title": ""
+      }
+    ]
+  ]
+}

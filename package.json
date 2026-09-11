@@ -1,0 +1,45 @@
+{
+  "name": "raijiframe",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Modular Overwolf overlay framework for Warframe â€” progression, completionism and account intelligence.",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "watch": "vite build --watch --mode development",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
+    "opk": "ow opk pack -f dist -o release",
+    "check": "node scripts/check-gentle.ts && node scripts/check-progression.ts && node scripts/check-catalog.ts && node scripts/check-eelog.ts && node scripts/check-missionlog.ts && node scripts/check-account-model.ts && node scripts/check-history-store.ts && node scripts/check-ledger.ts && node scripts/check-automod.ts && node scripts/check-strip-life.ts && node scripts/check-moddb.ts && node scripts/check-modstats.ts && node scripts/check-modded.ts && node scripts/check-fusion.ts && node scripts/check-armour.ts && node scripts/check-acquire.ts && node scripts/check-forma.ts && node scripts/check-survive.ts && node scripts/check-build.ts && node scripts/check-optimise.ts && node scripts/check-no-fabricated-data.ts && node scripts/check-itemdb.ts && node scripts/check-resourcedb.ts && node scripts/check-mastery.ts && node scripts/check-pursuits.ts && node scripts/check-subsystems.ts && node scripts/check-syndicates-panel.ts && node scripts/check-leverage.ts && node scripts/check-quest-ids.ts && node scripts/check-acquisition.ts && node scripts/check-transit.ts && node scripts/check-plat.ts && node scripts/check-expect.ts && node scripts/check-plat-steps.ts && node scripts/check-slugs.ts && node scripts/check-resource-paths.ts && node scripts/check-plain-claims.ts && node scripts/check-drop-sources.ts && node scripts/check-syndicate-tags.ts && node scripts/check-key-mods.ts && node scripts/check-frame-picks.ts && node scripts/check-amp-marker.ts && node scripts/check-fixture-paths.ts && node scripts/check-picks.ts && node scripts/check-buildable.ts && node scripts/check-build-queue.ts && node scripts/check-ordering.ts && node scripts/check-focus-schools.ts && node scripts/check-frozen.ts && node scripts/check-style-literals.ts && node scripts/check-jsx-comments.ts && node scripts/check-ui-tokens.ts && node scripts/check-relic-universe.ts && node scripts/check-slot-solve.ts  && node scripts/check-factions.ts  && node scripts/check-game-palette.ts  && node scripts/check-control-chars.ts",
+    "bench": "node scripts/bench-plan.ts",
+    "slots": "node scripts/measure-slots.mjs",
+    "opens": "node scripts/measure-open-paths.mjs",
+    "de": "uv run scripts/fetch-de-export.py",
+    "live": "node scripts/live-probe.mjs",
+    "routes": "tsx scripts/measure-routes.ts",
+    "cost": "node scripts/live-cost.mjs",
+    "replay": "node scripts/measure-live-log.ts",
+    "unread-visit": "node scripts/measure-unread-visit.mjs",
+    "check:data": "node scripts/validate-datasets.ts",
+    "check:fake": "node scripts/check-no-fabricated-data.ts",
+    "dump": "node scripts/catch-dump.mjs"
+  },
+  "dependencies": {
+    "motion": "^13.1.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@overwolf/types": "^3.50.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.2"
+  }
+}

@@ -1,0 +1,1529 @@
+/*
+ * The auto-modding overlay (src/app/automod.tsx + src/ui/ModCard.tsx).
+ *
+ * THE ONE RULE: NO PLATE.
+ * ───────────────────────
+ * The Upgrades screen puts cards on the void. It has no floating boxes, and the
+ * first version of this overlay was exactly that - a grey rectangle with a 1 px
+ * border - which is the single most un-Warframe object it could have been. So
+ * the window paints nothing: no background, no border, no shadow behind the
+ * content. What holds the eye is a gold hairline (the rule the game draws under
+ * CAPACITY and under the active config tab) and the cards themselves, and what
+ * keeps loose text legible over the game's art is a shadow on the ink, not a
+ * panel under it - which is how every game HUD has done it forever.
+ *
+ * COLOUR IS SAMPLED, NOT CHOSEN - AND THE FIRST SAMPLING WAS STILL WRONG.
+ *
+ * Every accent here was read off the player's own 1680 x 1050 capture, and the
+ * overlay still did not look like the game. The reason was WHICH pixels: the
+ * old pass sampled PEAKS - the brightest pixel on a card, a solid run of the
+ * gold rail. A peak is a real colour, but the game spends peaks on hairlines
+ * and specular edges, a fraction of a per cent of the screen. Fill a heading
+ * with one and you paint, at large area, a colour the game shows one pixel
+ * wide. The overlay was not near the palette and slightly off; it was at the
+ * palette's extreme, everywhere at once.
+ *
+ * `src/ui/game-palette.ts` now carries the DISTRIBUTION - every pixel of the
+ * capture converted to oklch and bucketed by hue, plus fifteen text regions
+ * sampled at the 99th percentile of their glyph cores - and every value below
+ * is one of its constants, written out because CSS cannot import a module.
+ * `check-game-palette.ts` refuses any that drifts from it.
+ *
+ * THE TWO FINDINGS THAT CHANGED THIS FILE:
+ *
+ *   THE GAME HAS ONE HUE. Its ink is not white and its gold is not a separate
+ *   colour. Title, section heads, stat values, tab labels, card names and the
+ *   capacity rail are ALL hue 89-101 at chroma 0.04-0.063, separated only by
+ *   lightness, in three levels that measure astonishingly tight - the four
+ *   "quiet" samples land within 0.008 of each other. The ink here used to be
+ *   `oklch(0.94 0.004 250)`: a COOL near-neutral, 160 degrees away at a twelfth
+ *   of the chroma. On a screen 54 % covered in violet ground, a cool white
+ *   reads as foreign and a warm one reads as native.
+ *
+ *   THE GAME SPENDS BRIGHTNESS LIKE MONEY. Median luminance over the whole
+ *   screen is 24.4 of 255; only 1.55 % of it is brighter than 192 and 0.96 %
+ *   brighter than 224. So the overlay gets a BUDGET, not a palette: at most
+ *   that share of its own area may be bright, which in this column is about a
+ *   thousand pixels - one line, and nothing else. Everything that used to be a
+ *   separate colour is now a lightness.
+ */
+
+.am {
+  /* Sampled from the capture: the four frame materials the tray sorts by. */
+  --am-rarity-common: oklch(0.6 0.062 72); /* bronze */
+  --am-rarity-uncommon: oklch(0.84 0.012 250); /* silver */
+  --am-rarity-rare: oklch(0.79 0.082 91); /* gold, at the brass band's p90 chroma */
+  --am-rarity-prime: oklch(0.82 0.058 232); /* the cold steel of Primed / Galvanized */
+
+  /*
+   * The card's body, MEASURED and converted, not chosen.
+   *
+   * Two clean columns of a tray card in the capture (x 1420 and x 1580,
+   * y 658-762) are blue-dominant in every sample - b > g > r without exception.
+   * Their mean is rgb(50, 54, 63) and the card's foot rgb(42, 45, 52); those
+   * two sRGB triples converted to oklch are the two values below, so the body
+   * is the game's body rather than something near it. Rendering the overlay and
+   * the game's own card in one screenshot then measuring both is the only way
+   * this was ever going to be settled - by eye the first two passes both looked
+   * "about right" and were warm and 20 % too light.
+   */
+  --am-card-ink: oklch(0.315 0.017 266);
+  --am-card-deep: oklch(0.2 0.012 267);
+  /*
+   * A GAME CARD IS HIGH CONTRAST, and averaging is what made this one flat.
+   *
+   * Point-sampled rather than averaged, the player's own card reads rgb(21,20,27)
+   * down its frame's left edge - very nearly black - against rgb(79,70,66) along
+   * its top rail and a near-white wedge across the face. Every earlier pass had
+   * matched the card's MEAN, which put the whole object at one mid value and is
+   * exactly why it looked like a tile. The mean is not a colour anything on the
+   * card actually is.
+   */
+  --am-frame-metal: oklch(0.17 0.01 262);
+  --am-chip-ink: oklch(0.13 0.014 254); /* the dark tab the drain sits in */
+  /* The base plate, sampled down one card: a near-white lit edge over a dark
+   * trough, with a muted blue bar under the pips. rgb(194,193,203) is the
+   * brightest pixel on a game card and it is on this plate, not on the face. */
+  --am-plate-lit: oklch(0.81 0.006 280);
+  /* GROUND.deep - the game's ground is violet, not grey: 54 % of the screen at
+   * hue 278, chroma 0.017. This used to be 0.008, which is what makes a plate
+   * read as a grey box laid over a coloured room. */
+  --am-plate-ink: oklch(0.190 0.014 278);
+  --am-plate-bar: oklch(0.64 0.062 245);
+
+  /*
+   * ONE HUE, THREE LIGHTNESSES - the game's whole type palette.
+   *
+   * Measured at the 99th percentile of the glyph core, because a glyph box is
+   * mostly antialiasing and its mean understates it badly:
+   *
+   *   bright  title 0.921 · CONFIG A 0.924 · stat value 0.923 · PRIMARY 0.925
+   *           · DAMAGE 0.926 · card name 0.950  ->  0.925
+   *   quiet   stat label 0.737 · CONFIG B 0.744 · COMBOS 0.745 · ACTIONS 0.745
+   *           ->  0.744, a spread of eight thousandths across four samples
+   *   off     "Requires Melee Arcane Adapter"   ->  0.496
+   */
+  --am-ink: oklch(0.925 0.050 91);
+  --am-ink-quiet: oklch(0.744 0.055 91);
+  --am-ink-off: oklch(0.496 0.013 90);
+
+  /*
+   * BRASS, as a band rather than a value. `--am-gold` FILLS - it is the median
+   * of every gold pixel on the screen. `--am-gold-edge` is the p90 and belongs
+   * on a hairline or a lit rail, which is the only place the game puts it. The
+   * single token that used to do both was `oklch(0.76 0.108 88)`: above the
+   * median in lightness and at 1.9x its chroma, used as a fill.
+   */
+  --am-gold: oklch(0.675 0.057 91);
+  --am-gold-edge: oklch(0.912 0.082 91);
+
+  /*
+   * ENERGY cyan, same treatment. The game gives it a quarter of the screen it
+   * gives brass (0.45 % against 1.90 %), so it is the rarer signal and stays
+   * that way: pips and charged states only, never a label.
+   */
+  --am-pip: oklch(0.609 0.067 237);
+  --am-pip-edge: oklch(0.853 0.083 237);
+
+  /*
+   * THE SHORTFALL, and the only red on the overlay.
+   *
+   * The game uses red on 108 of 441,000 sampled pixels - 0.02 % of the screen -
+   * so it is the loudest thing it owns and must mean something. It does: this
+   * marks the ONE resource the account is actually short of. The app's global
+   * `--color-signal-bad` is `oklch(0.63 0.20 27)`, at 2.2x the chroma of any
+   * red the game draws; this sits at the loud end of the game's own measured
+   * band (L 0.333-0.649, C 0.078-0.157, h 23-43) instead, and stays scoped to
+   * the overlay because the desktop panels are not pretending to be the game.
+   */
+  --am-short: oklch(0.600 0.130 32);
+
+  /*
+   * THE GAME'S ROW PITCH, as a length this file can do arithmetic with.
+   *
+   * 1.3 line-heights of the aside's own 13 px, which is the ratio measured off
+   * the capture (19.5 px rows against a 15 px face). Section gaps are 2x it,
+   * because that is what the capture measures between blocks.
+   */
+  --am-pitch: calc(1.3 * 13px * var(--am-scale, 1));
+
+  /* Legibility over the game's own art, without a panel to sit on. */
+  --am-lift: 0 1px 2px oklch(0.06 0.02 260 / 0.95), 0 0 6px oklch(0.06 0.02 260 / 0.7);
+
+  /*
+   * THE WHOLE SCREEN, painting almost none of it.
+   *
+   * The overlay used to be a 300 px flex column in a gutter. It now covers the
+   * game's client area so its content can sit on the game's OWN geometry - the
+   * eight mod slots - instead of beside it. Nothing here paints a background;
+   * the only things drawn are cards on slots and one column of type.
+   */
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: none;
+  color: var(--am-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-nano);
+  line-height: 1.3;
+  overflow: hidden;
+  /*
+   * NOTHING HERE IS A TARGET EXCEPT THE CONTROLS.
+   *
+   * The window passes input through to the game (`InputPassThrough`), and this
+   * is the web-side half of the same idea: the strip's own body does not take
+   * the pointer either, so the cursor never changes over it and it never reads
+   * as something in the way. The close control and the queue rows opt back in,
+   * one element at a time.
+   */
+  pointer-events: none;
+  /* The whole overlay arrives from the grid's side and stops. One law. */
+  animation: am-arrive var(--rf-approach);
+}
+.am-close,
+.am-view,
+.am-queue button {
+  pointer-events: auto;
+}
+
+/*
+ * THE WINDOW IS TRANSPARENT, AND SAYING SO ONCE WAS NOT ENOUGH.
+ *
+ * `theme.css` sets `color-scheme: dark` on `:root`, which makes Chromium paint
+ * the document's CANVAS in its dark default - rgb(18,18,18) - rather than
+ * leaving it transparent, whatever `background` says. Every element here
+ * computed to `rgba(0,0,0,0)` and the overlay was still an opaque slab.
+ *
+ * It went unseen for the whole life of the strip: at 300 x 263 in the darkest
+ * column of the Upgrades screen, an 18-grey panel is indistinguishable from the
+ * game behind it. It only became obvious when the overlay grew to cover the
+ * screen and blanked the entire capture. So the design rule this file opens
+ * with - NO PLATE - had been quietly violated from the first version, and every
+ * judgement made from a composite render was made against a false picture.
+ *
+ * `color-scheme: normal` restores a transparent canvas. The selectors are real
+ * ones rather than `:where(...)`, which has zero specificity and loses to
+ * anything `theme.css` declares.
+ */
+html.am-transparent,
+html.am-transparent body,
+html.am-transparent #root {
+  color-scheme: normal;
+  background: transparent;
+  height: 100%;
+}
+
+/* --- the grid: the perfect build on the game's own slots ------------------ */
+
+/*
+ * One slot. Positioned in the game's own pixels by `data/automod-place.ts`, so
+ * the card lands exactly where the game draws its own - no margin, no guess.
+ */
+/*
+ * ONE SLOT, AND ITS PLACE IN THE DEAL.
+ *
+ * 55 ms apart, across the row and then down, so the eight cards land in the
+ * order a player reads them. Watched as a contact sheet, the previous version -
+ * every card dropping 5 px at once - registered as ONE frame carrying the whole
+ * change: a state switch, not a movement. Five pixels simultaneously on a
+ * 1680 px screen is not something anybody sees.
+ *
+ * `backwards` holds the START transform through the delay, and that start is a
+ * TRANSFORM ONLY. Nothing here begins at zero opacity, because an Overwolf
+ * overlay's timeline does not advance while the window is unpresented, and an
+ * animation that begins invisible can stay that way for good.
+ */
+.am-slot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  animation: am-deal var(--rf-approach) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+/*
+ * A SLOT THAT IS ALREADY RIGHT gets a mark and nothing else.
+ *
+ * The game's own card is underneath it and is correct; covering it with a copy
+ * of itself would be pure noise. So this draws a small tick at the slot's top
+ * right - the one place a game card leaves empty, opposite its drain tab - and
+ * lets the player's own card show through everywhere else. This is how the
+ * overlay manages to cover every slot and obscure only the ones that change.
+ */
+/*
+ * TOP LEFT, not top right.
+ *
+ * The tick was drawn at the slot's top right, which is exactly where a game
+ * card carries its drain tab - so on every finished slot it landed on top of
+ * "6 V" and vanished. The top left is the one corner a mod card leaves empty.
+ */
+.am-slot--done {
+  place-items: start start;
+  padding: calc(5px * var(--am-scale, 1));
+  pointer-events: none;
+}
+.am-slot--done svg {
+  width: calc(17px * var(--am-scale, 1));
+  height: calc(17px * var(--am-scale, 1));
+  fill: none;
+  /*
+   * GOLD, not the app's signal green. There is no green anywhere on the
+   * Upgrades screen; a green tick reads instantly as a different piece of
+   * software laid over the game. Gold is what this screen already uses to mark
+   * the live thing - the active config tab, the capacity rule - so a gold tick
+   * is the screen agreeing with itself.
+   */
+  stroke: var(--am-gold-edge);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Two shadows: one to lift it off the card's art, one to make it glow like the screen's own gold. */
+  filter: drop-shadow(0 1px 2px oklch(0.06 0.02 260 / 0.95)) drop-shadow(0 0 5px oklch(from var(--am-gold-edge) l c h / 0.55));
+  /* The tick lands AFTER its own card has arrived, not alongside it. */
+  animation: am-tick var(--rf-settle) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms + 140ms);
+}
+
+/*
+ * A SLOT THAT HAS TO CHANGE: AN EDGE AND A PLATE, NEVER A CARD.
+ *
+ * The overlay used to paint its own mod card over the game's. On the player's
+ * live screen that was two card renderings fighting inside one rectangle - and
+ * the answer to "does it feel like the game" was obviously no. Everything below
+ * is deliberately less than a card: the game's art, frame, drain tab and
+ * polarity all stay visible and untouched.
+ */
+.am-slot[data-state] {
+  place-items: end stretch;
+  pointer-events: auto;
+}
+
+/*
+ * The edge. Inset by the same 5 px the card's own frame band occupies, so it
+ * traces the game card's outline rather than boxing it - a box around a card is
+ * a selection rectangle from a different application.
+ */
+.am-slot-edge {
+  position: absolute;
+  inset: calc(4px * var(--am-scale, 1));
+  border: 1px solid var(--am-gold-edge);
+  /*
+   * SQUARE, not rounded, and the gate is what said so. This surface is cut, not
+   * rounded - nothing on the Upgrades screen has a soft corner, and a 4 px
+   * radius here was the one thing on the overlay that could not have come from
+   * the game. Inset by 4 px it sits inside the card's own frame band, so the
+   * card's chamfered crest still reads as the card's.
+   */
+  opacity: 0.8;
+  box-shadow:
+    0 0 0 1px oklch(0.06 0.02 260 / 0.75),
+    0 0 calc(9px * var(--am-scale, 1)) oklch(from var(--am-gold-edge) l c h / 0.3);
+  /*
+   * `am-edge`, NOT `am-tick`, and the difference is 55 px of the game's screen.
+   *
+   * This reused the tick's keyframe, which starts at scale(1.55). On a 17 px
+   * tick that is a nine-pixel pop and it reads well. On a 201 x 104 slot edge
+   * it starts at 311 x 161 - fifty-five pixels of dashed gold hanging over the
+   * cards either side, for the first sixth of a second of every open. Nothing
+   * in the source says so; it took photographing the frames.
+   *
+   * `am-edge` grows the outline INWARD to its final size, so it never covers a
+   * neighbour at any point in the entrance. It is also closer to what this
+   * screen does: the game's own highlight settles onto a card, it does not
+   * burst out of one.
+   */
+  animation: am-edge var(--rf-settle) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms + 120ms);
+}
+/*
+ * NOT OWNED is dashed, and that is the whole difference. A dashed edge is what
+ * this screen already uses for a slot that holds nothing, so the overlay is
+ * borrowing the game's own word for absent rather than inventing one.
+ */
+.am-slot[data-state='get'] .am-slot-edge {
+  border-style: dashed;
+  opacity: 0.62;
+}
+
+/*
+ * The plate, on the card's bottom lip. A game mod card ends in a pointed base
+ * carrying its rank pips; that band is the only part of the card with nothing
+ * on it worth reading while you decide what to change, so it is the part the
+ * overlay is allowed to use.
+ */
+.am-slot-plate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(5px * var(--am-scale, 1)) calc(5px * var(--am-scale, 1));
+  padding: calc(2px * var(--am-scale, 1)) calc(6px * var(--am-scale, 1));
+  background: linear-gradient(oklch(0.12 0.015 260 / 0.82), oklch(0.08 0.015 260 / 0.94));
+  border-top: 1px solid oklch(from var(--am-gold-edge) l c h / 0.55);
+  font-size: calc(11px * var(--am-scale, 1));
+  line-height: 1.35;
+  /*
+   * IT RISES OUT OF THE CARD'S BASE; it does not slide in from the side.
+   * `am-arrive` starts 14 px to the LEFT, and a plate is 191 px inside a 201 px
+   * slot - so sliding in from the left began nine pixels over the neighbouring
+   * card. Vertical travel keeps every frame inside the slot it belongs to, and
+   * a plate emerging from the card's own base is the more natural reading.
+   */
+  animation: am-rise var(--rf-settle) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms + 160ms);
+}
+/* Name and figure share the plate's first line; the route takes the second. */
+.am-slot-line {
+  display: flex;
+  align-items: baseline;
+  gap: calc(6px * var(--am-scale, 1));
+}
+/*
+ * Where to get it, under the name, on the slot. Quieter than the name by the
+ * same amount the aside's route is, so the two read as one idea in two places.
+ */
+.am-slot-route {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--am-ink-quiet);
+  font-size: 0.92em;
+  text-shadow: var(--am-lift);
+}
+
+.am-slot-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--am-ink);
+  text-shadow: var(--am-lift);
+}
+/*
+ * The figure is gold because it is the instruction - "6 → 10", or what the mod
+ * will cost the capacity bar. It is the only coloured thing the overlay puts on
+ * a slot, which is what makes it findable at a glance across eight of them.
+ */
+.am-slot-figure {
+  flex: 0 0 auto;
+  color: var(--am-gold);
+  text-shadow: var(--am-lift);
+}
+
+/*
+ * The route under the hovered card, in full. The list has room for one line a
+ * mod and gives the short form; this is where the part it dropped goes.
+ */
+.am-peek-route {
+  max-width: calc(201px * var(--am-scale, 1) * 1.25);
+  margin: calc(6px * var(--am-scale, 1)) 0 0;
+  color: var(--am-ink-quiet);
+  font-size: calc(11px * var(--am-scale, 1));
+  line-height: 1.4;
+  text-shadow: var(--am-lift);
+}
+
+/* The hovered card, shown large under the aside the way the game's tray does. */
+.am-peek {
+  position: absolute;
+  animation: am-deal var(--rf-approach);
+  filter: drop-shadow(0 4px 14px oklch(0.04 0.02 260 / 0.85));
+}
+
+/* --- the aside: everything that is not about one slot -------------------- */
+
+/*
+ * The aside is positioned in the game's pixels and typed in them too: every
+ * other object on this overlay scales with the screen, and a fixed-size column
+ * of 11 px text beside cards that grow reads as a different application. The
+ * container sets a font size from `--am-scale`, which the overlay writes from
+ * the measured screen height, and everything inside is in `em` of it.
+ */
+.am-aside {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px 0 0;
+  /*
+   * THE GAME'S OWN SIZE, not a web panel's.
+   *
+   * 11 px was chosen to fit the column and it read as a different application
+   * beside the screen's own chrome: the Upgrades panel sets its stat rows at
+   * about 15 px and a mod card's name at 19 px, traced, at this resolution. A
+   * column of 11 px text next to that is the single loudest tell that something
+   * foreign is on screen. 13 px is the smallest step that reads as the same
+   * software; what it costs is one line of the assumption list, which is the
+   * one row here written to clip and to say that it clipped.
+   */
+  font-size: calc(13px * var(--am-scale, 1));
+}
+
+/*
+ * ONE ROW ABSORBS THE OVERFLOW, AND IT IS THE ONE THAT CAN SAY SO.
+ *
+ * A column flex item's default is `flex: 0 1 auto` - it SHRINKS - and every row
+ * in here had it, so when the panel ran long the browser took the height out of
+ * whichever rows it liked. Found by enumerating the panel's states rather than
+ * choosing them: 192 of the first 1,300 clipped the aura line, whose whole
+ * content is one line of `AURA Physique 5 +7` and which is the only row that
+ * says where the eight slots' extra capacity came from.
+ *
+ * THE THREE EXCEPTIONS keep their own `flex: 0 1 auto` below and win on source
+ * order: `.am-missing`, `.am-queue` and `.am-assumed`. Each is a LIST with
+ * `min-height: 0; overflow: hidden` - each is written to clip, and each says so
+ * ("3 of 5 assumed", "and 4 more"). Everything else holds its height, so no row
+ * is ever silently half-drawn.
+ */
+.am-aside > * {
+  flex: 0 0 auto;
+  /* The entrance below is the same selector; both belong to every row. */
+  animation: am-arrive var(--rf-approach) backwards;
+}
+
+/*
+ * THE ASIDE ASSEMBLES; IT DOES NOT APPEAR.
+ *
+ * The grid was already dealing itself out card by card, and the column beside it
+ * still arrived as one block - which the contact sheet caught immediately: one
+ * frame carried 86 % of the whole change, because a column of type appearing at
+ * once outweighs three cards dropping 18 px. So the aside's rows come in on the
+ * same law and the same rhythm, and the overlay ASSEMBLES rather than switching
+ * on. It is also what the game does with its own menus.
+ *
+ * `nth-child` rather than a variable from script: the order is the DOM's, there
+ * is nothing for React to decide, and a delay that needs a prop is a delay that
+ * can be forgotten at the one call site that matters.
+ */
+.am-aside > :nth-child(1) {
+  animation-delay: 0ms;
+}
+.am-aside > :nth-child(2) {
+  animation-delay: 45ms;
+}
+.am-aside > :nth-child(3) {
+  animation-delay: 90ms;
+}
+.am-aside > :nth-child(4) {
+  animation-delay: 135ms;
+}
+.am-aside > :nth-child(5) {
+  animation-delay: 180ms;
+}
+.am-aside > :nth-child(6) {
+  animation-delay: 225ms;
+}
+.am-aside > :nth-child(7) {
+  animation-delay: 270ms;
+}
+.am-aside > :nth-child(n + 8) {
+  animation-delay: 315ms;
+}
+
+/*
+ * The tally: how much of the perfect build is already on the weapon. It is the
+ * two-second answer, so it is the largest figure in the column - the grid
+ * behind it says WHICH slots, and this says how many without counting them.
+ */
+/*
+ * A SECTION HEAD, IN THE VOICE THE SCREEN USES FOR CAPACITY - AND WITH ITS RULE.
+ *
+ * The game marks a section with a head AND a hairline under it: CAPACITY has
+ * one, the active config tab has one. The overlay had the head and not the
+ * rule, which is why the column read as paragraphs rather than as blocks - a
+ * heading with nothing under it is just a smaller line of text.
+ *
+ * The gap above is measured, and the first version of it double-counted.
+ *
+ * Scanning the capture's own PRIMARY block, the stat rows sit 19-20 px apart
+ * and the last row of one block to the head of the next is 36-39 px: the
+ * game's section rhythm is exactly two row pitches. But those are BASELINE TO
+ * BASELINE, and a margin is not - a 38 px baseline gap across a 19.5 px line
+ * box is 18.5 px of actual white. Setting the margin to the full two pitches
+ * put an extra row of air above every head, which measured 42 px over a 263 px
+ * column: the whole overflow was this one mistake, twice.
+ */
+.am-aside-head {
+  /*
+   * Re-measured off the capture's own label column (x 94-240, y 195-600, rows
+   * found by per-row CONTRAST rather than by brightness, so a lit fill cannot
+   * be mistaken for a glyph). Eighteen runs: the row pitch is 18-21 px, mean
+   * 19.1, and the two section gaps are 40 and 39 - so a section is exactly two
+   * row pitches. And the head sits ONE pitch above its first row, not two: the
+   * doubled gap is entirely above the head, never below it. The bottom margin
+   * here was 0.3 of a pitch of pure surplus, twice over.
+   */
+  margin: var(--am-pitch) 0 0;
+  font-family: var(--font-display);
+  font-size: 0.95em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--am-ink-quiet);
+  text-shadow: var(--am-lift);
+  /*
+   * The rule runs from the end of the word to the right margin, so the head
+   * reads as a label ON a rule rather than as text with a line under it - which
+   * is what the game draws, and it costs no vertical room at all.
+   */
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.am-aside-head::after {
+  content: '';
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(to right, var(--am-gold), transparent 85%);
+  opacity: 0.55;
+}
+/* The first head in the column has the title's rule above it already. */
+.am-aside > .am-aside-head:first-of-type {
+  margin-top: calc(0.6 * var(--am-pitch));
+}
+
+/*
+ * THE STAT TABLE, WHICH IS THE GAME'S OWN AND NOT A LAYOUT OF OUR OWN DEVISING.
+ *
+ * Four hundred pixels to the left of this column the game draws PRIMARY /
+ * DAMAGE / HEAVY ATTACK: label on the left margin, value hard right, one shared
+ * axis down the whole block, tabular figures, a fixed pitch. The overlay's
+ * numbers were six independent rows - the tally in a flex box of its own, the
+ * price in two side-by-side cells, the Forma line as a run of prose, the aura
+ * in three spans - and nothing lined up with anything. That is what reads as a
+ * basic panel: not the colour, which is sampled off this same capture, and not
+ * the words.
+ *
+ * `display: contents` on each row is what puts every label and every value on
+ * ONE pair of columns instead of each row having its own. The rows keep their
+ * element - they carry the ink and the shortfall state, and colour inherits
+ * through a box that is not drawn.
+ */
+.am-stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 0.8em;
+  margin: 0;
+  /*
+   * THE PITCH IS THE GAME'S. Measured by scanning the capture's own PRIMARY
+   * block for rows of lit pixels (x 92-250, y 195-600): the label runs land
+   * 19, 20, 19, 20, 22 px apart against type whose glyph runs are 8-11 px tall.
+   * A 15 px face at 19.5 px pitch is a line-height of 1.30, and that ratio is
+   * what carries across to this column's 13 px without re-measuring anything.
+   */
+  line-height: 1.3;
+  text-shadow: var(--am-lift);
+}
+.am-stat {
+  display: contents;
+  color: var(--am-ink);
+}
+.am-stat dt {
+  /*
+   * SENTENCE CASE, AND THE OVERLAY HAD THIS EXACTLY INVERTED. The game sets its
+   * SECTION heads in tracked uppercase and its ROW labels in sentence case -
+   * "Critical Chance", "Combo Duration", "Slam Attack". The overlay was
+   * shouting ENDO and CR at the player in the case the game reserves for
+   * headings, which makes six quiet facts compete with the one instruction.
+   */
+  color: var(--am-ink-quiet);
+  text-transform: none;
+  letter-spacing: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.am-stat dd {
+  margin: 0;
+  color: inherit;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/*
+ * THE GAME DOES NOT SET NUMBERS IN A TERMINAL FONT.
+ *
+ * `.numeric` is the app's global numeral role and it is Cascadia Mono - a
+ * programmer's face with slab terminals, a slashed zero and a fixed advance -
+ * used 262 times across the desktop panels, where it is right: those are
+ * ledgers and a monospace column is what a ledger wants.
+ *
+ * On this overlay it is the single loudest tell that something foreign is on
+ * the screen. The game sets EVERY number on the Upgrades screen - 8/64, 70 %,
+ * 2,220.1, 1,893,292 - in its body face with tabular figures, and a monospace
+ * beside it does not read as a different style, it reads as a different
+ * application. Point-checked against the capture: the game's own "1,209.1" and
+ * "991.1" share their glyph shapes and their comma with its stat labels.
+ *
+ * So the ROLE is kept - tabular, so columns of figures still line up, which is
+ * the only thing the mono was ever needed for - and the FACE is the column's.
+ * Scoped to `.am` so the desktop's ledgers are untouched.
+ */
+.am .numeric {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+/*
+ * The shortfall, and only on the resource that is actually short. Endo comes
+ * from sculptures and relics and credits from twenty minutes of Index, so a
+ * single "cannot afford" would send a player to the wrong activity for an
+ * evening.
+ */
+.am-stat[data-short] {
+  color: var(--am-short);
+}
+/*
+ * The worst matchup is a FACT about the build, not a step, so it sits in the
+ * unactionable ink even inside a block that is already quiet - label and value
+ * both. It must never out-weigh the instruction above it.
+ */
+.am-weakest {
+  color: var(--am-ink-off);
+}
+.am-weakest dt {
+  color: var(--am-ink-off);
+}
+
+.am-missing {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.am-missing li {
+  animation: am-arrive var(--rf-approach);
+}
+/*
+ * What the app could not read, said rather than counted. Quieter than the mod
+ * names because it is a caveat and not an instruction, and it wraps - these are
+ * sentences, and truncating a sentence about what the app guessed would be a
+ * worse failure than the one it is confessing.
+ */
+.am-assumed {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--am-ink-off);
+  font-size: 0.92em;
+  line-height: 1.3;
+  text-shadow: var(--am-lift);
+}
+.am-assumed li {
+  margin-top: 0.25em;
+  animation: am-arrive var(--rf-settle) backwards;
+}
+
+/*
+ * THE ONE TO DO TONIGHT. Not a list - a list of eight does not fit a column
+ * that holds four at 720p, and every one of the eight is named and routed on
+ * its own grid slot anyway. This is the ordering, which the grid cannot carry,
+ * and it is the only place the route appears in full.
+ */
+/*
+ * THE INSTRUCTION, AS AN OBJECT RATHER THAN A SENTENCE.
+ *
+ * The card is drawn at the game's own tray size (201 x 99 at this screen's
+ * scale) inside a 300 px column, because a card that is nearly the game's size
+ * reads as a copy of one and a shrunken card reads as an icon. It sits flush to
+ * the column's left edge, on the same margin every other line uses, so the
+ * column still has one axis.
+ */
+.am-instruct {
+  /*
+   * THE CARD BESIDE THE WORDS, and the row is what makes the card affordable.
+   *
+   * Stacked, the card had to be the name-bearer and the block ran the column
+   * 29 px past its box at the game's own card size. Beside, the card costs only
+   * its own height - which is the height of two lines of type it now sits next
+   * to rather than above - and it can stay small enough to fit every resolution
+   * while the name stays type, legible at all of them.
+   *
+   * `align-items: center` because the card is an object and the two lines are a
+   * caption: optically the pair reads as one row only when the card's waist and
+   * the text block's centre agree. Baseline alignment puts the card's crest
+   * level with the cap height and the plate hangs below the descender.
+   */
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  min-width: 0;
+  margin: 0.15em 0 0;
+}
+.am-instruct .am-card {
+  flex: 0 0 auto;
+  display: block;
+  /*
+   * A THIRD OF THE COLUMN, which at 1680 x 1050 is 100 x 49 against the game's
+   * own 201 x 99 tray card. Half-size, and it survives it: what identifies a
+   * mod card at a glance is the silhouette, the polarity glyph and whether it
+   * is lit or dashed, and every one of those is scale-free. The name is the
+   * only thing that was not, and the name is now beside it.
+   */
+  width: 33%;
+  height: auto;
+  aspect-ratio: 201 / 99;
+}
+/*
+ * The two lines the card cannot say. `min-width: 0` so a long mod name
+ * ellipsises inside the row instead of pushing the card out of the column,
+ * which is the flexbox default and would have put a card over the game's art.
+ */
+/*
+ * THE CARD DROPS ITS OWN NAME HERE, because the name is beside it.
+ *
+ * `ModCard` sets the name at 19 units in a 201-unit box, which is 9 px on a
+ * 96 px card: unreadable, and duplicating a word that is legible two
+ * centimetres to the right. The card keeps every mark that identifies it
+ * WITHOUT words - silhouette, polarity glyph, drain, pips, lit against dashed -
+ * which is the whole reason it earns the space at this size.
+ */
+.am-instruct .am-card .am-card-name {
+  display: none;
+}
+.am-instruct-say {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+}
+/*
+ * THE ONE LOUD THING IN THE COLUMN.
+ *
+ * The bright budget measured off this screen is 1.55 % of area above luminance
+ * 192 - about a thousand pixels in a 300 x 263 column, which is one short line
+ * and nothing else (see `game-palette.ts`). This line is that line. Everything
+ * around it is a level or two down, which is the only way a two-second glance
+ * lands here rather than on whichever figure happens to be biggest.
+ */
+.am-instruct-say .am-queue-name {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-display);
+  font-size: 1.3em;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+.am-instruct-say .am-route {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-display);
+  color: var(--am-ink-quiet);
+  font-size: 0.94em;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  text-shadow: var(--am-lift);
+}
+
+.am-first {
+  flex: 0 0 auto;
+  margin: 0;
+  /*
+   * THE ONE SENTENCE THE PANEL EXISTS TO SAY, and now the only thing on the
+   * panel that is allowed to be loud.
+   *
+   * 1.22em was not a step up, it was a rounding error: measured at 1680x1050 it
+   * rendered 15.9 px against a title at 15.3 px and a tally numeral at 23.4 px.
+   * Three things competed for the glance and the one that won was a progress
+   * statistic. The brief says the panel shows FIRST what to do to build the
+   * best version of the weapon; the glance was landing on the weapon's name,
+   * which the game prints at 28 px two inches above this, and on a count.
+   *
+   * One loud thing per panel is the game's own law - the Upgrades screen shouts
+   * the capacity figure and keeps forty other numbers quiet - and this is that
+   * one thing.
+   *
+   * AND IT WAS SET IN THE WINDOWS SYSTEM FONT. `.am-first` inherited
+   * `--font-sans`, so the loudest line on an overlay meant to be
+   * indistinguishable from Warframe was 21 px of Segoe UI over a screen whose
+   * every label is a squared technical face. Nothing else on the panel was
+   * further from the game, and no colour work could have covered it.
+   *
+   * The tracking is the game's own for a name at this size, not an eyebrow's:
+   * the measured inter-letter gaps on the screen's own headers are 1-3 px, so
+   * a name is set nearly solid and only an UPPERCASE label gets the wide track.
+   */
+  font-family: var(--font-display);
+  font-size: 1.62em;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+/*
+ * The mod's own name in the screen's gold: the game marks the live thing that
+ * way - the active config tab, the capacity rule - and this is the live thing.
+ */
+.am-first .am-queue-name {
+  color: var(--am-gold);
+}
+/*
+ * WHERE TO GET IT, subordinate to WHAT to get.
+ *
+ * This is a fraction of the instruction and the instruction just grew, so this
+ * grew with it: measured, 19.0 px against the name's 21.1 px, which reads as
+ * two headlines rather than one instruction with its source under it. Raising a
+ * parent without following the change into its children is how a fix half
+ * lands.
+ *
+ * 0.71 puts it at about 15 px here - clearly under the name, clearly above the
+ * 13 px the footnotes sit at, so it still reads as part of the same thought.
+ */
+/*
+ * WHERE TO GET IT is the second half of the instruction's sentence, not a
+ * footnote under it - "Melee Prowess" alone is a name, and "Melee Prowess,
+ * Ghoul Rictus Alpha, ten runs" is something to go and do. So it is set in the
+ * same voice one step down rather than in a different face at a different
+ * opacity, which is what it was: the headline had just moved to the display
+ * face and its own continuation was still Segoe UI.
+ *
+ * The opacity is gone with it. Dimming by opacity over the game's own art
+ * multiplies against whatever card happens to be behind, so the same rule drew
+ * one colour over the gutter and another over a lit card; the quiet ink is a
+ * measured colour and holds still.
+ */
+.am-first .am-route {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-display);
+  color: var(--am-ink-quiet);
+  font-size: 0.74em;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  text-shadow: var(--am-lift);
+}
+
+/*
+ * THE RUNG'S POSITION IN THE ARC, carried by the section head rather than by a
+ * line of its own.
+ *
+ * "then five more" was a row under the instruction, and the aside had no room
+ * for it: measured, the ladder's rows overflowed at every resolution and
+ * flexbox paid for it by crushing the aura line and the honesty footer to three
+ * pixels. The head was already there saying "NEXT" and had space beside it, so
+ * the count went there and the row went away.
+ *
+ * Set apart from the head's own word - not uppercase, not tracked - so it reads
+ * as a position rather than as part of the label.
+ */
+.am-aside-head span {
+  margin-left: 0.6em;
+  font-family: var(--font-numeric, inherit);
+  font-size: 0.92em;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--am-ink-off);
+}
+
+/* --- the head ------------------------------------------------------------ */
+
+.am-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/*
+ * THE ITEM'S NAME IS AN ANCHOR, NOT NEWS - and it was wearing the panel's loud
+ * colour at nearly the size of the instruction.
+ *
+ * The game prints "UPGRADES / BROKEN WAR [30]" at 28 px across the top of the
+ * very screen this sits on. Repeating it in gold at 15.3 px, beside an
+ * instruction at 15.9 px, spent the panel's two-second glance on something the
+ * player already knew.
+ *
+ * It stays, because it is how a wrong item is caught - the panel titled the
+ * wrong weapon twice and the player spotted it from this line - but it stays as
+ * an eyebrow: small, letter-spaced, quiet. And it gives up the gold, which this
+ * stylesheet reserves for THE LIVE THING (`.am-first .am-queue-name` says so).
+ * A name the app is only confirming is not the live thing; the instruction is.
+ */
+.am-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.95em;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--am-ink-quiet);
+  text-shadow: var(--am-lift);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/*
+ * The close control. It exists because the window RECEIVES CLICKS - an in-game
+ * Overwolf window has `clickthrough: false` by default - and the first version
+ * shipped without one, which made an overlay nobody could dismiss.
+ */
+.am-close {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--am-ink-quiet);
+  cursor: pointer;
+  transition: color var(--rf-give);
+}
+.am-close svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 1.4;
+  filter: drop-shadow(0 1px 2px oklch(0.06 0.02 260 / 0.9));
+}
+.am-close:hover,
+.am-close:focus-visible {
+  color: var(--am-gold);
+  outline: none;
+}
+
+/* The game's rule: a gold hairline that fades out, under a title. */
+.am-rule {
+  height: 1px;
+  margin: 2px 0 3px;
+  background: linear-gradient(90deg, var(--am-gold) 0%, oklch(from var(--am-gold-edge) l c h / 0.25) 62%, transparent 100%);
+  transform-origin: left center;
+  animation: am-rule var(--rf-settle);
+}
+
+/* --- now against the ceiling --------------------------------------------- */
+
+.am-now {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  text-shadow: var(--am-lift);
+}
+.am-now-label {
+  font-family: var(--font-display);
+  font-size: 0.95em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--am-ink-quiet);
+}
+.am-now-figs {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.am-now-figs b {
+  font-weight: 400;
+  color: var(--am-ink);
+}
+/*
+ * A QUESTIONED FIGURE DOES NOT SHOUT. When the score carries a note - today,
+ * melee, measured against the game and half - the whole line drops to the quiet
+ * ink, so the eye goes to the tally above it instead. It is still shown, and
+ * still marked, because hiding a number the app computed would be its own kind
+ * of dishonesty.
+ */
+.am-now[data-quiet] .am-now-figs b,
+.am-now[data-quiet] .am-ceiling {
+  color: var(--am-ink-quiet);
+}
+.am-ceiling {
+  color: var(--am-gold);
+}
+/*
+ * The game's own uncertainty mark: a small diamond, drawn rather than typed for
+ * the same reason the arrow below is. The screen puts it after Slam Attack and
+ * Status; this overlay puts it after a figure that has been measured against
+ * the game and disagrees with it.
+ */
+.am-mark {
+  width: 0.42em;
+  height: 0.42em;
+  margin-left: 0.15em;
+  background: var(--am-short);
+  transform: rotate(45deg);
+  cursor: help;
+  pointer-events: auto;
+}
+
+/* The arrow is drawn, not typed: a glyph would inherit the text font's idea of one. */
+.am-to {
+  width: 9px;
+  height: 5px;
+  background: currentcolor;
+  color: var(--am-ink-quiet);
+  clip-path: polygon(0 40%, 62% 40%, 62% 0, 100% 50%, 62% 100%, 62% 60%, 0 60%);
+}
+
+.am-meter {
+  position: relative;
+  height: 3px;
+  margin: 2px 0 4px;
+  background: oklch(1 0 0 / 0.12);
+}
+.am-meter i {
+  display: block;
+  height: 100%;
+  background: var(--am-gold-edge);
+  transform-origin: left center;
+  transition: transform var(--rf-settle);
+}
+
+/*
+ * WHERE THE NEXT STEP LANDS, DRAWN RATHER THAN WRITTEN.
+ *
+ * This was a line of text - "2,816 of 5,203" - under the instruction, and
+ * measured on the artboard it did not fit: with the ladder's rows the aside
+ * needed 264 px of its 263 at the design resolution and 196.7 of 180 at
+ * 1280x720, and flexbox paid for it by crushing the aura line and the honesty
+ * footer from ten pixels to three. A fact nobody can read is not a fact.
+ *
+ * So it goes where it costs no height at all, and where the game itself puts
+ * exactly this information: the Upgrades screen previews a mod's cost as a
+ * second segment on its capacity bar before you commit it. Same idiom, same
+ * bar, and the panel goes back to having room for everything.
+ *
+ * Quieter than the filled bar and behind it in the stack, because it is a
+ * projection rather than a reading - what WOULD be true, not what is.
+ */
+.am-meter u {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--am-gold-edge);
+  opacity: 0.34;
+  transform-origin: left center;
+  transition: transform var(--rf-settle);
+}
+.am-meter i {
+  position: relative;
+}
+/*
+ * A full meter is a different fact from a nearly full one, so it is a different
+ * object: the bar thickens and carries the gold's own glow. The game does the
+ * same thing to the capacity bar when capacity is exactly spent.
+ */
+.am-meter[data-full] {
+  height: 3px;
+}
+.am-meter[data-full] i {
+  box-shadow: 0 0 6px var(--am-gold-edge);
+}
+
+/*
+ * "AT THE CEILING". Set in the display face at the title's tracking, because it
+ * is a status the screen is announcing rather than a sentence it is saying -
+ * the same voice as CAPACITY and DRAIN on the screen behind it.
+ */
+.am-done {
+  margin: 0.6em 0 0;
+  font-family: var(--font-display);
+  font-size: 1.18em;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--am-gold);
+  text-shadow: var(--am-lift);
+}
+
+/* --- the card ------------------------------------------------------------ */
+
+/*
+ * `.am-hero` used to live here: the strip's single recommended card, centred in
+ * a column. Nothing renders it since the overlay became a grid, so it is gone
+ * rather than left to rot - a rule matching no element is a rule nobody can
+ * check.
+ */
+.am-card {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 2px 6px oklch(0.05 0.02 260 / 0.8));
+}
+/*
+ * THE NAME IS THE ANSWER, so it is set the size the game sets it.
+ *
+ * Cropped side by side with the player's own Primed Pressure Point at 1:1, the
+ * overlay's name was half the weight and two thirds the size of the game's, and
+ * that alone made the card read as a caption under a tile rather than as the
+ * card's subject. The game sets a mod name bold, near-white, hard-shadowed, and
+ * lets it wrap rather than shrinking it.
+ */
+.am-card-name {
+  font-family: var(--font-sans);
+  font-size: 19px;
+  font-weight: 600;
+  fill: oklch(0.98 0.002 250);
+  paint-order: stroke;
+  stroke: oklch(0.08 0.014 258 / 0.9);
+  stroke-width: 3px;
+}
+.am-card-drain {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--am-ink);
+}
+/*
+ * The overlay's own figure. It sits where the game leaves the card's top left
+ * empty, and it stays QUIETER than the name: the two-second glance is meant to
+ * land on which mod, then on what it buys. Set at the name's weight it fought
+ * the name and won, which is the wrong answer to the wrong question.
+ */
+.am-card-gain {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: oklch(0.08 0.014 258 / 0.85);
+  stroke-width: 2.4px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--am-gold);
+}
+/*
+ * Three pip states, because the pips carry the rank move: dim past the target,
+ * solid for what the account already has, and an open ring for every rank this
+ * plan would add. That is the game's own fusion vocabulary and it is why no
+ * caption reads "3 -> 5" under the card.
+ */
+.am-pip {
+  fill: oklch(1 0 0 / 0.14);
+}
+.am-pip--on {
+  fill: var(--am-pip);
+  filter: drop-shadow(0 0 2px var(--am-pip));
+}
+.am-pip--add {
+  fill: none;
+  stroke: var(--am-pip);
+  stroke-width: 1.1;
+  filter: drop-shadow(0 0 3px var(--am-pip));
+}
+
+/*
+ * THE PRICE.
+ *
+ * Set the way the game sets CAPACITY on this same screen: a quiet label in the
+ * display face at nano size, the figure in tabular numerals beside it. The line
+ * is silent when the account can pay - a price you can afford is not news - and
+ * only the resource that is actually short takes the warning colour, because
+ * Endo and credits are earned in completely different places.
+ */
+.am-queue-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/*
+ * The queue's figures are gold, but QUIETER than the card's.
+ *
+ * At equal weight the three list numbers out-shouted the one on the card, which
+ * inverts the whole point: the card is the answer and the list is what comes
+ * after it. Gold still marks all four as gains - one signal colour, used for
+ * one meaning - and the card's is simply larger, as the card is.
+ */
+.am-queue-gain {
+  flex: 0 0 auto;
+  color: var(--am-gold);
+  font-variant-numeric: tabular-nums;
+}
+.am-queue button:hover .am-queue-gain,
+.am-queue button:focus-visible .am-queue-gain {
+  opacity: 1;
+}
+.am-edit {
+  cursor: default;
+}
+/*
+ * A MOD YOU JUST PLACED WAS GREEN, AND GREEN IS NOT A COLOUR THIS SCREEN HAS.
+ *
+ * `--color-signal-good` is hue 152 at chroma 0.16. Over 441,000 sampled pixels
+ * of the Upgrades screen there is no green text anywhere: the palette is one
+ * warm brass at three lightnesses plus a rare energy cyan, and this line was a
+ * fourth accent on a panel that had just been cut down to two.
+ *
+ * What the row means is "this one is on the weapon now" - a state, not an
+ * approval - and the game marks a live thing with its energy cyan, which is
+ * exactly the signal already reserved here for rank pips and charged states.
+ * So a placed edit takes the pip colour and the panel keeps its two hues.
+ */
+.am-edit[data-placed] {
+  color: var(--am-pip-edge);
+}
+
+.am-say,
+.am-foot {
+  margin: 5px 0 0;
+  color: var(--am-ink-quiet);
+  text-shadow: var(--am-lift);
+}
+/*
+ * The footer sits at the BOTTOM when a queue is above it - that is what lets
+ * the queue clip instead of the footer - and directly under the prose when
+ * there is no queue at all, as in the ceiling state, where pinning it left it
+ * marooned a hundred and forty pixels below the sentence it belongs to.
+ */
+.am-queue + .am-foot {
+  margin-top: auto;
+}
+.am-foot {
+  margin-top: 3px;
+  padding-top: 2px;
+  /*
+   * A COUNT OF CAVEATS IS THE SMALLEST THING ON THE PANEL, and it was set at
+   * full size, taking a whole row pitch plus its margins - twenty-six pixels
+   * of a two-hundred-and-sixty-three pixel column - to say "0 of 1 assumed".
+   * The list above it, which carries the caveats themselves and is the half
+   * worth reading, is the row written to clip and had nothing left to clip
+   * into. This is a footnote, so it is set as one, and what it gives up goes
+   * to the sentences it is counting.
+   */
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+  /*
+   * THE THIRD INK LEVEL, and it replaces an opacity.
+   *
+   * This line and the caveat list above it were dimmed with `opacity`, which
+   * multiplies against WHATEVER IS BEHIND - and behind this overlay is the
+   * game's own art, so the same rule produced one colour over the dark gutter
+   * and a different one over a lit mod card. The game never does that: it has
+   * a third ink for a thing that is not actionable, measured at
+   * `oklch(0.496 0.013 90)` off "Requires Melee Arcane Adapter", and it is a
+   * COLOUR rather than a multiplication. Four lines of caveat were arriving at
+   * the same weight as the instruction, which is what made this column read as
+   * a form to fill in rather than a thing to do.
+   */
+  color: var(--am-ink-off);
+}
+
+/* --- motion: sudden, then still ------------------------------------------ */
+
+/*
+ * A tick LANDS; it does not fade in.
+ *
+ * It started at `opacity: 0` for one pass and `check-frozen` caught it: an
+ * Overwolf overlay's timeline does not advance while the window is
+ * unpresented, so an animation that begins invisible can leave its content
+ * invisible forever. Nothing here may be the only thing that reveals a mark.
+ * The scale carries the whole gesture and the mark is legible on frame one.
+ */
+/*
+ * THE TICK LANDS BY GROWING INTO PLACE, not by shrinking out of an overshoot.
+ *
+ * It used to start at scale(1.55). On a 17 px mark that is nine pixels and it
+ * reads fine - but it made "nothing starts larger than it ends" a rule with an
+ * exception, and an exception is what the slot edge slipped through when it
+ * borrowed this keyframe and started fifty-five pixels over the neighbouring
+ * cards. Growing inward reads just as well here, and it lets the rule be
+ * absolute in the one stylesheet that draws on somebody else's screen.
+ */
+@keyframes am-tick {
+  from {
+    transform: scale(0.6);
+  }
+  to {
+    transform: none;
+  }
+}
+/*
+ * Everything that is not a card arrives from the grid's side and stops. The
+ * travel was 7 px, which at 1680 px wide is not a movement anybody perceives;
+ * 14 px reads without becoming a slide.
+ */
+/*
+ * THE ASIDE ARRIVES FROM INSIDE ITS OWN COLUMN, not across the game's grid.
+ *
+ * This was translateX(-14px) - "from the grid's side", which was a deliberate
+ * choice and a wrong one: the column starts at x 1372 and the last mod card
+ * ends at 1364, so every row of the aside spent the first frames of its
+ * entrance sitting on top of that card. Six pixels, for 220 ms, on every open.
+ *
+ * Positive travel starts it 14 px further into the empty column and settles it
+ * left into place. Same law, same distance, and no frame of it touches the
+ * game.
+ */
+@keyframes am-arrive {
+  from {
+    transform: translateX(14px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/** The slot edge, growing inward to its final size - never over a neighbour. */
+@keyframes am-edge {
+  from {
+    transform: scale(0.965);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/** A name plate rising out of the card's own base. */
+@keyframes am-rise {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes am-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+/*
+ * A CARD DROPS INTO A SLOT. It does not float in and it does not fade.
+ *
+ * 18 px of travel and a scale of 0.88, both several times what they were,
+ * because the contact sheet showed the old values were invisible at the size
+ * this is actually seen. This is the one bold move in the piece; everything
+ * else on the screen stays still while it happens.
+ */
+@keyframes am-deal {
+  from {
+    transform: translateY(-18px) scale(0.88);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/*
+ * REDUCED MOTION: EVERYTHING STOPS, and it is a blanket rather than a list.
+ *
+ * It WAS a list, naming each animated selector, and `cgc motion` measured the
+ * result: under `prefers-reduced-motion` the page still travelled half as far
+ * as it does normally. The list had fallen behind the stylesheet - `.am-missing
+ * li` sits inside `.am-aside` and so was never reached by `.am-aside > *`, and
+ * two names in it (`.am-hero`, `.am-queue li`) match nothing at all any more.
+ * A list of selectors to remember is a list somebody will forget, and the cost
+ * of forgetting here is not a preference ignored: for a viewer with a
+ * vestibular disorder it is symptoms.
+ *
+ * So: every animation and every transition inside the overlay, off. The
+ * `!important` is deliberate and is the one place in this file it appears - a
+ * viewer who has asked for less motion outranks any specificity this
+ * stylesheet can invent. Cards and rows simply arrive where they belong; the
+ * `backwards` fills resolve to the end state because there is no delay left to
+ * hold them at the start.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .am,
+  .am *,
+  .am *::before,
+  .am *::after {
+    animation: none !important;
+    animation-delay: 0s !important;
+    transition: none !important;
+  }
+}
+
+/*
+ * THE WHOLE BUILD, one row a slot. Four columns on a grid rather than a flex
+ * row, because the ranks and drains are numbers and a column of numbers that
+ * does not line up reads as a mistake - the game's own stat panel right-aligns
+ * every figure for the same reason.
+ */
+.am-build {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0.35em 0 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: tabular-nums;
+}
+.am-build li {
+  display: grid;
+  grid-template-columns: 2.4em 1fr auto auto;
+  align-items: baseline;
+  gap: 0 0.5em;
+  line-height: 1.5;
+  animation: am-arrive var(--rf-settle) backwards;
+}
+.am-build-slot {
+  color: var(--am-ink-off);
+  font-size: 0.86em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.am-build-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.am-build-rank {
+  color: var(--am-ink-quiet);
+  font-size: 0.92em;
+}
+.am-build-drain {
+  min-width: 2.2em;
+  color: var(--am-ink-quiet);
+  font-size: 0.92em;
+  text-align: right;
+}
+/* Already right: the game marks a live thing in gold, so this does too. */
+.am-build li[data-state='done'] .am-build-name {
+  color: var(--am-gold);
+}
+/* Owned but under-ranked: the name stays, the rank carries the instruction. */
+.am-build li[data-state='rank'] .am-build-rank {
+  color: var(--am-ink);
+}
+/* Not owned: the row is quieter, and the leader says the slot is empty today. */
+.am-build li[data-state='get'] .am-build-name {
+  color: var(--am-ink-quiet);
+}
+.am-build li[data-state='get'] .am-build-slot::after {
+  content: ' ·';
+}
+/* The aura gives capacity rather than spending it; gold, like every gain. */
+.am-build-gain {
+  color: var(--am-gold);
+  opacity: 1;
+}
+.am-build-foot {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.35em 0 0;
+  color: var(--am-ink-quiet);
+  text-shadow: var(--am-lift);
+}
+/* The view toggle, in the header beside the close. */
+.am-view {
+  flex: 0 0 auto;
+  margin: 0 0.5em 0 auto;
+  padding: 0 0.35em;
+  border: 1px solid oklch(from var(--am-gold-edge) l c h / 0.35);
+  background: none;
+  color: var(--am-ink-quiet);
+  font: inherit;
+  font-size: 0.86em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.am-view:hover {
+  border-color: var(--am-gold);
+  color: var(--am-gold);
+}

@@ -1,0 +1,1584 @@
+@import 'tailwindcss';
+
+/*
+ * OROKIN — the RaijiFrame design system.
+ *
+ * The brief was "an exact replica of Warframe's own UI, then go way overboard".
+ * This file is the replica half: the palette, geometry and type that make a
+ * surface read as Warframe rather than as a generic dark dashboard.
+ *
+ * The palette is not eyeballed. The core values were sampled from Digital
+ * Extremes' own site (warframe.com), which runs their brand system:
+ *
+ *   #DDC57D   the Orokin gold — their primary accent, used at full and 50% alpha
+ *   #65C4ED   Tenno cyan
+ *   #07567A   deep signal blue
+ *   #27455C   slate blue
+ *   #121214   the page ground, very slightly blue-shifted off neutral
+ *
+ * Everything else is derived from those in OKLCH so the ramps stay perceptually
+ * even instead of collapsing into mud at the dark end.
+ *
+ * The geometry rule: Warframe has almost no rounded rectangles. Its panels are
+ * CUT — chamfered corners, angled edges, notches. Radius is replaced by
+ * clip-path throughout, which is the single biggest thing that separates "looks
+ * like Warframe" from "looks like every other dark UI".
+ */
+
+/*
+ * Type, taken from frame captures of the game itself.
+ *
+ * Warframe runs TWO distinct roles and they are not interchangeable:
+ *
+ *   TITLES  ("CERES", "EARTH")        light weight, ~0.35em tracking, flared
+ *                                      inscriptional capitals. Cinzel is the
+ *                                      closest free match; bundled locally so
+ *                                      the overlay never waits on a network.
+ *   ACTIONS ("CHANGE LOADOUT")        bold, condensed, tight tracking, gold,
+ *                                      with a solid gold underline.
+ *
+ * Collapsing them into one display face - which the first pass did - is a large
+ * part of why the UI did not read as Warframe.
+ */
+@font-face {
+  font-family: 'Cinzel';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/cinzel-1.woff2') format('woff2');
+}
+
+/*
+ * CHAKRA PETCH - the display face, and the first one this app has ever shipped
+ * that belongs to the subject.
+ *
+ * The game's own header face is licensed FOR PERSONAL USE ONLY, so it cannot
+ * ship here. `check-ui-tokens.ts` greps for its name and fails the build - and
+ * it fired on the first draft of THIS comment, which named the face while
+ * explaining why it is banned. The gate is deliberately blunt and it is right
+ * to be: a name in a comment is one copy-paste from a `font-family`.
+ * Chakra Petch is the substitute the UI research settled on -
+ * SIL OFL 1.1, a squared technical sans with the same flat terminals and open
+ * counters, and it is what a wide-tracked Warframe label wants.
+ *
+ * LATIN SUBSET ONLY, both weights: 9,756 and 9,900 bytes. This face renders
+ * over a running game, so every byte is a byte the game wanted, and the panel
+ * has no Thai or Vietnamese to set.
+ *
+ * 400 and 700 only. The face ships six weights and a variable axis; a display
+ * face with a weight ramp invites a hierarchy built out of weights, which is
+ * the hierarchy the game does not have - it has one weight and three
+ * lightnesses.
+ */
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/chakra-petch-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/chakra-petch-700.woff2') format('woff2');
+}
+
+@theme {
+  /* ---- Orokin gold ------------------------------------------------------
+     Anchored on the sampled #DDC57D. The ramp runs from a near-white highlight
+     down to a deep burnished shadow, so gold can carry hierarchy on its own. */
+  --color-orokin-100: oklch(0.96 0.03 92);
+  --color-orokin-200: oklch(0.92 0.06 92);
+  --color-orokin-300: oklch(0.87 0.09 91);
+  --color-orokin-400: oklch(0.83 0.105 90); /* ≈ #DDC57D, the sampled brand gold */
+  --color-orokin-500: oklch(0.75 0.115 88);
+  --color-orokin-600: oklch(0.64 0.11 84);
+  --color-orokin-700: oklch(0.52 0.09 80);
+  --color-orokin-800: oklch(0.38 0.07 76);
+
+  /* ---- Tenno energy ----------------------------------------------------- */
+  --color-tenno-200: oklch(0.93 0.05 220);
+  --color-tenno-300: oklch(0.86 0.09 224);
+  --color-tenno-400: oklch(0.78 0.115 228); /* ≈ #65C4ED */
+  --color-tenno-500: oklch(0.66 0.13 232);
+  --color-tenno-600: oklch(0.52 0.12 236);
+  --color-tenno-700: oklch(0.41 0.10 238); /* ≈ #07567A */
+
+  /* ---- Void neutrals ----------------------------------------------------
+     Hue 265, low chroma. Never pure grey: a dead-neutral ramp over a game frame
+     reads as a browser window sitting on top of the picture. */
+  --color-void-50: oklch(0.97 0.004 265);
+  --color-void-100: oklch(0.91 0.007 265);
+  --color-void-200: oklch(0.81 0.010 265);
+  --color-void-300: oklch(0.69 0.014 265);
+  --color-void-400: oklch(0.56 0.017 265);
+  --color-void-500: oklch(0.45 0.019 265);
+  --color-void-600: oklch(0.35 0.021 265);
+  --color-void-700: oklch(0.27 0.023 265);
+  --color-void-800: oklch(0.20 0.025 265);
+  --color-void-900: oklch(0.15 0.027 265);
+  --color-void-950: oklch(0.105 0.022 275); /* ≈ #121214 */
+
+  /* ---- Faction colours --------------------------------------------------
+     Used to tint mission nodes, drop sources and enemy readouts. Approximated
+     from the factions' in-game identity; flagged for correction once the UI
+     research confirms exact values. */
+  --color-faction-grineer: oklch(0.62 0.13 45);
+  --color-faction-corpus: oklch(0.66 0.14 240);
+  --color-faction-infested: oklch(0.72 0.14 130);
+  --color-faction-orokin: oklch(0.83 0.105 90);
+  --color-faction-sentient: oklch(0.62 0.17 320);
+  --color-faction-murmur: oklch(0.80 0.05 250);
+  --color-faction-techrot: oklch(0.70 0.16 145);
+  --color-faction-narmer: oklch(0.72 0.13 70);
+
+  /* ---- Signal ----------------------------------------------------------- */
+  --color-signal-good: oklch(0.76 0.16 152);
+  --color-signal-warn: oklch(0.80 0.15 72);
+  --color-signal-bad: oklch(0.63 0.20 27);
+  --color-signal-rare: oklch(0.72 0.16 300);
+
+  /* ---- Type -------------------------------------------------------------
+     Warframe's display face is a squarish technical sans. Bahnschrift ships with
+     Windows 10/11, is variable-width and variable-weight, and is the closest
+     thing available with zero network cost — which matters for an overlay that
+     must paint instantly and work offline. */
+  /* Inscriptional capitals for titles - the "CERES" treatment. */
+  --font-title: 'Cinzel', 'Trajan Pro', 'Constantia', Georgia, serif;
+  /* Bold condensed for actions - the "CHANGE LOADOUT" treatment. */
+  --font-display: 'Chakra Petch', 'Bahnschrift', 'DIN Alternate', 'Segoe UI Variable Display', system-ui, sans-serif;
+  --font-sans: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Cascadia Mono', 'Consolas', ui-monospace, monospace;
+
+  /* ---- The scale, rebuilt on a 12px floor ---------------------------------
+     WHAT WAS WRONG, MEASURED RATHER THAN FELT
+
+     A rendered-page audit counted 299 text runs under 12px on one screen, the
+     smallest at 10.9px. That was not an accident, it was this scale: `nano`
+     resolved to 10.6px and `micro` to 10.6-11.8px, so the two smallest steps
+     were the SAME SIZE to the eye and both sat under the floor. Between them
+     they carry the eyebrows, every provenance label, every note and every
+     status word in the app - and `.eyebrow` sets its step in uppercase with
+     0.18em tracking, which is the hardest text on the screen to read. The
+     hardest text was also the smallest text.
+
+     Two things follow, and only the second is about size.
+
+     A FLOOR. Nothing that carries information is set under 12px. The old
+     comment here argued for 10.5px on the grounds that chips carry meta a
+     player reads; that is the argument AGAINST it.
+
+     REAL GAPS. Six steps that differ by half a pixel are not a hierarchy, they
+     are one size with rounding error - which is what "sized, not typeset"
+     means. Each step below is a clear jump from the one under it, so a reader
+     can tell two levels apart without measuring, and so hierarchy comes from
+     contrast rather than from six near-identical sizes stacked up.
+
+     Still fluid, still ratio ~1.22 through the middle, so the overlay survives
+     1080p through 4K - but the small end no longer shrinks below the floor. */
+  --text-nano: clamp(0.75rem, 0.73rem + 0.07vw, 0.8rem);
+  --text-micro: clamp(0.8125rem, 0.79rem + 0.09vw, 0.875rem);
+  --text-small: clamp(0.9375rem, 0.9rem + 0.14vw, 1.02rem);
+  --text-body: clamp(1.0625rem, 1.02rem + 0.19vw, 1.19rem);
+  --text-lead: clamp(1.4rem, 1.29rem + 0.42vw, 1.7rem);
+  --text-title: clamp(2rem, 1.72rem + 1.1vw, 2.75rem);
+  --text-hero: clamp(2.9rem, 2.2rem + 2.6vw, 4.6rem);
+  --text-mega: clamp(3.8rem, 2.6rem + 4.4vw, 6.8rem);
+
+  /* ---- Cut geometry -----------------------------------------------------
+     Warframe cuts corners rather than rounding them. These are the chamfer
+     sizes; the clip-path shapes below consume them. */
+  --cut-sm: 8px;
+  --cut-md: 14px;
+  --cut-lg: 22px;
+  --cut-xl: 34px;
+  /*
+   * THE CHAMFER THE APP ACTUALLY WEARS IS 10px, AND IT WAS IN NO TOKEN.
+   * ──────────────────────────────────────────────────────────────────
+   * Measured: the chamfer polygon was declared as a string literal in
+   * twenty-four files - twenty at 10px, two at 8px, two at 14px. The scale
+   * above has 8 and 14 and no 10, so the size on most of the app answered to
+   * nothing here. Adopting the spec's stroke-bearing frame (UI-SPEC §2.0)
+   * would have meant landing it in twenty-four places.
+   *
+   * Named as its own step rather than snapped to 8 or 14: resizing twenty
+   * panels is a visual decision, not a tidy-up, and it is owed a screenshot
+   * before and after. The polygons below are the literals verbatim, so
+   * pointing a file at them changes no pixel - `check-ui-tokens.ts` refuses
+   * the literals from now on, and `src/ui/geometry.ts` is the one place that
+   * names them.
+   */
+  --cut-base: 10px;
+  --chamfer-sm: polygon(0 0, calc(100% - var(--cut-sm)) 0, 100% var(--cut-sm), 100% 100%, var(--cut-sm) 100%, 0 calc(100% - var(--cut-sm)));
+  --chamfer: polygon(0 0, calc(100% - var(--cut-base)) 0, 100% var(--cut-base), 100% 100%, var(--cut-base) 100%, 0 calc(100% - var(--cut-base)));
+  --chamfer-md: polygon(0 0, calc(100% - var(--cut-md)) 0, 100% var(--cut-md), 100% 100%, var(--cut-md) 100%, 0 calc(100% - var(--cut-md)));
+
+  /* ---- Plates -------------------------------------------------------------
+     THE TWO GROUNDS, AND THE RULE NOBODY HAD WRITTEN DOWN.
+
+     Every plate in the app is one of these, and until now each was a literal
+     copied between files: the cool gradient five times, the flat lift eight,
+     the gold pair twice, the hairline rule ten. An inventory across fourteen
+     panels found the two colour families split cleanly by DOMAIN - cool for
+     the economic panels (platinum, ducats, the command palette), warm gold for
+     gameplay and progression (arsenal, foundry, focus, daily) - and not one
+     comment stating that this was on purpose.
+
+     It is. docs/research/ui-color-type.md §7.1 measured it off the game: the
+     Vitruvian screen sets warm gold TEXT over a cool structural line, and
+     "Warframe deliberately uses a cool structural line under warm content".
+     The cool plates are structure; the gold plate is the one lit surface, and
+     it is spent on the panels about the player rather than the market. That
+     rule lives here now, where the values do. */
+  --plate-lift: oklch(1 0 0 / 0.028);
+  --plate-cool: linear-gradient(168deg, oklch(0.16 0.024 268 / 0.9), oklch(0.11 0.022 275 / 0.94));
+  /* The lit rim, brightest at the top-left, because the app is lit from there. */
+  --plate-gold-rim: linear-gradient(150deg, var(--color-orokin-400), oklch(0.83 0.105 90 / 0.18) 42%, transparent 78%);
+  --plate-gold-fill: radial-gradient(120% 150% at 0% 0%, oklch(0.83 0.105 90 / 0.13), transparent 58%), linear-gradient(168deg, oklch(0.175 0.03 80 / 0.97), oklch(0.105 0.02 70 / 0.98));
+  /* A divider that fades out to the right, so it reads as a rule and not a box edge. */
+  --rule-hairline: linear-gradient(90deg, var(--hairline), transparent);
+
+  /* The few places a radius is still right (dots, pills, avatars). */
+  --radius-chrome: 2px;
+  --radius-card: 3px;
+  --radius-hero: 4px;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    --surface: var(--color-void-950);
+    --surface-raised: oklch(0.14 0.024 268);
+    /*
+     * Nearly opaque, deliberately.
+     *
+     * backdrop-filter CANNOT blur the game. Overwolf composites the game frame
+     * BELOW a transparent window, so CSS never sees those pixels - the blur only
+     * ever applied to other in-app layers. At 0.78 alpha the result was simply a
+     * see-through panel with the game and the Overwolf client legible straight
+     * through the text.
+     *
+     * The panel body therefore has to carry its own opacity. Translucency is
+     * kept only where something in-app is genuinely stacked behind.
+     */
+    --surface-glass: oklch(0.105 0.022 275 / 0.965);
+    --surface-deep: oklch(0.075 0.02 275 / 0.98);
+    /* For layers stacked over the app's own content, where blur does work. */
+    --surface-veil: oklch(0.105 0.022 275 / 0.86);
+
+    /* ---- The edge (UI-SPEC §1.2, "highest-yield single detail") ----------
+       1px bright / 6px gap / 1px dim at 56% of the outer, measured off the
+       game. UNCERTAIN U4 in the spec: the real gap is 6px top, 5px bottom;
+       shipped symmetric. `--edge` is the spec's mix - the accent at 55% in
+       oklab over nothing - written against the gold this theme already names,
+       because the spec's `--accent` token was never adopted here. Consumed by
+       `primitives.css` (`.wf-frame`, `.wf-rect`) and nothing else yet. */
+    --stroke: 1px;
+    --edge-inset: 6px;
+    --edge-inner-alpha: 0.56;
+    --edge: color-mix(in oklab, var(--color-orokin-400) 55%, transparent);
+
+    /* ---- The quiet tiers, raised to where they can be read -----------------
+       MEASURED, NOT GUESSED
+
+       Sampling every text run on a real screen and computing contrast against
+       the ground each run is actually painted on: 41 of 97 runs sat under the
+       4.5:1 minimum. They were not scattered - they were these two tokens.
+
+         --text-faint  4.22:1   the whole left nav, "read 7 minutes ago", and
+                                most of the meta in every panel
+         --text-ghost  2.61:1   the lines that explain what the app CANNOT
+                                check: "you have never been read as a member of
+                                this syndicate", "yours not read"
+
+       The second is the worse failure by far, and not only because the number
+       is lower. Those lines are the honesty of the app - the part that says
+       which facts are missing and why - and they were rendered as the faintest
+       text on the screen, which is where you put something you hope nobody
+       reads. Theme.css already argues this exact point about `.eyebrow`:
+       information-bearing text cannot also be the faintest.
+
+       Raised until each clears 4.5:1 on the panel plates, with the steps still
+       far enough apart in lightness to read as three distinct tiers.
+
+       CONFIRMED AFTERWARDS, on the rebuilt panels: every text run on all six
+       screens sampled with an account loaded, each one composited against the
+       real stack of translucent layers it is painted on rather than against an
+       assumed ground - 413 runs, 0 below their WCAG minimum. The tiers now
+       measure --text 18.9:1, --text-muted 8.9, --text-faint 6.8, --text-ghost
+       5.1, and the gold and cyan accents 12-16.
+
+       A note for whoever measures this next: the app authors colour in oklch,
+       and `getComputedStyle` hands it back as `oklch(...)` rather than
+       normalising to rgb. A probe that parses the three numbers as RGB reads
+       0.97 as a red channel and reports every run on the screen as failing.
+       Paint the colour into a 1x1 canvas and read the pixel back instead - it
+       is exact, and it does not care what syntax the colour was written in. */
+    --text: var(--color-void-50);
+    --text-muted: oklch(0.74 0.013 265);
+    --text-faint: oklch(0.665 0.016 265);
+    --text-ghost: oklch(0.595 0.018 265);
+
+    --hairline: oklch(1 0 0 / 0.10);
+    --hairline-strong: oklch(1 0 0 / 0.20);
+    --edge-gold: oklch(0.83 0.105 90 / 0.55);
+    --edge-tenno: oklch(0.78 0.115 228 / 0.5);
+
+    /* Layered and hue-tinted. One flat black shadow collapses every plane into
+       the same depth; three tinted layers keep elevation readable. */
+    --shadow-card: 0 1px 2px oklch(0.08 0.02 275 / 0.55), 0 4px 14px oklch(0.08 0.02 275 / 0.45),
+      0 18px 36px oklch(0.08 0.02 275 / 0.35);
+    --shadow-hero: 0 2px 4px oklch(0.08 0.02 275 / 0.6), 0 14px 32px oklch(0.08 0.02 275 / 0.5),
+      0 40px 80px oklch(0.08 0.02 275 / 0.42);
+    --glow-gold: 0 0 18px oklch(0.83 0.105 90 / 0.32);
+    --glow-tenno: 0 0 18px oklch(0.78 0.115 228 / 0.32);
+
+    /* ---- Panel silhouettes ------------------------------------------------
+       The defining move. Two opposite corners cut on major panels, a single cut
+       on cards, a slant on buttons and tabs. */
+    --clip-panel: polygon(
+      0 var(--cut-lg),
+      var(--cut-lg) 0,
+      100% 0,
+      100% calc(100% - var(--cut-lg)),
+      calc(100% - var(--cut-lg)) 100%,
+      0 100%
+    );
+    --clip-card: polygon(0 0, calc(100% - var(--cut-md)) 0, 100% var(--cut-md), 100% 100%, 0 100%);
+    --clip-card-alt: polygon(var(--cut-md) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut-md));
+    --clip-button: polygon(var(--cut-sm) 0, 100% 0, calc(100% - var(--cut-sm)) 100%, 0 100%);
+    --clip-tab: polygon(0 0, 100% 0, calc(100% - var(--cut-sm)) 100%, 0 100%);
+    --clip-notch: polygon(
+      0 0,
+      calc(50% - 26px) 0,
+      calc(50% - 18px) 9px,
+      calc(50% + 18px) 9px,
+      calc(50% + 26px) 0,
+      100% 0,
+      100% 100%,
+      0 100%
+    );
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    /* Transparent: the Overwolf window composites over the live game frame. */
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+
+    /*
+     * The two axes the face actually has, used.
+     *
+     * The scale above now spans 12px to 46px, and a single outline drawn for a
+     * paragraph does not hold up at either end of that: at 12px the counters
+     * fill in, at 46px the joints look heavy. `opsz` is the axis the type
+     * designer cut for exactly this, and asking for it is one line. It applies
+     * to whichever variable face is actually present and is inert on the
+     * others, so it costs nothing where it cannot help.
+     *
+     * `font-synthesis: none` matters more here than it looks. This app names
+     * Windows 11 faces first - Segoe UI Variable Text, Segoe UI Variable
+     * Display - and this machine is Windows 10, where neither exists. The
+     * fallback is a static face, and asking a static face for weight 600
+     * gets a SYNTHESISED bold: the outline smeared sideways by the rasteriser.
+     * Every eyebrow in the app asks for 600. Refusing the synthesis means the
+     * fallback renders at the weight it really has rather than a fake one.
+     */
+    font-optical-sizing: auto;
+    font-synthesis: none;
+    overflow: hidden;
+    /* An overlay is not a document. Selection drag is off except where content
+       is genuinely meant to be copied. */
+    user-select: none;
+    cursor: default;
+  }
+
+  ::selection {
+    background: oklch(0.83 0.105 90 / 0.3);
+    color: var(--color-void-50);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  p {
+    text-wrap: pretty;
+    margin: 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-orokin-400);
+    outline-offset: 3px;
+  }
+
+  /*
+   * A CLIPPED ELEMENT PAINTS NO OUTLINE.
+   *
+   * Every chamfered control in this app carries a `clip-path`, and clip-path
+   * clips the element's whole painting - the focus outline with it. So the
+   * global rule above, which is correct everywhere else, drew a ring that was
+   * then cut away, and a keyboard user tabbing through the panels could not
+   * see where they were on any of the buttons that matter.
+   *
+   * An inset ring is inside the clip, so it survives. Anything with a chamfer
+   * carries this class.
+   */
+  .rf-clipped:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-orokin-400);
+  }
+
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.83 0.105 90 / 0.18);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.83 0.105 90 / 0.4);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  /* ---- Cut surfaces -----------------------------------------------------
+     clip-path removes the border, so the edge is drawn by a pseudo-element that
+     carries the same silhouette one pixel larger and sits behind. That is what
+     produces a crisp lit edge on a chamfered panel. */
+  .cut {
+    position: relative;
+    clip-path: var(--clip-card);
+  }
+  .cut-panel {
+    clip-path: var(--clip-panel);
+  }
+  .cut-button {
+    clip-path: var(--clip-button);
+  }
+  .cut-tab {
+    clip-path: var(--clip-tab);
+  }
+
+  /*
+   * Flat edge, not a lit bevel.
+   *
+   * The first pass put a gradient sheen on every surface to suggest metal. The
+   * game does the opposite: its panels are FLAT dark plates with a single
+   * hairline, and the only thing that glints is genuine light in the 3D scene
+   * behind. A CSS gloss on a flat panel reads as cheap plastic, which is exactly
+   * how it looked.
+   */
+  .edge {
+    position: relative;
+    border: 1px solid var(--hairline);
+  }
+  .edge-tenno {
+    border-color: color-mix(in oklch, var(--color-tenno-400) 30%, transparent);
+  }
+  .edge-gold {
+    border-color: color-mix(in oklch, var(--color-orokin-400) 32%, transparent);
+  }
+
+  /* Real glass: blur plus a saturation lift. The saturation is what separates
+     convincing glass from a muddy grey box, and it earns its place because
+     there is always a game frame behind it. */
+  /*
+   * The app body. Opaque enough that nothing behind the overlay is legible
+   * through it - the blur is retained only for in-app layering, where it does
+   * something.
+   */
+  .glass {
+    background: var(--surface-glass);
+    backdrop-filter: blur(12px) saturate(1.3);
+  }
+  .glass-deep {
+    background: var(--surface-deep);
+  }
+  /* Genuinely translucent, for overlays stacked on the app's own content. */
+  .veil {
+    background: var(--surface-veil);
+    backdrop-filter: blur(18px) saturate(1.5);
+  }
+
+  /* All-caps labels need positive tracking or they read as cramped. This is the
+     single most Warframe-looking piece of typography in the system. */
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    /*
+     * THE HALF-LEADING NO UPPERCASE LABEL EVER USES.
+     * ————————————————————————————————————————————
+     * A line box reserves room above the cap height and below the baseline for
+     * ascenders and descenders. Uppercase text has neither, so every one of
+     * these labels sat with 2.0px of space above its glyphs and 3.9px below -
+     * measured on the rendered page, on every eyebrow in the app.
+     *
+     * Nothing about that looks broken. It is 1.9px, on the app's most repeated
+     * text style, and it is exactly what "the text is a bit unrefined" feels
+     * like: labels sitting a hair high inside their buttons, a caption never
+     * quite on the same optical line as the number beside it, hundreds of times
+     * over.
+     *
+     * `text-box: trim-both cap alphabetic` trims the box to the glyphs the type
+     * designer actually drew - cap height to baseline - so centring a label
+     * centres the LETTERS rather than the font's metrics. It is the one CSS
+     * feature that fixes this without hand-tuned padding per control, and
+     * hand-tuned padding is how a codebase ends up with forty different nudges
+     * that all drift apart.
+     */
+    text-box: trim-both cap alphabetic;
+    /*
+     * `--text-muted`, not `--text-faint`. Two hundred eyebrows carry the app's
+     * labels, section notes and status words - information, not decoration -
+     * and at void-400 on the panel plates they measured under the 3:1 floor.
+     * Uppercase tracked text at the micro size is the hardest text on the
+     * screen to read; it cannot also be the faintest.
+     */
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .eyebrow-gold {
+    color: var(--color-orokin-400);
+  }
+
+  /* Tabular figures so counters do not jitter as they tick. */
+  /* ---- The two prose roles (UI-SPEC Wave 1 B5) -------------------------
+     THERE WAS A CLASS FOR LABELS AND A CLASS FOR NUMBERS AND NONE FOR A
+     SENTENCE, which is the mechanical reason 79% of this app's type sits in
+     the bottom three steps of a nine-times scale. `.eyebrow` and `.numeric`
+     are named roles used 345 and 262 times; every SENTENCE was dressed by
+     hand, and by hand meant at whatever size the surrounding row happened to
+     be. Fifty-seven paragraphs were set at the label sizes - including "they
+     were never quoted, which is a different fact from being worth nothing",
+     this app's whole doctrine, at 12px in the faintest ink.
+
+     Two roles, because a sentence has two jobs here:
+
+     `.wf-prose` is a paragraph the reader came for - what a route IS, why a
+     rate cannot be computed, what the panel is waiting for. Body size, the
+     step this app defined and then used thirty-three times.
+
+     `.wf-note` is a sentence attached to a control - a caveat under a
+     disclosure, a qualifier beside a figure. Small, muted, still a sentence.
+
+     Both carry their own measure. A paragraph running the full width of a
+     1500px panel is unreadable at any size, and every site was setting
+     `max-w-[70ch]` by hand or forgetting to. */
+  .wf-prose {
+    font-size: var(--text-body);
+    line-height: 1.55;
+    color: var(--text);
+    max-width: 70ch;
+    text-wrap: pretty;
+  }
+  .wf-note {
+    font-size: var(--text-small);
+    line-height: 1.5;
+    color: var(--text-muted);
+    max-width: 70ch;
+    text-wrap: pretty;
+  }
+
+  .numeric {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Big display numerals: thin, wide, confident. */
+  .stat {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+  }
+
+  /* Divider with a centred diamond — a direct lift of the game's section rules. */
+  .rule {
+    position: relative;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--hairline) 15%, var(--hairline) 85%, transparent);
+  }
+  .rule::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    translate: -50% -50%;
+    rotate: 45deg;
+    background: var(--color-orokin-500);
+  }
+
+  /* Selected-state marker: a gold bar on the leading edge. */
+  .marked {
+    position: relative;
+  }
+  .marked::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12%;
+    bottom: 12%;
+    width: 2px;
+    background: var(--color-orokin-400);
+    box-shadow: var(--glow-gold);
+  }
+
+  /*
+   * The action button, measured from the game: a nearly invisible dark plate,
+   * bold condensed gold caps, and a solid gold rule underneath. The underline is
+   * the signature - no border, no radius, no glow, no gradient.
+   */
+  .action {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-small);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-orokin-300);
+    background: oklch(1 0 0 / 0.035);
+    padding: 0.42rem 1.1rem 0.34rem;
+    border: 0;
+    border-bottom: 2px solid var(--color-orokin-500);
+    transition: color 0.14s, background-color 0.14s, border-color 0.14s;
+  }
+  .action:hover {
+    color: var(--color-orokin-100);
+    background: oklch(1 0 0 / 0.07);
+    border-bottom-color: var(--color-orokin-300);
+  }
+  .action:active {
+    background: oklch(1 0 0 / 0.02);
+  }
+
+  /* Title treatment: light inscriptional capitals, very wide tracking. */
+  .title {
+    font-family: var(--font-title);
+    font-weight: 400;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: oklch(0.94 0.006 260);
+  }
+
+  .drag-handle {
+    -webkit-app-region: drag;
+  }
+}
+
+@layer utilities {
+  /* Energy line travelling along a surface. Uses a masked gradient rather than
+     animating position, so it stays on the compositor. */
+  @keyframes energy-sweep {
+    from {
+      background-position: -140% 0;
+    }
+    to {
+      background-position: 240% 0;
+    }
+  }
+  /* Reserved for genuine energy fills (a meter charging), never as decoration
+     swept across a static panel - that was the "unrealistic sheen". */
+  .energy {
+    background-image: linear-gradient(90deg, var(--color-tenno-600), var(--color-tenno-300));
+  }
+
+  @keyframes orokin-pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  .pulse-slow {
+    animation: orokin-pulse 2.8s ease-in-out infinite;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * REDUCED MOTION, FOR THE WHOLE APP.
+ *
+ * One blanket rule rather than a list of class names, because the alternative
+ * is a list that has to be extended every time a panel adds a style block, and
+ * the one it forgets is the one a motion-sensitive viewer meets. Every
+ * entrance, hover lift, meter fill and chevron turn defined in this file or in
+ * a style block inside a panel collapses here. The per-panel reduced-motion
+ * blocks are deliberately kept: they still document what each panel intends,
+ * and they say the same thing this does.
+ *
+ * WHAT WAS WRONG BEFORE
+ * ---------------------
+ * This block used the usual "shorten everything" recipe:
+ *
+ *     animation-duration: 0.01ms !important;
+ *     animation-iteration-count: 1 !important;
+ *     transition-duration: 0.01ms !important;
+ *
+ * That does not stop motion, it only makes it fast, and fast still means the
+ * browser instantiates every effect. Measured on the desktop overlay under
+ * `prefers-reduced-motion: reduce`, `document.getAnimations()` reported
+ * EIGHTEEN animations with `playState: "running"` - every one of them a 0.01ms
+ * transition that the shortening rule had created rather than removed. A
+ * viewer who asked for no motion still got a flicker on every colour change,
+ * and anything whose delay outlasted its shortened duration was still sitting
+ * there waiting to play.
+ *
+ * `animation: none` and `transition: none` remove the effect instead of racing
+ * it. Nothing is instantiated, and the count is zero.
+ *
+ * WHY THIS CANNOT HIDE CONTENT
+ * ----------------------------
+ * Reduced motion means the motion stops, never that the content goes. Removing
+ * an animation is only safe because every entrance in this app is transform-
+ * only and ends at `transform: none`, which is also the element's base style -
+ * the entrance block below records the three separate times that rule was
+ * learned the hard way. So an element with its animation removed sits at the
+ * FINAL state, not at the first frame. Anything that stranded an element at an
+ * entrance's start state would be a fresh instance of the exact bug this file
+ * is built around, and would be worse than the motion it removed.
+ *
+ * WHAT THIS DOES NOT TOUCH
+ * ------------------------
+ * Direct manipulation. A card that follows the finger dragging it is not
+ * decoration, it is the gesture's only feedback; Dispatch.tsx writes that
+ * position straight to a custom property with no transition at all, so there is
+ * nothing here to switch off and the drag keeps working. Nor can a CSS rule
+ * reach a requestAnimationFrame loop - src/ui/Backdrop.tsx reads the same media
+ * query itself and paints one static frame instead of looping.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Entrance motion.
+ *
+ * AN ENTRANCE MUST NEVER BE ABLE TO HIDE CONTENT. That is the whole rule, and
+ * it was learned the hard way, twice.
+ *
+ * First attempt used Motion (JS). Motion is driven by requestAnimationFrame,
+ * and rAF does not run while a window is hidden or a renderer is throttled, so
+ * elements entering from `opacity: 0` were stranded permanently invisible —
+ * observed on the nav rail, on a HUD plate measured at opacity 0.51, and on
+ * progress meters that consequently reported 0% for accounts that were not at
+ * 0%.
+ *
+ * Second attempt moved them to CSS on the assumption that the compositor would
+ * settle them regardless. THAT ASSUMPTION IS FALSE. CSS animations run on the
+ * document timeline, and a document that is not being presented has a frozen
+ * timeline: the animation reports `playState: "running"` with `currentTime: 0`
+ * forever. With `backwards` fill that holds the FROM state — opacity 0 — and
+ * the content is just as invisible as before. Reproduced on four world-cycle
+ * cards that existed in the DOM, at full height, at opacity 0.
+ *
+ * So these keyframes animate TRANSFORM ONLY. There is no opacity in them. A
+ * frozen timeline now means an element sits 9px from where it belongs, fully
+ * legible, instead of being invisible. The motion still reads as things
+ * settling into place, and the failure mode went from "content is missing" to
+ * "content is very slightly offset".
+ *
+ * Corollary: never add opacity to an entrance here, and never fade in content
+ * whose absence would be mistaken for missing data.
+ * ------------------------------------------------------------------------- */
+@keyframes rf-rise {
+  from {
+    transform: translate3d(0, 9px, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes rf-slide-in {
+  from {
+    transform: translate3d(-14px, 0, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.anim-rise {
+  animation: rf-rise 0.52s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.anim-slide-in {
+  animation: rf-slide-in 0.46s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/*
+ * Vestibular safety is a constraint, not a preference. Everything above is
+ * decorative; under reduced-motion the end state is what matters, so entrances
+ * resolve instantly rather than being merely shortened.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .anim-rise,
+  .anim-slide-in {
+    animation: none !important;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+ * Drilling into a world.
+ *
+ * Opening a planet from the system view should feel like travelling to it, not
+ * like a page swap. The body arrives slightly oversized and settles, which reads
+ * as the tail end of an approach — the same trick the game's own zoom uses.
+ *
+ * Scale ONLY — no opacity, for the same reason as rf-rise above. This class
+ * wraps the entire planet view, so an opacity fade on a frozen document
+ * timeline would blank the whole screen rather than merely offset something.
+ * Scale alone degrades to "the world is 16% too large", which is survivable.
+ * ------------------------------------------------------------------------- */
+@keyframes rf-approach {
+  from {
+    transform: scale3d(1.16, 1.16, 1);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.anim-approach {
+  animation: rf-approach 0.62s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-approach {
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Long lists.
+ *
+ * The catalog panels render the entire masterable item set — ~800 rows, ~13,000
+ * DOM nodes in one panel. That is correct data and the wrong cost: this app is
+ * an overlay composited over a running game, and style recalculation and layout
+ * across 13k nodes is exactly the kind of tax that produced the original
+ * "extremely laggy" report.
+ *
+ * `content-visibility: auto` is the browser's own answer. Off-screen rows skip
+ * layout, paint and style entirely until they scroll near the viewport, which
+ * gets virtualization's benefit with no windowing library, no fixed row height
+ * assumption, no scroll-position maths, and no change to the markup.
+ *
+ * `contain-intrinsic-size` supplies a placeholder height for skipped rows so the
+ * scrollbar does not jump as they resolve. The value is a measured typical row
+ * height, not a guess at the exact one — being slightly off only affects
+ * scrollbar smoothness, never correctness.
+ *
+ * Applied per ROW rather than to the container: containing the whole list would
+ * skip the container's own layout and collapse it.
+ * ------------------------------------------------------------------------- */
+.list-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 44px;
+}
+
+/*
+ * Taller rows - artwork plus two lines of text - carry their own estimate.
+ *
+ * The estimate is not cosmetic. A skipped row is laid out at this height until
+ * it renders, so if it is wrong every row below sits at the wrong offset, and
+ * anything that scrolls to a row by position lands somewhere else. Measured: a
+ * deep link into the collection grid, whose rows are 60px, scrolled correctly
+ * and then drifted 700px as the rows above it resolved from the 44px default.
+ *
+ * `auto` means the browser reuses the real size once it has seen it, so this
+ * value only has to be right for the FIRST layout - which is exactly the layout
+ * a jump from another panel happens in.
+ */
+.list-row-lg {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 60px;
+}
+
+/*
+ * Denser rows (table bodies, compact grids) carry their own intrinsic height.
+ *
+ * THE PLACEHOLDER HAS TO MATCH THE ROW, AND IT DID NOT.
+ * ' + ('-'*44) + '
+ * `content-visibility: auto` skips layout for off-screen rows, which is what
+ * keeps a 120-row catalog cheap. The price is that the browser reserves
+ * `contain-intrinsic-size` for every row it has not rendered yet - so that
+ * number IS the scroll height until the rows are seen.
+ *
+ * It said 32px. Measured on the rendered page, these rows are a median of 48px
+ * and a max of 52. Across 120 rows that under-predicts the scrollable height by
+ * roughly 1,900px, and the correction lands as each row scrolls into view: the
+ * scrollbar grows under the cursor and the content shifts. That reads exactly
+ * like a janky, unoptimised list, and it is a one-number bug rather than a
+ * rendering cost.
+ *
+ * `auto` still lets the browser substitute the REAL size once a row has been
+ * rendered once, so this figure only has to be right for rows never yet seen.
+ */
+.list-row-sm {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48px;
+}
+
+/*
+ * The table row's answer to the pointer.
+ *
+ * Seven panels render clickable rows through DataTable and, until now, not one
+ * of them acknowledged the cursor at all: the row was a button that never lit
+ * up. That is the plainest kind of not-user-friendly, and it was invisible in
+ * review precisely because the rows LOOK like a table rather than like controls.
+ *
+ * It cannot use `.rf-row`. A <tr> does not reliably paint pseudo-elements and
+ * does not take transforms, and the perf note above is serious - ~800 rows over
+ * a running game. So the treatment is the two properties a table row does take
+ * cheaply, and which the compositor handles: a background wash, and an inset
+ * shadow on the leading cell standing in for the lit edge.
+ *
+ * The inline `background` DataTable sets for an OPEN row deliberately wins over
+ * this: which row is open is state, and state outranks where the pointer
+ * happens to be.
+ */
+tbody .list-row-sm:hover {
+  background-color: color-mix(in oklch, var(--color-orokin-400) 6%, transparent);
+}
+
+tbody .list-row-sm:hover > td:first-child {
+  box-shadow: inset 2px 0 0 0 var(--color-orokin-400);
+}
+
+/* Keyboard reaches the same row, so it gets the same answer. */
+tbody .list-row-sm:focus-visible {
+  background-color: color-mix(in oklch, var(--color-orokin-400) 8%, transparent);
+  outline: none;
+}
+
+tbody .list-row-sm:focus-visible > td:first-child {
+  box-shadow: inset 2px 0 0 0 var(--color-orokin-200);
+}
+
+
+/* ---------------------------------------------------------------------------
+ * INTERACTION.
+ *
+ * WHY CSS AND NOT MOTION
+ * ──────────────────────
+ * These classes are worn by every row in the app, and the catalog panels carry
+ * ~800 of them at once. A JS animation component per row would mean 800
+ * subscriptions, 800 style objects and a rAF loop that touches all of them —
+ * on an overlay composited over a running game. CSS pseudo-classes cost nothing
+ * until the pointer is actually over a row, and the work happens on the
+ * compositor.
+ *
+ * WHY THIS IS SAFE UNDER THE FROZEN TIMELINE
+ * ──────────────────────────────────────────
+ * The entrance keyframes above are transform-only because the document timeline
+ * freezes while the window is not presented. Everything HERE is triggered by
+ * hover, focus, press or a click — which can only happen while the player is
+ * looking at the window, which is exactly when the timeline is running. So
+ * these may safely animate opacity and colour: an interaction-driven transition
+ * cannot strand content, because the interaction implies a live timeline.
+ * ------------------------------------------------------------------------- */
+
+/*
+ * The lit edge.
+ *
+ * The single visual idiom borrowed most directly from the game: a bar of energy
+ * along the leading edge of whatever the cursor is on, growing from the middle
+ * out. Everything else about a row hover is deliberately almost nothing — a
+ * hairline of background and two pixels of travel — so this one move reads.
+ */
+.rf-row {
+  position: relative;
+  /* Transform only. The open-state wash is STATE, and a background-color
+     transition stranded on a frozen timeline held the closed colour on an
+     open row. Hover colour now switches instantly; only the lift eases. */
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rf-row::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 2px;
+  background: var(--rf-row-accent, var(--color-orokin-400));
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.rf-row:hover,
+.rf-row:focus-visible {
+  background-color: color-mix(in oklch, var(--rf-row-accent, var(--color-orokin-400)) 7%, transparent);
+  transform: translate3d(2px, 0, 0);
+}
+
+.rf-row:hover::before,
+.rf-row:focus-visible::before,
+.rf-row[data-open='true']::before {
+  transform: scaleY(1);
+}
+
+/* Pressing has to feel like it lands. The row gives, briefly. */
+.rf-row:active {
+  transform: translate3d(1px, 0, 0) scale(0.997);
+  transition-duration: 60ms;
+}
+
+/*
+ * An open row keeps its edge lit, at a lower intensity than hover: it is
+ * currently the subject, but it is not currently under the cursor. Two
+ * different states have to look different or the highlight stops meaning
+ * anything.
+ */
+.rf-row[data-open='true'] {
+  background-color: color-mix(in oklch, var(--rf-row-accent, var(--color-orokin-400)) 5%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+ * Disclosure.
+ *
+ * READ THIS BEFORE ANIMATING A HEIGHT HERE. IT HAS NOW BEEN GOT WRONG THREE
+ * TIMES, IN THREE DIFFERENT PROPERTIES, FOR THE SAME REASON.
+ *
+ * The first version of this block transitioned `grid-template-rows` from `0fr`
+ * to `1fr` - the standard modern way to animate to a content's own height with
+ * no measurement. The reasoning for believing it was safe here went: the
+ * entrance keyframes have to be transform-only because the document timeline
+ * freezes while the window is not presented, BUT a disclosure only ever opens
+ * because someone clicked it, and a click means someone is looking at it, so
+ * the timeline must be running.
+ *
+ * THAT REASONING IS WRONG. Measured, on a real click, on a row whose button had
+ * correctly flipped to `data-open="true"`:
+ *
+ *     grid-template-rows: 0px        height: 0
+ *
+ * and on a second row caught mid-flight, `0.78125px`. The click lands, React
+ * commits, the attribute flips - and then the transition simply never advances,
+ * because this is an overlay whose host can stop presenting it at any moment,
+ * including the moment after the click. The row reports itself open and shows
+ * nothing at all. That is the exact failure the entrance keyframes exist to
+ * prevent, arrived at from a new direction.
+ *
+ * THE RULE, RESTATED GENERALLY: a transition or animation may never be the only
+ * thing that puts content into its visible state. Not opacity, not height, not
+ * `grid-template-rows`, not anything. The resting state has to be correct after
+ * a plain style recalculation, with no timeline at all.
+ *
+ * So the height is NOT animated. `1fr` is applied directly and the row is at
+ * full height the instant it opens, frozen timeline or not. The motion is a
+ * transform on the content, which is exactly what `rf-rise` does and degrades
+ * the same harmless way: with a frozen timeline the detail sits six pixels high
+ * and completely legible, instead of being a zero-height lie.
+ * ------------------------------------------------------------------------- */
+.rf-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+
+.rf-reveal[data-open='true'] {
+  grid-template-rows: 1fr;
+}
+
+.rf-reveal > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/*
+ * The one animated part: the detail slides down into the space that has already
+ * been made for it. Transform only.
+ */
+.rf-reveal > * > * {
+  transform: translate3d(0, -6px, 0);
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rf-reveal[data-open='true'] > * > * {
+  transform: none;
+}
+
+/* The chevron turns to point at what it opened. */
+.rf-chevron {
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rf-chevron[data-open='true'] {
+  transform: rotate(90deg);
+}
+
+/*
+ * A named thing you can go to.
+ *
+ * Underlined on hover from the left, because a dotted underline that merely
+ * changes colour is indistinguishable from emphasis. This has to read as "this
+ * is a destination".
+ */
+.rf-link {
+  position: relative;
+  cursor: pointer;
+  transition: color 140ms linear;
+}
+
+.rf-link::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rf-link:hover,
+.rf-link:focus-visible {
+  color: var(--color-tenno-300);
+}
+
+.rf-link:hover::after,
+.rf-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-row,
+  .rf-row::before,
+  .rf-reveal,
+  .rf-reveal > * > *,
+  .rf-chevron,
+  .rf-link::after {
+    transition: none !important;
+  }
+  .rf-row:hover,
+  .rf-row:focus-visible,
+  .rf-row:active {
+    transform: none;
+  }
+}
+
+
+/* ===========================================================================
+ * THE CONSOLE LAYER — depth, material and energy.
+ *
+ * THE DIRECTION, IN ONE SENTENCE
+ * ──────────────────────────────
+ * An Orokin console with real depth: content sits on layered planes over a
+ * void, gold energy traces the edge of whatever you touch, and every surface
+ * responds to where you are looking.
+ *
+ * WHAT WAS WRONG BEFORE
+ * ─────────────────────
+ * The palette, the geometry and the type were right, and the result still read
+ * as a competent dark dashboard. The reason was that EVERYTHING WAS PAINTED ON
+ * ONE PLANE. A chamfered plate at rest is indistinguishable from a rectangle at
+ * rest; the cut only reads when light moves across it. There was no light.
+ *
+ * So this layer adds the three things a flat surface cannot have:
+ *
+ *   DEPTH     planes at genuinely different distances, with shadows in the
+ *             void's own colour rather than in black, and lift toward the
+ *             viewer on approach.
+ *   MATERIAL  a specular response that follows the pointer, so a surface has a
+ *             finish rather than a fill.
+ *   ENERGY    gold that traces an edge on contact, the one idiom borrowed most
+ *             directly from the game.
+ *
+ * WHY IT IS ALL IN CSS, KEYED ON CLASSES THAT ALREADY EXIST
+ * ────────────────────────────────────────────────────────
+ * `.rf-row` is already worn by nine panels and several hundred rows at a time.
+ * Adding the treatment here upgrades every one of them at once, including rows
+ * written later, with no per-panel edits and no JavaScript per row. The single
+ * pointer listener in `ui/pointer.ts` feeds `--mx`/`--my` to whichever element
+ * is under the cursor; everything else is pseudo-classes, which cost nothing
+ * until the pointer actually arrives.
+ *
+ * THE MOTION LAW, CHOSEN AND OBEYED
+ * ─────────────────────────────────
+ *   approach   220ms  cubic-bezier(0.16, 1, 0.30, 1)   decisive, settles hard
+ *   settle     420ms  cubic-bezier(0.22, 1, 0.36, 1)   for things finding rest
+ *   give        90ms  cubic-bezier(0.4, 0, 1, 1)       press, and release
+ *   spring     260ms  cubic-bezier(0.34, 1.56, 0.64, 1) one overshoot, earned
+ *
+ * Exits are faster than entrances, always. Nothing uses the bare `ease`
+ * keyword, which is the curve of not having chosen.
+ *
+ * FROZEN TIMELINE — READ THE DISCLOSURE BLOCK ABOVE BEFORE EDITING
+ * ───────────────────────────────────────────────────────────────
+ * Every effect below is either (a) triggered by hover, focus or press, which
+ * can only happen while the window is presented and therefore while the
+ * timeline runs, or (b) a decoration over content that is ALREADY in its
+ * correct resting state. Nothing here is the only thing that makes anything
+ * visible. That rule has been broken three times in this file's history and the
+ * comment above records each one.
+ * ======================================================================== */
+
+@layer components {
+  :root {
+    /* Shadows in the void's own hue. Black shadows on a blue-black ground read
+       as dirt; these read as distance. */
+    --rf-depth-1: 0 1px 2px oklch(0.06 0.02 275 / 0.5);
+    --rf-depth-2: 0 3px 10px -2px oklch(0.05 0.02 275 / 0.6), 0 1px 3px oklch(0.05 0.02 275 / 0.4);
+    --rf-depth-3: 0 12px 34px -8px oklch(0.04 0.02 275 / 0.75), 0 3px 10px oklch(0.05 0.02 275 / 0.5);
+
+    --rf-approach: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    --rf-settle: 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    --rf-give: 90ms cubic-bezier(0.4, 0, 1, 1);
+    --rf-spring: 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ---------------------------------------------------------------------
+   * MATERIAL. The specular response.
+   *
+   * A radial highlight positioned at the pointer, painted BEHIND the content
+   * via a negative z-index on an isolated stacking context, so it lights the
+   * surface without washing out the text sitting on it.
+   * ------------------------------------------------------------------ */
+  .rf-row,
+  .rf-lit {
+    isolation: isolate;
+  }
+
+  .rf-row::after,
+  .rf-lit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      280px circle at var(--mx, 50%) var(--my, 50%),
+      color-mix(in oklch, var(--rf-row-accent, var(--color-orokin-400)) 14%, transparent),
+      transparent 70%
+    );
+    transition: opacity var(--rf-approach);
+  }
+
+  .rf-row:hover::after,
+  .rf-row:focus-visible::after,
+  .rf-lit:hover::after {
+    opacity: 1;
+  }
+
+  /* ---------------------------------------------------------------------
+   * DEPTH. Rows rise toward the viewer, and the shadow grows with them.
+   *
+   * `translateZ` rather than `translateY` so the lift is real perspective when
+   * an ancestor provides it, and a harmless no-op when none does.
+   * ------------------------------------------------------------------ */
+  .rf-stage {
+    perspective: 900px;
+    perspective-origin: 50% 40%;
+  }
+
+  .rf-row {
+    transform-style: preserve-3d;
+    box-shadow: var(--rf-depth-1);
+    transition:
+      transform var(--rf-approach),
+      box-shadow var(--rf-approach);
+  }
+
+  .rf-stage .rf-row:hover,
+  .rf-stage .rf-row:focus-visible {
+    transform: translate3d(2px, -1px, 14px);
+    box-shadow: var(--rf-depth-2);
+  }
+
+  .rf-row:active {
+    transition-duration: 90ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  /* ---------------------------------------------------------------------
+   * ENERGY. The lit edge is defined once, above, and is deliberately NOT
+   * redefined here — a second mechanism for the same hairline would be two
+   * things fighting over one edge for no gain. What this layer adds around it
+   * is the material and the depth that make the edge read as a cut.
+   * ------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------
+   * FOCUS worth looking at.
+   *
+   * The browser's default ring is a grey box that ignores the chamfer. This is
+   * the same gold energy, at a size that survives a busy background.
+   * ------------------------------------------------------------------ */
+  :where(button, a, [tabindex], input, select):focus-visible {
+    outline: 2px solid var(--color-orokin-400);
+    outline-offset: 2px;
+  }
+
+  /* ---------------------------------------------------------------------
+   * PLATES. The surfaces content sits on.
+   *
+   * A plate is a piece of material, not a fill: it carries a lit top edge, a
+   * shadow that puts it above the void, and a specular response of its own.
+   * ------------------------------------------------------------------ */
+  .rf-plate {
+    position: relative;
+    isolation: isolate;
+    background: linear-gradient(168deg, oklch(0.16 0.024 268 / 0.9), oklch(0.11 0.022 275 / 0.94));
+    box-shadow: var(--rf-depth-2);
+    transition:
+      transform var(--rf-approach),
+      box-shadow var(--rf-approach);
+  }
+
+  /* The lit top edge. One hairline, which is what makes a cut read as a cut. */
+  .rf-plate::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklch, var(--color-orokin-400) 55%, transparent) 22%,
+      color-mix(in oklch, var(--color-orokin-200) 70%, transparent) 50%,
+      color-mix(in oklch, var(--color-orokin-400) 55%, transparent) 78%,
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .rf-plate--raise:hover {
+    transform: translate3d(0, -2px, 0);
+    box-shadow: var(--rf-depth-3);
+  }
+
+  /* ---------------------------------------------------------------------
+   * STAGING. Index-driven entrance.
+   *
+   * Set `--i` on a child and it enters in sequence. Transform and opacity only,
+   * and `both` fill so a frozen timeline leaves the element at its FINAL state
+   * rather than its first frame — the rule the disclosure block records.
+   * ------------------------------------------------------------------ */
+  /*
+   * TRANSFORM ONLY, and `backwards` rather than `both`.
+   *
+   * The first version of this animated opacity 0 -> 1 with `both` fill, which
+   * is precisely the failure the entrance block above documents: a frozen
+   * document timeline holds the FROM state forever, so every staged element sat
+   * at opacity 0 and the content was invisible. Four world-cycle cards died
+   * that way once already; this made it five.
+   *
+   * With transform only, a frozen timeline leaves an element eight pixels from
+   * where it belongs and completely legible.
+   */
+  @keyframes rf-stage-in {
+    from {
+      transform: translate3d(0, 8px, 0);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  .rf-staged > * {
+    animation: rf-stage-in var(--rf-settle) backwards;
+    animation-delay: calc(var(--i, 0) * 26ms);
+  }
+
+  /*
+   * The stagger, without asking the caller for an index.
+   *
+   * The first version needed `--i` set on every child, which meant editing every
+   * list that wanted it - so no list wanted it, and the whole thing sat unused.
+   * nth-child does the same job from the container class alone, which makes
+   * adoption one word.
+   *
+   * It stops at eighteen deliberately: past about half a second the eye has
+   * stopped reading it as one gesture, and a catalog panel renders eight
+   * hundred rows. Everything after the eighteenth arrives together.
+   */
+    /*
+     * THE STEP IS A VARIABLE, BECAUSE THE SPEC SAYS COMPUTE IT AND THIS DID NOT.
+     * ————————————————————————————————————————————
+     * `docs/research/ui-motion.md:206` is explicit: "Cap the total:
+     * stagger = min(0.035, 0.30 / n). Compute it, do not hardcode it." These
+     * eighteen rules hardcoded 26ms each, so the eighteenth row started at
+     * 442ms — 47% past the 300ms the spec caps a cascade at, which is the
+     * difference between a gesture and a slow menu.
+     *
+     * Worse, and visible: rows past the eighteenth had no rule at all, so they
+     * arrived at 0ms. On the collection grid, which renders up to 235 rows, row
+     * 19 landed BEFORE row 18. A cascade running backwards at its own seam.
+     *
+     * The index still comes from nth-child — that is what made this adoptable,
+     * and `sibling-index()` is far past the chrome108 target — but the STEP is
+     * now a property a caller sets from its real row count. Default 26ms, so
+     * every existing list behaves exactly as before; a long list sets
+     * `--rf-stagger` to `300ms / n` and the whole cascade fits the cap.
+     */
+    .rf-staged > *:nth-child(1) { animation-delay: calc(var(--rf-stagger, 26ms) * 0); }
+    .rf-staged > *:nth-child(2) { animation-delay: calc(var(--rf-stagger, 26ms) * 1); }
+    .rf-staged > *:nth-child(3) { animation-delay: calc(var(--rf-stagger, 26ms) * 2); }
+    .rf-staged > *:nth-child(4) { animation-delay: calc(var(--rf-stagger, 26ms) * 3); }
+    .rf-staged > *:nth-child(5) { animation-delay: calc(var(--rf-stagger, 26ms) * 4); }
+    .rf-staged > *:nth-child(6) { animation-delay: calc(var(--rf-stagger, 26ms) * 5); }
+    .rf-staged > *:nth-child(7) { animation-delay: calc(var(--rf-stagger, 26ms) * 6); }
+    .rf-staged > *:nth-child(8) { animation-delay: calc(var(--rf-stagger, 26ms) * 7); }
+    .rf-staged > *:nth-child(9) { animation-delay: calc(var(--rf-stagger, 26ms) * 8); }
+    .rf-staged > *:nth-child(10) { animation-delay: calc(var(--rf-stagger, 26ms) * 9); }
+    .rf-staged > *:nth-child(11) { animation-delay: calc(var(--rf-stagger, 26ms) * 10); }
+    .rf-staged > *:nth-child(12) { animation-delay: calc(var(--rf-stagger, 26ms) * 11); }
+    .rf-staged > *:nth-child(13) { animation-delay: calc(var(--rf-stagger, 26ms) * 12); }
+    .rf-staged > *:nth-child(14) { animation-delay: calc(var(--rf-stagger, 26ms) * 13); }
+    .rf-staged > *:nth-child(15) { animation-delay: calc(var(--rf-stagger, 26ms) * 14); }
+    .rf-staged > *:nth-child(16) { animation-delay: calc(var(--rf-stagger, 26ms) * 15); }
+    .rf-staged > *:nth-child(17) { animation-delay: calc(var(--rf-stagger, 26ms) * 16); }
+    .rf-staged > *:nth-child(18) { animation-delay: calc(var(--rf-stagger, 26ms) * 17); }
+    /*
+     * And the seam is closed: everything past the eighteenth arrives WITH the
+     * eighteenth rather than before it. That was always the stated intent —
+     * "everything after the eighteenth arrives together" — and the missing rule
+     * meant it arrived together at the wrong end.
+     */
+    .rf-staged > *:nth-child(n + 19) { animation-delay: calc(var(--rf-stagger, 26ms) * 17); }
+
+
+  /* ---------------------------------------------------------------------
+   * DELTA MARK — what changed since the last time you looked.
+   *
+   * `UI-SPEC.md:1308` rates this four stars and gives the argument: "The game
+   * cannot do this; it has no memory of your last login." An overlay does, so
+   * marking the figures that moved is a capability rather than a decoration.
+   *
+   * WHY THIS ONE MAY ANIMATE WHEN `Counter` MAY NOT
+   * ————————————————————————————
+   * The figure itself is forbidden from moving, because a tween caught by a
+   * frozen timeline leaves a number on screen that was never true. This does
+   * not touch the figure. It is a rule UNDER it, drawn at full width and wiped
+   * away left to right, and the figure prints at its true value on the first
+   * paint with or without a clock.
+   *
+   * So the stranded state is not merely tolerable, it is the right one: freeze
+   * the timeline half way and the reader is left looking at a number with a
+   * mark under it, which is exactly the sentence this feature exists to say.
+   * Transform only, and it ends at `scaleX(0)` — nothing is hidden behind it
+   * either way.
+   */
+  /*
+   * IT HOLDS BEFORE IT WIPES, AND WATCHING IT IS WHAT SHOWED THAT.
+   * ————————————————————————————
+   * The first version was a plain `scaleX(1)` to `scaleX(0)` on an ease-out.
+   * Scrubbed under a controlled clock, the bar was at scaleX(0.039) by the
+   * halfway point: 96% of the movement inside the first 450ms of a 900ms
+   * animation, so it read as a snap and the reader never saw the mark it exists
+   * to show. Source alone cannot tell you that - the duration and the curve
+   * both looked reasonable.
+   *
+   * So it holds at full width for the first third, then leaves. The hold is the
+   * message; the wipe is only how it stops being one.
+   */
+  @keyframes rf-delta-wipe {
+    0%,
+    34% {
+      transform: scaleX(1);
+    }
+    100% {
+      transform: scaleX(0);
+    }
+  }
+  .rf-delta {
+    position: relative;
+  }
+  .rf-delta::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--rf-delta-ink, var(--color-orokin-400));
+    transform-origin: left center;
+    animation: rf-delta-wipe 1100ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: none;
+  }
+  /*
+   * Reduced motion keeps the MARK and drops the wipe. A reader who asked for no
+   * motion still gets told which figures moved; they just get told with a rule
+   * that stays put rather than one that leaves.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .rf-delta::after {
+      animation: none;
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+   * NUMERALS. Figures are the content of this app, so they get the treatment.
+   * ------------------------------------------------------------------ */
+  .numeric {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .rf-row:hover .numeric {
+    text-shadow: 0 0 18px color-mix(in oklch, var(--rf-row-accent, var(--color-orokin-400)) 40%, transparent);
+  }
+
+  /* ---------------------------------------------------------------------
+   * REDUCED MOTION. Everything above is decoration over a correct resting
+   * state, so removing all of it changes nothing about what can be read.
+   * ------------------------------------------------------------------ */
+  @media (prefers-reduced-motion: reduce) {
+    .rf-row,
+    .rf-lit,
+    .rf-plate,
+    .rf-row::before,
+    .rf-row::after,
+    .rf-lit::after {
+      transition: none;
+    }
+
+    .rf-staged > * {
+      animation: none;
+    }
+
+    .rf-stage .rf-row:hover,
+    .rf-stage .rf-row:focus-visible,
+    .rf-plate--raise:hover {
+      transform: none;
+    }
+  }
+}

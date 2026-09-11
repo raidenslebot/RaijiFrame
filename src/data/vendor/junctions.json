@@ -1,0 +1,386 @@
+{
+  "version": "2026-08-31",
+  "source": "https://wiki.warframe.com/w/Junction (hub, ?action=raw); per-junction pages ?action=raw: Venus_Junction, Mercury_Junction, Mars_Junction, Phobos_Junction, Ceres_Junction, Jupiter_Junction, Europa_Junction, Saturn_Junction, Uranus_Junction, Neptune_Junction, Pluto_Junction, Eris_Junction, Sedna_Junction; https://wiki.warframe.com/w/Module:Missions/data for InternalName; https://content.warframe.com/PublicExport/Manifest/ExportRegions_en.json (cross-check)",
+  "sourceNote": "Hand-constructed: there is no Module:Junctions/data. Scraped 2026-08-31 through a real browser (wiki.warframe.com is behind a Cloudflare JS interstitial; curl/api.php return a challenge page). Reflects the Update 39 'Isleweaver' Junction Rework plus the Update 40 change of the Venus Junction's first task from Vor's Prize to The Teacher. 13 junctions, 4 tasks each. NOTES: (1) `id` is the wiki `InternalName` from Module:Missions/data, which is what joins to `Missions[].Tag` in the account dump. It follows the <From>To<To>Junction pattern EXCEPT for the Jupiter Junction, whose tag is still the legacy `CeresToJupiterJunction` even though the junction now sits on Deimos - do not regenerate that id from from/to. (2) Junctions do NOT appear in DE's ExportRegions_en.json (269 nodes, none of type junction), so the wiki is the only source for both ids and tasks. (3) The wiki tables include a final 'Complete the Junction' row; that is the junction clear itself (and carries the completion rewards), not a prerequisite, so it is omitted here - DE's own patch notes list exactly 4 'Junction Tasks' per junction. (4) Uranus Junction task 3 uses the current in-game wording documented in the Update 42 patch notes ('...in one mission'); the Uranus_Junction page body is stale and omits that clause. (5) Certain star chart paths have no junction at all and are therefore absent: all paths to the Void, Earth -> Lua, and Mars -> Deimos. (6) Rewards are deliberately not captured. Task refs are normalised to the canonical quest name in quests.json (the in-game wording 'The Rising Tide' refers to the quest titled 'Rising Tide'); the original wording is preserved in `text`.",
+  "junctionCount": 13,
+  "junctions": [
+    {
+      "id": "EarthToVenusJunction",
+      "name": "Venus Junction",
+      "from": "Earth",
+      "to": "Venus",
+      "unlocksPlanet": "Venus",
+      "tasks": [
+        {
+          "text": "Complete Quest: The Teacher",
+          "kind": "quest",
+          "ref": "The Teacher"
+        },
+        {
+          "text": "Equip Dreamer's Bond in your Warframe's Aura Slot",
+          "kind": "other",
+          "ref": "Dreamer's Bond"
+        },
+        {
+          "text": "Upgrade Dreamer's Bond Mod",
+          "kind": "rank",
+          "ref": "Dreamer's Bond"
+        },
+        {
+          "text": "Start building a Taxon Sentinel in the Foundry",
+          "kind": "craft",
+          "ref": "Taxon"
+        }
+      ]
+    },
+    {
+      "id": "VenusToMercuryJunction",
+      "name": "Mercury Junction",
+      "from": "Venus",
+      "to": "Mercury",
+      "unlocksPlanet": "Mercury",
+      "tasks": [
+        {
+          "text": "Complete Quest: Vox Solaris",
+          "kind": "quest",
+          "ref": "Vox Solaris"
+        },
+        {
+          "text": "Purchase a Rhino Blueprint from the Market for Credits",
+          "kind": "collect",
+          "ref": "Rhino Blueprint"
+        },
+        {
+          "text": "Defeat Jackal at Fossa (Venus)",
+          "kind": "mission",
+          "ref": "Fossa"
+        },
+        {
+          "text": "Start building a Rhino Component in the Foundry",
+          "kind": "craft",
+          "ref": "Rhino"
+        }
+      ]
+    },
+    {
+      "id": "EarthToMarsJunction",
+      "name": "Mars Junction",
+      "from": "Earth",
+      "to": "Mars",
+      "unlocksPlanet": "Mars",
+      "tasks": [
+        {
+          "text": "Complete Quest: Once Awake",
+          "kind": "quest",
+          "ref": "Once Awake"
+        },
+        {
+          "text": "Visit the Side Quest section of the Codex in the Orbiter",
+          "kind": "other",
+          "ref": null
+        },
+        {
+          "text": "Complete a mission with the Boltor primary weapon equipped",
+          "kind": "mission",
+          "ref": "Boltor"
+        },
+        {
+          "text": "Purchase a MK1 Weapon from the Market",
+          "kind": "collect",
+          "ref": null
+        }
+      ]
+    },
+    {
+      "id": "MarsToPhobosJunction",
+      "name": "Phobos Junction",
+      "from": "Mars",
+      "to": "Phobos",
+      "unlocksPlanet": "Phobos",
+      "tasks": [
+        {
+          "text": "Refine a Void Relic at the console in the Orbiter",
+          "kind": "other",
+          "ref": "Void Relic"
+        },
+        {
+          "text": "Open 3 Lith Void Relics",
+          "kind": "mission",
+          "ref": "Lith Void Relic"
+        },
+        {
+          "text": "Kill 10 enemies with Headshots",
+          "kind": "other",
+          "ref": null
+        },
+        {
+          "text": "Talk to Maroo in Maroo's Bazaar Relay on Mars",
+          "kind": "other",
+          "ref": "Maroo's Bazaar"
+        }
+      ]
+    },
+    {
+      "id": "MarsToCeresJunction",
+      "name": "Ceres Junction",
+      "from": "Mars",
+      "to": "Ceres",
+      "unlocksPlanet": "Ceres",
+      "tasks": [
+        {
+          "text": "Complete Maroo's Weekly Ayatan Treasure Hunt",
+          "kind": "mission",
+          "ref": "Maroo's Weekly Ayatan Treasure Hunt"
+        },
+        {
+          "text": "Fill an Ayatan Sculpture with Ayatan Stars",
+          "kind": "other",
+          "ref": "Ayatan Sculpture"
+        },
+        {
+          "text": "Trade an Ayatan Sculpture in with Maroo for Endo",
+          "kind": "other",
+          "ref": "Ayatan Sculpture"
+        },
+        {
+          "text": "Pledge to a Syndicate",
+          "kind": "other",
+          "ref": null
+        }
+      ]
+    },
+    {
+      "id": "CeresToJupiterJunction",
+      "idNote": "Legacy tag. The Jupiter Junction was moved from Ceres to Deimos, but DE's internal name (and therefore Missions[].Tag) still reads CeresToJupiterJunction.",
+      "name": "Jupiter Junction",
+      "from": "Deimos",
+      "to": "Jupiter",
+      "unlocksPlanet": "Jupiter",
+      "tasks": [
+        {
+          "text": "Complete Quest: Heart of Deimos",
+          "kind": "quest",
+          "ref": "Heart of Deimos"
+        },
+        {
+          "text": "Get 1 Kill while Wall Latching",
+          "kind": "other",
+          "ref": null
+        },
+        {
+          "text": "Complete the Advanced Movement Tutorial in the Codex",
+          "kind": "other",
+          "ref": "Advanced Movement"
+        },
+        {
+          "text": "Upgrade a Redirection Mod to Rank 5",
+          "kind": "rank",
+          "ref": "Redirection"
+        }
+      ]
+    },
+    {
+      "id": "JupiterToEuropaJunction",
+      "name": "Europa Junction",
+      "from": "Jupiter",
+      "to": "Europa",
+      "unlocksPlanet": "Europa",
+      "tasks": [
+        {
+          "text": "Learn how to perform Synthesis from Cephalon Simaris",
+          "kind": "other",
+          "ref": "Cephalon Simaris"
+        },
+        {
+          "text": "Visit a Dojo",
+          "kind": "other",
+          "ref": null
+        },
+        {
+          "text": "Start building 1 Forma in the Foundry",
+          "kind": "craft",
+          "ref": "Forma"
+        },
+        {
+          "text": "Complete a Nightmare mission",
+          "kind": "mission",
+          "ref": null
+        }
+      ]
+    },
+    {
+      "id": "JupiterToSaturnJunction",
+      "name": "Saturn Junction",
+      "from": "Jupiter",
+      "to": "Saturn",
+      "unlocksPlanet": "Saturn",
+      "tasks": [
+        {
+          "text": "Complete Quest: The Archwing",
+          "kind": "quest",
+          "ref": "The Archwing"
+        },
+        {
+          "text": "Equip a Codex Scanner to your Gear Wheel",
+          "kind": "other",
+          "ref": "Codex Scanner"
+        },
+        {
+          "text": "Fully scan the same enemy type to add it to your Codex",
+          "kind": "other",
+          "ref": null
+        },
+        {
+          "text": "Dissolve 5 Mods",
+          "kind": "other",
+          "ref": null
+        }
+      ]
+    },
+    {
+      "id": "SaturnToUranusJunction",
+      "name": "Uranus Junction",
+      "from": "Saturn",
+      "to": "Uranus",
+      "unlocksPlanet": "Uranus",
+      "tasks": [
+        {
+          "text": "Defeat Sargas Ruk at Tethys (Saturn)",
+          "kind": "mission",
+          "ref": "Tethys"
+        },
+        {
+          "text": "Kill 10 enemies with Heavy Melee attacks",
+          "kind": "other",
+          "ref": null
+        },
+        {
+          "text": "Complete 20 minutes of Survival at Titan (Saturn) in one mission",
+          "kind": "mission",
+          "ref": "Titan"
+        },
+        {
+          "text": "Transmute a Mod",
+          "kind": "other",
+          "ref": null
+        }
+      ]
+    },
+    {
+      "id": "UranusToNeptuneJunction",
+      "name": "Neptune Junction",
+      "from": "Uranus",
+      "to": "Neptune",
+      "unlocksPlanet": "Neptune",
+      "tasks": [
+        {
+          "text": "Complete Quest: Natah",
+          "kind": "quest",
+          "ref": "Natah"
+        },
+        {
+          "text": "Defeat Tyl Regor at Titania (Uranus)",
+          "kind": "mission",
+          "ref": "Titania"
+        },
+        {
+          "text": "Complete a mission on Uranus with only your Melee Weapon equipped",
+          "kind": "mission",
+          "ref": null
+        },
+        {
+          "text": "Complete a Rescue Mission at Caliban (Uranus)",
+          "kind": "mission",
+          "ref": "Caliban"
+        }
+      ]
+    },
+    {
+      "id": "NeptuneToPlutoJunction",
+      "name": "Pluto Junction",
+      "from": "Neptune",
+      "to": "Pluto",
+      "unlocksPlanet": "Pluto",
+      "tasks": [
+        {
+          "text": "Complete Quest: The Second Dream",
+          "kind": "quest",
+          "ref": "The Second Dream"
+        },
+        {
+          "text": "Defeat the Hyena Pack at Psamathe (Neptune)",
+          "kind": "mission",
+          "ref": "Psamathe"
+        },
+        {
+          "text": "Equip the Archwing Launcher in the Gear Wheel",
+          "kind": "other",
+          "ref": "Archwing Launcher"
+        },
+        {
+          "text": "Play the same Invasion mission 3 times in support of a single Faction",
+          "kind": "mission",
+          "ref": null
+        }
+      ]
+    },
+    {
+      "id": "PlutoToErisJunction",
+      "name": "Eris Junction",
+      "from": "Pluto",
+      "to": "Eris",
+      "unlocksPlanet": "Eris",
+      "tasks": [
+        {
+          "text": "Complete 6 waves of Defense at Stöfler (Lua) in a single mission",
+          "kind": "mission",
+          "ref": "Stöfler"
+        },
+        {
+          "text": "Equip a Focus Lens",
+          "kind": "other",
+          "ref": "Focus Lens"
+        },
+        {
+          "text": "Find a locked Orokin Vault at Phlegyas (Deimos)",
+          "kind": "mission",
+          "ref": "Phlegyas"
+        },
+        {
+          "text": "Complete Quest: The War Within",
+          "kind": "quest",
+          "ref": "The War Within"
+        }
+      ]
+    },
+    {
+      "id": "ErisToSednaJunction",
+      "name": "Sedna Junction",
+      "from": "Eris",
+      "to": "Sedna",
+      "unlocksPlanet": "Sedna",
+      "tasks": [
+        {
+          "text": "Complete Quest: The Rising Tide",
+          "kind": "quest",
+          "ref": "Rising Tide"
+        },
+        {
+          "text": "Complete the Railjack mission Sover Strait (Earth Proxima)",
+          "kind": "mission",
+          "ref": "Sover Strait"
+        },
+        {
+          "text": "Defeat 5 Vomvalysts on the Plains of Eidolon (Earth)",
+          "kind": "mission",
+          "ref": "Plains of Eidolon"
+        },
+        {
+          "text": "Defeat Ambulas at Hades (Pluto)",
+          "kind": "mission",
+          "ref": "Hades"
+        }
+      ]
+    }
+  ]
+}
